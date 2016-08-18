@@ -14,10 +14,16 @@ function HomeAssistantLight(log, data, client) {
   this.domain = "light"
   this.data = data
   this.entity_id = data.entity_id
+  this.supports_color = false
+
   if (data.attributes && data.attributes.friendly_name) {
     this.name = data.attributes.friendly_name
   }else{
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ')
+  }
+
+  if (data.attributes && data.attributes.xy_color) {
+    this.supports_color = true
   }
 
   this.client = client
@@ -78,6 +84,18 @@ HomeAssistantLight.prototype = {
       }
     }.bind(this))
   },
+  getHue: function(callback){
+    this.log("fetching hue for: " + this.name);
+
+    this.client.fetchState(this.entity_id, function(data){
+      if (data && data.attributes) {
+        hue = 0
+        callback(null, hue)
+      }else{
+        callback(communicationError)
+      }
+    }.bind(this))
+  },
   setPowerState: function(powerOn, callback) {
     var that = this;
     var service_data = {}
@@ -125,6 +143,9 @@ HomeAssistantLight.prototype = {
       }
     }.bind(this))
   },
+  setHue: function(value, callback){
+    this.log("Setting hue on the '"+this.name+"' to " + value);
+  },
   getServices: function() {
     var lightbulbService = new Service.Lightbulb();
     var informationService = new Service.AccessoryInformation();
@@ -144,6 +165,13 @@ HomeAssistantLight.prototype = {
         .addCharacteristic(Characteristic.Brightness)
         .on('get', this.getBrightness.bind(this))
         .on('set', this.setBrightness.bind(this));
+    }
+
+    if (this.supports_color) {
+      lightbulbService
+        .addCharacteristic(Characteristic.Hue)
+        .on('get', this.getHue.bind(this))
+        .on('set', this.setHue.bind(this));
     }
 
     return [informationService, lightbulbService];
