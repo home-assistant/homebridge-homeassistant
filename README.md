@@ -24,7 +24,7 @@ Here's a list of the devices that are currently exposed:
 * **Media Players** - exposed as an on/off switch
 * **Lock** - lock/unlock lock
 * **Garage Door** - open/close garage door
-* **Rollershutter** - exposed as a garage door
+* **Cover** - open/close shutter or set specific position
 * **Fan** - on/off/speed
 * **Input boolean** - on/off
 
@@ -68,7 +68,7 @@ adding it to your `config.json`.
     "name": "HomeAssistant",
     "host": "http://192.168.1.16:8123",
     "password": "yourapipassword",
-    "supported_types": ["fan", "garage_door", "input_boolean", "light", "lock", "media_player", "rollershutter", "scene", "switch"]
+    "supported_types": ["fan", "garage_door", "input_boolean", "light", "lock", "media_player", "cover", "scene", "switch"]
   }
 ]
 ```
