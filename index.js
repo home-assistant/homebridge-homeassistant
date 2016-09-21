@@ -7,6 +7,7 @@ var communicationError = new Error('Can not communicate with Home Assistant.')
 
 var HomeAssistantLight;
 var HomeAssistantSwitch;
+var HomeAssistantInputBoolean;
 var HomeAssistantLock;
 var HomeAssistantGarageDoor;
 var HomeAssistantMediaPlayer;
@@ -22,7 +23,7 @@ module.exports = function(homebridge) {
 
   HomeAssistantLight = require('./accessories/light')(Service, Characteristic, communicationError);
   HomeAssistantSwitch = require('./accessories/switch')(Service, Characteristic, communicationError);
-  HomeAssistantSwitch = require('./accessories/input_boolean')(Service, Characteristic, communicationError);
+  HomeAssistantInputBoolean = require('./accessories/input_boolean')(Service, Characteristic, communicationError);
   HomeAssistantLock = require('./accessories/lock')(Service, Characteristic, communicationError);
   HomeAssistantGarageDoor = require('./accessories/garage_door')(Service, Characteristic, communicationError);
   HomeAssistantRollershutter = require('./accessories/rollershutter')(Service, Characteristic, communicationError);
