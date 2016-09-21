@@ -22,7 +22,6 @@ module.exports = function(homebridge) {
 
   HomeAssistantLight = require('./accessories/light')(Service, Characteristic, communicationError);
   HomeAssistantSwitch = require('./accessories/switch')(Service, Characteristic, communicationError);
-  HomeAssistantSwitch = require('./accessories/input_boolean')(Service, Characteristic, communicationError);
   HomeAssistantLock = require('./accessories/lock')(Service, Characteristic, communicationError);
   HomeAssistantGarageDoor = require('./accessories/garage_door')(Service, Characteristic, communicationError);
   HomeAssistantRollershutter = require('./accessories/rollershutter')(Service, Characteristic, communicationError);
@@ -172,8 +171,6 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantLight(that.log, entity, that)
         }else if (entity_type == 'switch'){
           accessory = new HomeAssistantSwitch(that.log, entity, that)
-        }else if (entity_type == 'input_boolean'){
-          accessory = new HomeAssistantInputBoolean(that.log, entity, that)
         }else if (entity_type == 'lock'){
           accessory = new HomeAssistantLock(that.log, entity, that)
         }else if (entity_type == 'cover'){
