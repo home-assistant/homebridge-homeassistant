@@ -103,16 +103,11 @@ HomeAssistantFan.prototype = {
     var service_data = {}
     service_data.entity_id = this.entity_id
 
-    this.log("Received a fan speed of"+speed)
-
-    if (speed >= 0 && speed <= 25) {
-      this.log("Setting fan low")
+    if (speed <= 25) {
       service_data.speed = "low";
-    } else if (speed >= 25 && speed <= 75) {
-      this.log("Setting fan med")
+    } else if (speed <= 75) {
       service_data.speed = "med";
-    } else if (speed >= 75 && speed <= 100) {
-      this.log("Setting fan high")
+    } else if (speed <= 100) {
       service_data.speed = "high";
     }
 
