@@ -11,7 +11,7 @@ var HomeAssistantLock;
 var HomeAssistantGarageDoor;
 var HomeAssistantMediaPlayer;
 var HomeAssistantRollershutter;
-
+var HomeAssistantFan;
 
 module.exports = function(homebridge) {
   console.log("homebridge API version: " + homebridge.version);
@@ -26,6 +26,7 @@ module.exports = function(homebridge) {
   HomeAssistantGarageDoor = require('./accessories/garage_door')(Service, Characteristic, communicationError);
   HomeAssistantRollershutter = require('./accessories/rollershutter')(Service, Characteristic, communicationError);
   HomeAssistantMediaPlayer = require('./accessories/media_player')(Service, Characteristic, communicationError);
+  HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
 
   homebridge.registerPlatform("homebridge-homeassistant", "HomeAssistant", HomeAssistantPlatform, false);
 }
@@ -181,6 +182,8 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantRollershutter(that.log, entity, that)
         }else if (entity_type == 'media_player' && entity.attributes && entity.attributes.supported_media_commands){
           accessory = new HomeAssistantMediaPlayer(that.log, entity, that)
+        }else if (entity_type == 'fan'){
+          accessory = new HomeAssistantFan(that.log, entity, that)
         }
 
         if (accessory) {
