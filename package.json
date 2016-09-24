@@ -1,6 +1,6 @@
 {
   "name": "homebridge-homeassistant",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Homebridge plugin for Home Assistant: https://home-assistant.io",
   "license": "MIT",
   "keywords": [
