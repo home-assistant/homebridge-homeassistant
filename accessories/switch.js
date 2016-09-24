@@ -82,6 +82,9 @@ HomeAssistantSwitch.prototype = {
       case "scene":
         model = "Scene"
         break;
+      case "input_boolean":
+        model = "Input boolean"
+        break;
       default:
         model = "Switch"
     }

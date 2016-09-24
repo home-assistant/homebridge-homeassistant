@@ -181,6 +181,10 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantRollershutter(that.log, entity, that)
         }else if (entity_type == 'media_player' && entity.attributes && entity.attributes.supported_media_commands){
           accessory = new HomeAssistantMediaPlayer(that.log, entity, that)
+        }else if (entity_type == 'fan'){
+          accessory = new HomeAssistantFan(that.log, entity, that)
+        }else if (entity_type == 'input_boolean'){
+          accessory = new HomeAssistantSwitch(that.log, entity, that, 'input_boolean')
         }
 
         if (accessory) {
