@@ -73,6 +73,112 @@ HomeAssistantFan.prototype = {
       }.bind(this))
     }
   },
+  getRotationSpeed: function(callback){
+    this.client.fetchState(this.entity_id, function(data){
+      if (data) {
+        if (data.state == 'off') {
+          callback(null, 0);
+        } else {
+          switch (data.attributes.speed) {
+            case "low":
+              callback(null, 25);
+            case "med", "medium":
+              callback(null, 50);
+            case "high":
+              callback(null, 100);
+          }
+        }
+      }else{
+        callback(communicationError)
+      }
+    }.bind(this))
+  },
+  setRotationSpeed: function(speed, callback, context) {
+    if (context == 'internal') {
+      callback();
+      return;
+    }
+
+    var that = this;
+    var service_data = {}
+    service_data.entity_id = this.entity_id
+
+    this.log("Received a fan speed of"+speed)
+
+    if (speed >= 0 && speed <= 25) {
+      this.log("Setting fan low")
+      service_data.speed = "low";
+    } else if (speed >= 25 && speed <= 75) {
+      this.log("Setting fan med")
+      service_data.speed = "med";
+    } else if (speed >= 75 && speed <= 100) {
+      this.log("Setting fan high")
+      service_data.speed = "high";
+    }
+
+    this.log("Setting speed on the '"+this.name+"' to "+service_data.speed);
+
+    this.client.callService(this.domain, 'set_speed', service_data, function(data){
+      if (data) {
+        that.log("Successfully set power state on the '"+that.name+"' to on");
+        callback()
+      }else{
+        callback(communicationError)
+      }
+    }.bind(this))
+  },
+  getRotationSpeed: function(callback){
+    this.client.fetchState(this.entity_id, function(data){
+      if (data) {
+        if (data.state == 'off') {
+          callback(null, 0);
+        } else {
+          switch (data.attributes.speed) {
+            case "low":
+              callback(null, 33);
+              break;
+            case "med", "medium":
+              callback(null, 66);
+              break;
+            case "high":
+              callback(null, 100);
+              break;
+          }
+        }
+      }else{
+        callback(communicationError)
+      }
+    }.bind(this))
+  },
+  setRotationSpeed: function(speed, callback, context) {
+    if (context == 'internal') {
+      callback();
+      return;
+    }
+
+    var that = this;
+    var service_data = {}
+    service_data.entity_id = this.entity_id
+
+    if (speed >= 0 && speed < 33) {
+      service_data.speed = "low";
+    } else if (speed >= 33 && speed < 66) {
+      service_data.speed = "med";
+    } else if (speed >= 66 && speed <= 100) {
+      service_data.speed = "high";
+    }
+
+    this.log("Setting speed on the '"+this.name+"' to "+service_data.speed);
+
+    this.client.callService(this.domain, 'set_speed', service_data, function(data){
+      if (data) {
+        that.log("Successfully set power state on the '"+that.name+"' to on");
+        callback()
+      }else{
+        callback(communicationError)
+      }
+    }.bind(this))
+  },
   getServices: function() {
     this.fanService = new Service.Fan();
     var informationService = new Service.AccessoryInformation();
@@ -86,6 +192,11 @@ HomeAssistantFan.prototype = {
       .getCharacteristic(Characteristic.On)
       .on('get', this.getPowerState.bind(this))
       .on('set', this.setPowerState.bind(this));
+
+    this.fanService
+      .getCharacteristic(Characteristic.RotationSpeed)
+      .on('get', this.getRotationSpeed.bind(this))
+      .on('set', this.setRotationSpeed.bind(this));
 
     return [informationService, this.fanService];
   }
