@@ -9,9 +9,9 @@ module.exports = function (oService, oCharacteristic, oCommunicationError) {
 };
 module.exports.HomeAssistantFan = HomeAssistantFan;
 
-function HomeAssistantFan(log, data, client, type) {
+function HomeAssistantFan(log, data, client) {
   // device info
-  this.domain = type || "fan"
+  this.domain = "fan"
   this.data = data
   this.entity_id = data.entity_id
   if (data.attributes && data.attributes.friendly_name) {
@@ -76,11 +76,10 @@ HomeAssistantFan.prototype = {
   getServices: function() {
     this.fanService = new Service.Fan();
     var informationService = new Service.AccessoryInformation();
-    var model = "fan";
 
     informationService
       .setCharacteristic(Characteristic.Manufacturer, "Home Assistant")
-      .setCharacteristic(Characteristic.Model, model)
+      .setCharacteristic(Characteristic.Model, "Fan")
       .setCharacteristic(Characteristic.SerialNumber, "xxx");
 
     this.fanService
