@@ -122,58 +122,6 @@ HomeAssistantFan.prototype = {
       }
     }.bind(this))
   },
-  getRotationSpeed: function(callback){
-    this.client.fetchState(this.entity_id, function(data){
-      if (data) {
-        if (data.state == 'off') {
-          callback(null, 0);
-        } else {
-          switch (data.attributes.speed) {
-            case "low":
-              callback(null, 33);
-              break;
-            case "med", "medium":
-              callback(null, 66);
-              break;
-            case "high":
-              callback(null, 100);
-              break;
-          }
-        }
-      }else{
-        callback(communicationError)
-      }
-    }.bind(this))
-  },
-  setRotationSpeed: function(speed, callback, context) {
-    if (context == 'internal') {
-      callback();
-      return;
-    }
-
-    var that = this;
-    var service_data = {}
-    service_data.entity_id = this.entity_id
-
-    if (speed >= 0 && speed < 33) {
-      service_data.speed = "low";
-    } else if (speed >= 33 && speed < 66) {
-      service_data.speed = "med";
-    } else if (speed >= 66 && speed <= 100) {
-      service_data.speed = "high";
-    }
-
-    this.log("Setting speed on the '"+this.name+"' to "+service_data.speed);
-
-    this.client.callService(this.domain, 'set_speed', service_data, function(data){
-      if (data) {
-        that.log("Successfully set power state on the '"+that.name+"' to on");
-        callback()
-      }else{
-        callback(communicationError)
-      }
-    }.bind(this))
-  },
   getServices: function() {
     this.fanService = new Service.Fan();
     var informationService = new Service.AccessoryInformation();
