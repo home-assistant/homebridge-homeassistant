@@ -25,6 +25,7 @@ Here's a list of the devices that are currently exposed:
 * **Lock** - lock/unlock lock
 * **Garage Door** - open/close garage door
 * **Rollershutter** - exposed as a garage door
+* **Fan** - on/off/speed
 
 ### Scene Support
 
