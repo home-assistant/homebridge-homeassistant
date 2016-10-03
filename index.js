@@ -188,7 +188,7 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'input_boolean')
         }else if (entity_type == 'fan'){
           accessory = new HomeAssistantFan(that.log, entity, that)
-        }else if (entity_type == 'sensor' && entity.attributes && entity.attributes.unit_of_measurement == '°C'){
+        }else if (entity_type == 'sensor' && entity.attributes && (entity.attributes.unit_of_measurement == '°C' || entity.attributes.unit_of_measurement == '°F')){
           accessory = new HomeAssistantTemperatureSensor(that.log, entity, that)
         }
 
