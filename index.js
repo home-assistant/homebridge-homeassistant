@@ -12,6 +12,7 @@ var HomeAssistantGarageDoor;
 var HomeAssistantMediaPlayer;
 var HomeAssistantRollershutter;
 var HomeAssistantFan;
+var HomeAssistantTemperatureSensor;
 
 module.exports = function(homebridge) {
   console.log("homebridge API version: " + homebridge.version);
@@ -27,6 +28,7 @@ module.exports = function(homebridge) {
   HomeAssistantRollershutter = require('./accessories/rollershutter')(Service, Characteristic, communicationError);
   HomeAssistantMediaPlayer = require('./accessories/media_player')(Service, Characteristic, communicationError);
   HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
+  HomeAssistantTemperatureSensor = require('./accessories/temperature_sensor')(Service, Characteristic, communicationError);
 
   homebridge.registerPlatform("homebridge-homeassistant", "HomeAssistant", HomeAssistantPlatform, false);
 }
@@ -186,6 +188,8 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'input_boolean')
         }else if (entity_type == 'fan'){
           accessory = new HomeAssistantFan(that.log, entity, that)
+        }else if (entity_type == 'sensor' && entity.attributes && (entity.attributes.unit_of_measurement == '°C' || entity.attributes.unit_of_measurement == '°F')){
+          accessory = new HomeAssistantTemperatureSensor(that.log, entity, that)
         }
 
         if (accessory) {
