@@ -10,7 +10,7 @@ var HomeAssistantSwitch;
 var HomeAssistantLock;
 var HomeAssistantGarageDoor;
 var HomeAssistantMediaPlayer;
-var HomeAssistantRollershutter;
+var HomeAssistantCover;
 var HomeAssistantFan;
 
 module.exports = function(homebridge) {
@@ -24,7 +24,7 @@ module.exports = function(homebridge) {
   HomeAssistantSwitch = require('./accessories/switch')(Service, Characteristic, communicationError);
   HomeAssistantLock = require('./accessories/lock')(Service, Characteristic, communicationError);
   HomeAssistantGarageDoor = require('./accessories/garage_door')(Service, Characteristic, communicationError);
-  HomeAssistantRollershutter = require('./accessories/rollershutter')(Service, Characteristic, communicationError);
+  HomeAssistantCover = require('./accessories/cover')(Service, Characteristic, communicationError);
   HomeAssistantMediaPlayer = require('./accessories/media_player')(Service, Characteristic, communicationError);
   HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
 
@@ -178,8 +178,8 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantGarageDoor(that.log, entity, that)
         }else if (entity_type == 'scene'){
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'scene')
-        }else if (entity_type == 'rollershutter'){
-          accessory = new HomeAssistantRollershutter(that.log, entity, that)
+        }else if (entity_type == 'cover'){
+          accessory = new HomeAssistantCover(that.log, entity, that)
         }else if (entity_type == 'media_player' && entity.attributes && entity.attributes.supported_media_commands){
           accessory = new HomeAssistantMediaPlayer(that.log, entity, that)
         }else if (entity_type == 'input_boolean'){
