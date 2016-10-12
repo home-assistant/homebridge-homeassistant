@@ -27,6 +27,8 @@ Here's a list of the devices that are currently exposed:
 * **Rollershutter** - exposed as a garage door
 * **Fan** - on/off/speed
 * **Input boolean** - on/off
+* **Door** - open/close state exposed
+* **Motion Sensor** - state exposed
 
 ### Scene Support
 
@@ -68,7 +70,7 @@ adding it to your `config.json`.
     "name": "HomeAssistant",
     "host": "http://192.168.1.16:8123",
     "password": "yourapipassword",
-    "supported_types": ["fan", "garage_door", "input_boolean", "light", "lock", "media_player", "rollershutter", "scene", "switch"]
+    "supported_types": ["binary_sensor", "fan", "garage_door", "input_boolean", "light", "lock", "media_player", "rollershutter", "scene", "switch"]
   }
 ]
 ```
