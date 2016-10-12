@@ -26,7 +26,21 @@ function HomeAssistantTemperature(log, data, client) {
 }
 
 HomeAssistantTemperature.prototype = {
+  temperatureFromData: function(data) {
+    if (this.entity_type == 'sensor'){
+      value = parseFloat(data.state)
+    }else{
+      value = parseFloat(data.attributes.temperature)
+    }
+    // HomeKit only works with Celsius internally
+    if (data.attributes.unit_of_measurement == '\u00B0F') {
+      value = (value - 32) / 1.8
+    }
+    return value
+  },
   onEvent: function(old_state, new_state) {
+    this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature)
+      .setValue(this.temperatureFromData(new_state), null, 'internal')
   },
   identify: function(callback){
     this.log("identifying: " + this.name);
@@ -36,16 +50,7 @@ HomeAssistantTemperature.prototype = {
     this.log("fetching temperature for: " + this.name);
     this.client.fetchState(this.entity_id, function(data){
       if (data) {
-        if (this.entity_type == 'sensor'){
-          value = parseFloat(data.state)
-        }else{
-          value = parseFloat(data.attributes.temperature)
-        }
-        // HomeKit only works with Celsius internally
-        if (data.attributes.unit_of_measurement == '\u00B0F') {
-          value = (value - 32) / 1.8
-        }
-        callback(null, value)
+        callback(null, this.temperatureFromData(data))
       }else{
         callback(communicationError)
       } 
