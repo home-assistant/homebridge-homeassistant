@@ -189,11 +189,9 @@ HomeAssistantPlatform.prototype = {
         }else if (entity_type == 'fan'){
           accessory = new HomeAssistantFan(that.log, entity, that)
         }else if (entity_type == 'sensor'){
-          if (entity.attributes && (entity.attributes.unit_of_measurement == '\u00B0C' || entity.attributes.unit_of_measurement == '\u00B0F') && entity.entity_id != 'sensor.vision_zp3111_multisensor_4in1_dew_point_5'){
+          if (entity.attributes && (entity.attributes.unit_of_measurement == '°C' || entity.attributes.unit_of_measurement == '°F')){
             accessory = new HomeAssistantTemperature(that.log, entity, that);
           }
-        }else if (entity_type == 'climate'){
-          accessory = new HomeAssistantTemperature(that.log, entity, that);
         }
 
         if (accessory) {

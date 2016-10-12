@@ -27,13 +27,9 @@ function HomeAssistantTemperature(log, data, client) {
 
 HomeAssistantTemperature.prototype = {
   temperatureFromData: function(data) {
-    if (this.entity_type == 'sensor'){
-      value = parseFloat(data.state)
-    }else{
-      value = parseFloat(data.attributes.temperature)
-    }
+    value = parseFloat(data.state)
     // HomeKit only works with Celsius internally
-    if (data.attributes.unit_of_measurement == '\u00B0F') {
+    if (data.attributes.unit_of_measurement == '°F') {
       value = (value - 32) / 1.8
     }
     return value
