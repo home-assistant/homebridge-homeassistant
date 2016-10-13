@@ -188,11 +188,28 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'input_boolean')
         }else if (entity_type == 'fan'){
           accessory = new HomeAssistantFan(that.log, entity, that)
-        }else if (entity_type == 'binary_sensor'){
-          if (entity.attributes && entity.attributes.sensor_class == 'opening') {
-            accessory = new HomeAssistantBinarySensor(that.log, entity, that, Service.Door, Characteristic.CurrentPosition, 100, 0)
-          }else if (entity.attributes && entity.attributes.sensor_class == 'motion') {
-            accessory = new HomeAssistantBinarySensor(that.log, entity, that, Service.MotionSensor, Characteristic.MotionDetected, true, false)
+        }else if (entity_type == 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
+          switch(entity.attributes.sensor_class) {
+            case 'opening':
+              accessory = new HomeAssistantBinarySensor(
+                that.log,
+                entity,
+                that,
+                Service.ContactSensor,
+                Characteristic.ContactSensorState,
+                Characteristic.ContactSensorState.CONTACT_NOT_DETECTED,
+                Characteristic.ContactSensorState.CONTACT_DETECTED)
+              break
+            case 'motion':
+              accessory = new HomeAssistantBinarySensor(
+                that.log,
+                entity,
+                that,
+                Service.MotionSensor,
+                Characteristic.MotionDetected,
+                true,
+                false)
+              break
           }
         }
 
