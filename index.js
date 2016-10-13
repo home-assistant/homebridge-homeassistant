@@ -192,14 +192,15 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantFan(that.log, entity, that)
         }else if (entity_type == 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
           switch(entity.attributes.sensor_class) {
-            case 'opening':
-              var opening_type;
-              if (entity.attributes.homebridge_opening_type && entity.attributes.homebridge_opening_type == 'window') {
-                opening_type = Service.Window;
-              }else{
-                opening_type = Service.Door;
-              }
-              accessory = new HomeAssistantOpening(that.log, entity, that, Service.Door)
+            case 'moisture':
+              accessory = new HomeAssistantBinarySensor(
+                that.log,
+                entity,
+                that,
+                Service.LeakSensor,
+                Characteristic.LeakDetected,
+                Characteristic.LeakDetected.LEAK_DETECTED,
+                Characteristic.LeakDetected.LEAK_NOT_DETECTED)
               break
             case 'motion':
               accessory = new HomeAssistantBinarySensor(
@@ -210,6 +211,35 @@ HomeAssistantPlatform.prototype = {
                 Characteristic.MotionDetected,
                 true,
                 false)
+              break
+            case 'occupancy':
+              accessory = new HomeAssistantBinarySensor(
+                that.log,
+                entity,
+                that,
+                Service.OccupancySensor,
+                Characteristic.OccupancyDetected,
+                Characteristic.OccupancyDetected.OCCUPANCY_DETECTED,
+                Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED)
+              break
+            case 'opening':
+              var opening_type;
+              if (entity.attributes.homebridge_opening_type && entity.attributes.homebridge_opening_type == 'window') {
+                opening_type = Service.Window;
+              }else{
+                opening_type = Service.Door;
+              }
+              accessory = new HomeAssistantOpening(that.log, entity, that, Service.Door)
+              break
+            case 'smoke':
+              accessory = new HomeAssistantBinarySensor(
+                that.log,
+                entity,
+                that,
+                Service.SmokeSensor,
+                Characteristic.SmokeDetected,
+                Characteristic.SmokeDetected.SMOKE_DETECTED,
+                Characteristic.SmokeDetected.SMOKE_NOT_DETECTED)
               break
           }
         }

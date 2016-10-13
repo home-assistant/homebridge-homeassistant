@@ -27,8 +27,7 @@ Here's a list of the devices that are currently exposed:
 * **Rollershutter** - exposed as a garage door
 * **Fan** - on/off/speed
 * **Input boolean** - on/off
-* **Door** - open/close state exposed
-* **Motion Sensor** - state exposed
+* **Binary Sensor** - door, leak, moisture, motion, smoke, and window state
 
 ### Scene Support
 
