@@ -13,6 +13,7 @@ var HomeAssistantMediaPlayer;
 var HomeAssistantRollershutter;
 var HomeAssistantFan;
 var HomeAssistantBinarySensor;
+var HomeAssistantOpening;
 
 module.exports = function(homebridge) {
   console.log("homebridge API version: " + homebridge.version);
@@ -29,6 +30,7 @@ module.exports = function(homebridge) {
   HomeAssistantMediaPlayer = require('./accessories/media_player')(Service, Characteristic, communicationError);
   HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
   HomeAssistantBinarySensor = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
+  HomeAssistantOpening = require('./accessories/opening')(Service, Characteristic, communicationError);
 
   homebridge.registerPlatform("homebridge-homeassistant", "HomeAssistant", HomeAssistantPlatform, false);
 }
@@ -191,14 +193,13 @@ HomeAssistantPlatform.prototype = {
         }else if (entity_type == 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
           switch(entity.attributes.sensor_class) {
             case 'opening':
-              accessory = new HomeAssistantBinarySensor(
-                that.log,
-                entity,
-                that,
-                Service.ContactSensor,
-                Characteristic.ContactSensorState,
-                Characteristic.ContactSensorState.CONTACT_NOT_DETECTED,
-                Characteristic.ContactSensorState.CONTACT_DETECTED)
+              var opening_type;
+              if (entity.attributes.homebridge_opening_type && entity.attributes.homebridge_opening_type == 'window') {
+                opening_type = Service.Window;
+              }else{
+                opening_type = Service.Door;
+              }
+              accessory = new HomeAssistantOpening(that.log, entity, that, Service.Door)
               break
             case 'motion':
               accessory = new HomeAssistantBinarySensor(

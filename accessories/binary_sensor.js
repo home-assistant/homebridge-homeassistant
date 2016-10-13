@@ -7,39 +7,38 @@ module.exports = function (oService, oCharacteristic, oCommunicationError) {
 
   return HomeAssistantBinarySensor;
 };
-module.exports.HomeAssistantBinarySensor = HomeAssistantBinarySensor;
 
-function HomeAssistantBinarySensor(log, data, client, service, characteristic, onValue, offValue) {
-  // device info
-  this.data = data
-  this.entity_id = data.entity_id
-  if (data.attributes && data.attributes.friendly_name) {
-    this.name = data.attributes.friendly_name
-  } else {
-    this.name = data.entity_id.split('.').pop().replace(/_/g, ' ')
+class HomeAssistantBinarySensor {
+  constructor(log, data, client, service, characteristic, onValue, offValue) {
+    // device info
+    this.data = data
+    this.entity_id = data.entity_id
+    if (data.attributes && data.attributes.friendly_name) {
+      this.name = data.attributes.friendly_name
+    } else {
+      this.name = data.entity_id.split('.').pop().replace(/_/g, ' ')
+    }
+  
+    this.entity_type = data.entity_id.split('.')[0]
+  
+    this.client = client
+    this.log = log;
+  
+    this.service = service
+    this.characteristic = characteristic
+    this.onValue = onValue
+    this.offValue = offValue
   }
 
-  this.entity_type = data.entity_id.split('.')[0]
-
-  this.client = client
-  this.log = log;
-
-  this.service = service
-  this.characteristic = characteristic
-  this.onValue = onValue
-  this.offValue = offValue
-}
-
-HomeAssistantBinarySensor.prototype = {
-  onEvent: function(old_state, new_state) {
+  onEvent(old_state, new_state) {
     this.sensorService.getCharacteristic(this.characteristic)
       .setValue(new_state.state == "on" ? this.onValue : this.offValue, null, 'internal')
-  },
-  identify: function(callback){
+  }
+  identify(callback){
     this.log("identifying: " + this.name);
     callback();
-  },
-  getState: function(callback){
+  }
+  getState(callback){
     this.log("fetching state for: " + this.name);
     this.client.fetchState(this.entity_id, function(data){
       if (data) {
@@ -48,8 +47,8 @@ HomeAssistantBinarySensor.prototype = {
         callback(communicationError)
       } 
     }.bind(this))
-  },
-  getServices: function() {
+  }
+  getServices() {
     this.sensorService = new this.service()
     this.sensorService
       .getCharacteristic(this.characteristic)
@@ -63,5 +62,7 @@ HomeAssistantBinarySensor.prototype = {
 
     return [informationService, this.sensorService];
   }
-
 }
+
+module.exports.HomeAssistantBinarySensor = HomeAssistantBinarySensor;
+
