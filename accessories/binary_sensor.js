@@ -15,7 +15,7 @@ function HomeAssistantBinarySensor(log, data, client, service, characteristic, o
   this.entity_id = data.entity_id
   if (data.attributes && data.attributes.friendly_name) {
     this.name = data.attributes.friendly_name
-  }else{
+  } else {
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ')
   }
 
@@ -44,7 +44,7 @@ HomeAssistantBinarySensor.prototype = {
     this.client.fetchState(this.entity_id, function(data){
       if (data) {
         callback(null, data.state == "on" ? this.onValue : this.offValue)
-      }else{
+      } else {
         callback(communicationError)
       } 
     }.bind(this))
