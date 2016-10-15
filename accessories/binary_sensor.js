@@ -9,7 +9,7 @@ module.exports = function (oService, oCharacteristic, oCommunicationError) {
 };
 
 class HomeAssistantBinarySensor {
-  constructor(log, data, client, service, characteristic, onValue, offValue) {
+  constructor(log, data, client) {
     // device info
     this.data = data
     this.entity_id = data.entity_id
@@ -23,11 +23,38 @@ class HomeAssistantBinarySensor {
   
     this.client = client
     this.log = log;
-  
-    this.service = service
-    this.characteristic = characteristic
-    this.onValue = onValue
-    this.offValue = offValue
+
+    switch(data.attributes.sensor_class) {
+      case 'moisture':
+        this.service = Service.LeakSensor
+        this.characteristic = Characteristic.LeakDetected
+        this.onValue = Characteristic.LeakDetected.LEAK_DETECTED
+        this.offValue = Characteristic.LeakDetected.LEAK_NOT_DETECTED
+        break
+      case 'motion':
+        this.service = Service.MotionSensor
+        this.characteristic = Characteristic.MotionDetected
+        this.onValue = true
+        this.offValue = false
+        break
+      case 'occupancy':
+        this.service = Service.OccupancySensor
+        this.characteristic = Characteristic.OccupancyDetected
+        this.onValue = Characteristic.OccupancyDetected.OCCUPANCY_DETECTED
+        this.offValue = Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED
+        break
+      case 'opening':
+        // Handled by subclass
+        break
+      case 'smoke':
+        this.service = Service.SmokeSensor
+        this.characteristic = Characteristic.SmokeDetected
+        this.onValue = Characteristic.SmokeDetected.SMOKE_DETECTED
+        this.offValue = Characteristic.SmokeDetected.SMOKE_NOT_DETECTED
+        break
+      default:
+        return null
+    }
   }
 
   onEvent(old_state, new_state) {
