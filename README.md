@@ -56,10 +56,11 @@ type must be specified in the `customize` section of your Home Assistant's
 `configuration.yaml`. Refer to the following example:
 
 ```
-cover.lounge_main:
-  homebridge_cover_type: rollershutter
-cover.garage:
-  homebridge_cover_type: garage_door
+customize:
+  cover.lounge_main:
+    homebridge_cover_type: rollershutter
+  cover.garage:
+    homebridge_cover_type: garage_door
 ```
 
 ## Installation
