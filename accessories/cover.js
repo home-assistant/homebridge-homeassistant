@@ -38,9 +38,9 @@ HomeAssistantCover.prototype = {
   onEvent: function(old_state, new_state) {
     var coverState = new_state.attributes.current_position == 100 ? 1 : 0;
     this.coverService.getCharacteristic(Characteristic.CurrentDoorState)
-        .setValue(garageState, null, 'internal');
+        .setValue(coverState, null, 'internal');
     this.coverService.getCharacteristic(Characteristic.TargetDoorState)
-        .setValue(garageState, null, 'internal');
+        .setValue(coverState, null, 'internal');
   },
   getCoverState: function(callback){
     this.client.fetchState(this.entity_id, function(data){
