@@ -36,7 +36,7 @@ function HomeAssistantCover(log, data, client, type) {
 
 HomeAssistantCover.prototype = {
   onEvent: function(old_state, new_state) {
-    var coverState = new_state.attributes.current_position == 100 ? 1 : 0;
+    var coverState = new_state.attributes.current_position == 100 ? 0 : 1;
     this.coverService.getCharacteristic(Characteristic.CurrentDoorState)
         .setValue(coverState, null, 'internal');
     this.coverService.getCharacteristic(Characteristic.TargetDoorState)
