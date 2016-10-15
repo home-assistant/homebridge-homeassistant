@@ -65,7 +65,7 @@ HomeAssistantCover.prototype = {
     if (coverOn) {
       this.log("Setting cover state on the '"+this.name+"' to closed");
 
-      this.client.callService(this.domain, 'close', service_data, function(data){
+      this.client.callService(this.domain, 'close_cover', service_data, function(data){
         if (data) {
           that.log("Successfully set cover state on the '"+that.name+"' to closed");
           callback()
@@ -76,7 +76,7 @@ HomeAssistantCover.prototype = {
     }else{
       this.log("Setting cover state on the '"+this.name+"' to open");
 
-      this.client.callService(this.domain, 'open', service_data, function(data){
+      this.client.callService(this.domain, 'open_cover', service_data, function(data){
         if (data) {
           that.log("Successfully set cover state on the '"+that.name+"' to open");
           callback()
