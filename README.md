@@ -25,6 +25,7 @@ Here's a list of the devices that are currently exposed:
 * **Lock** - lock/unlock lock
 * **Garage Door** - open/close garage door
 * **Rollershutter** - exposed as a garage door
+* **Cover** - exposed as a garage door (see notes)
 * **Fan** - on/off/speed
 * **Input boolean** - on/off
 
@@ -47,6 +48,19 @@ There are some rules to know about how on/off treats your media player. If
 your media player supports play/pause, then turning them on and off via
 HomeKit will play and pause them. If they do not support play/pause but instead
 support on/off they will be turned on and off.
+
+### Cover Support
+
+Covers on your Home Assistant will appear as garage doors, however their real
+type must be specified in the `customize` section of your Home Assistant's
+`configuration.yaml`. Refer to the following example:
+
+```
+cover.lounge_main:
+  homebridge_cover_type: rollershutter
+cover.garage:
+  homebridge_cover_type: garage_door
+```
 
 ## Installation
 
