@@ -27,7 +27,7 @@ Here's a list of the devices that are currently exposed:
 * **Rollershutter** - exposed as a garage door
 * **Fan** - on/off/speed
 * **Input boolean** - on/off
-* **Temperature** - temperature from sensors is exposed
+* **Sensors** - temperature, light and humidity sensors
 
 ### Scene Support
 
