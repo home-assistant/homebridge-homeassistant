@@ -17,17 +17,17 @@ function HomeAssistantCover(log, data, client, type) {
   if (data.attributes && data.attributes.friendly_name) {
     this.name = data.attributes.friendly_name
   }else{
-    this.name = data.entity_id.split('.').pop().replace(/_/g, ' ')
+    this.name = data.entity_id.split(".").pop().replace(/_/g, " ")
   }
   if (data.attributes && data.attributes.homebridge_cover_type && (
-    data.attributes.homebridge_cover_type === 'rollershutter' ||
-    data.attributes.homebridge_cover_type === 'garage_door'
+    data.attributes.homebridge_cover_type === "rollershutter" ||
+    data.attributes.homebridge_cover_type === "garage_door"
   )) {
     this.cover_type = data.attributes.homebridge_cover_type;
   } else {
-    throw new Error('You must provide the `homebridge_cover_type\' property ' +
-                    'in the customise section of your Home Assistant config. ' +
-                    'Set it to either `rollershutter\' or `garage_door\'.');
+    throw new Error("You must provide the `homebridge_cover_type\" property " +
+                    "in the customise section of your Home Assistant config. " +
+                    "Set it to either `rollershutter\" or `garage_door\".");
   }
 
   this.client = client
@@ -38,14 +38,14 @@ HomeAssistantCover.prototype = {
   onEvent: function(old_state, new_state) {
     var coverState = new_state.attributes.current_position == 100 ? 0 : 1;
     this.coverService.getCharacteristic(Characteristic.CurrentDoorState)
-        .setValue(coverState, null, 'internal');
+        .setValue(coverState, null, "internal");
     this.coverService.getCharacteristic(Characteristic.TargetDoorState)
-        .setValue(coverState, null, 'internal');
+        .setValue(coverState, null, "internal");
   },
   getCoverState: function(callback){
     this.client.fetchState(this.entity_id, function(data){
       if (data) {
-        coverState = data.state == 'closed'
+        coverState = data.state == "closed"
         callback(null, coverState)
       }else{
         callback(communicationError)
@@ -53,7 +53,7 @@ HomeAssistantCover.prototype = {
     }.bind(this))
   },
   setCoverState: function(coverOn, callback, context) {
-    if (context == 'internal') {
+    if (context == "internal") {
       callback();
       return;
     }
@@ -63,22 +63,22 @@ HomeAssistantCover.prototype = {
     service_data.entity_id = this.entity_id
 
     if (coverOn) {
-      this.log("Setting cover state on the '"+this.name+"' to closed");
+      this.log("Setting cover state on the "+this.name+" to closed");
 
-      this.client.callService(this.domain, 'close_cover', service_data, function(data){
+      this.client.callService(this.domain, "close_cover", service_data, function(data){
         if (data) {
-          that.log("Successfully set cover state on the '"+that.name+"' to closed");
+          that.log("Successfully set cover state on the "+that.name+" to closed");
           callback()
         }else{
           callback(communicationError)
         }
       }.bind(this))
     }else{
-      this.log("Setting cover state on the '"+this.name+"' to open");
+      this.log("Setting cover state on the "+this.name+" to open");
 
-      this.client.callService(this.domain, 'open_cover', service_data, function(data){
+      this.client.callService(this.domain, "open_cover", service_data, function(data){
         if (data) {
-          that.log("Successfully set cover state on the '"+that.name+"' to open");
+          that.log("Successfully set cover state on the "+that.name+" to open");
           callback()
         }else{
           callback(communicationError)
@@ -86,27 +86,53 @@ HomeAssistantCover.prototype = {
       }.bind(this))
     }
   },
+  getPosition: function(callback){
+    this.client.fetchState(this.entity_id, function(data){
+      if (data && data.attributes) {
+        callback(null, data.attributes.current_position)
+      }else{
+        callback(communicationError)
+      }
+    }.bind(this))
+  },
+  setPosition: function(position, callback, context) {
+    var that = this;
+    var data = {
+      entity_id: this.entity_id,
+      position: position
+    };
+
+    this.log("Setting the state of the "+this.name+" to "+ data.position);
+
+    this.client.callService(this.domain, "set_cover_position", data, function(data){
+      if (data) {
+        that.log("Successfully set position of "+that.name+" to "+ data.position);
+        callback()
+      }else{
+        callback(communicationError)
+      }
+    }.bind(this))
+  },
   getServices: function() {
-    this.coverService = new Service.GarageDoorOpener();
+    this.coverService = (this.cover_type === "garage_door") ? new Service.GarageDoorOpener() : new Service.WindowCovering();
+    this.model = (this.cover_type === "garage_door") ? "Garage Door" : "Rollershutter";
+    this.stateCharacteristic = (this.cover_type === "garage_door") ? Characteristic.CurrentDoorState : Characteristic.TargetDoorState;
+    this.targetCharacteristic = (this.cover_type === "garage_door") ? Characteristic.TargetDoorState : Characteristic.TargetPosition;
 
     var informationService = new Service.AccessoryInformation();
     informationService
         .setCharacteristic(Characteristic.Manufacturer, "Home Assistant")
-        .setCharacteristic(Characteristic.SerialNumber, "xxx");
-    if(this.cover_type === 'garage_door') {
-        informationService.setCharacteristic(Characteristic.Model, "Garage Door");
-    } else {
-        informationService.setCharacteristic(Characteristic.Model, "Rollershutter");
-    }
+        .setCharacteristic(Characteristic.SerialNumber, "xxx")
+        .setCharacteristic(Characteristic.Model, this.model);
 
-      this.coverService
-        .getCharacteristic(Characteristic.CurrentDoorState)
-        .on('get', this.getCoverState.bind(this));
+    this.coverService
+      .getCharacteristic(this.stateCharacteristic)
+      .on("get", this.getPosition.bind(this));
 
-      this.coverService
-        .getCharacteristic(Characteristic.TargetDoorState)
-        .on('get', this.getCoverState.bind(this))
-        .on('set', this.setCoverState.bind(this));
+    this.coverService
+      .getCharacteristic(this.targetCharacteristic)
+      .on("get", this.getPosition.bind(this))
+      .on("set", this.setPosition.bind(this));
 
     return [informationService, this.coverService];
   }
