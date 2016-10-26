@@ -189,15 +189,12 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'input_boolean')
         }else if (entity_type == 'fan'){
           accessory = new HomeAssistantFan(that.log, entity, that)
-<<<<<<< HEAD
         }else if (entity_type == 'cover'){
           accessory = new HomeAssistantCover(that.log, entity, that)
-=======
         }else if (entity_type == 'sensor'){
           accessory = HomeAssistantSensorFactory(that.log, entity, that)
         }else if (entity_type == 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
           accessory = HomeAssistantBinarySensorFactory(that.log, entity, that)
->>>>>>> master
         }
 
         if (accessory) {
