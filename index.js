@@ -177,7 +177,7 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantSwitch(that.log, entity, that)
         }else if (entity_type == 'lock'){
           accessory = new HomeAssistantLock(that.log, entity, that)
-        }else if (entity_type == 'garage_door'){
+        }else if (entity_type == 'cover'){
           accessory = new HomeAssistantGarageDoor(that.log, entity, that)
         }else if (entity_type == 'scene'){
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'scene')

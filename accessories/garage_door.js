@@ -11,7 +11,7 @@ module.exports.HomeAssistantGarageDoor = HomeAssistantGarageDoor;
 
 function HomeAssistantGarageDoor(log, data, client, type) {
   // device info
-  this.domain = "garage_door"
+  this.domain = "cover"
   this.data = data
   this.entity_id = data.entity_id
   if (data.attributes && data.attributes.friendly_name) {
@@ -55,7 +55,7 @@ HomeAssistantGarageDoor.prototype = {
     if (garageOn) {
       this.log("Setting garage door state on the '"+this.name+"' to closed");
 
-      this.client.callService(this.domain, 'close', service_data, function(data){
+      this.client.callService(this.domain, 'close_cover', service_data, function(data){
         if (data) {
           that.log("Successfully set garage door state on the '"+that.name+"' to closed");
           callback()
@@ -66,7 +66,7 @@ HomeAssistantGarageDoor.prototype = {
     }else{
       this.log("Setting garage door state on the '"+this.name+"' to open");
 
-      this.client.callService(this.domain, 'open', service_data, function(data){
+      this.client.callService(this.domain, 'open_cover', service_data, function(data){
         if (data) {
           that.log("Successfully set garage door state on the '"+that.name+"' to open");
           callback()
