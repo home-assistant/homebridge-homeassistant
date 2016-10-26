@@ -13,6 +13,7 @@ var HomeAssistantMediaPlayer;
 var HomeAssistantRollershutter;
 var HomeAssistantFan;
 var HomeAssistantSensorFactory;
+var HomeAssistantBinarySensorFactory;
 
 module.exports = function(homebridge) {
   console.log("homebridge API version: " + homebridge.version);
@@ -29,6 +30,7 @@ module.exports = function(homebridge) {
   HomeAssistantMediaPlayer = require('./accessories/media_player')(Service, Characteristic, communicationError);
   HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
   HomeAssistantSensorFactory = require('./accessories/sensor')(Service, Characteristic, communicationError);
+  HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
 
   homebridge.registerPlatform("homebridge-homeassistant", "HomeAssistant", HomeAssistantPlatform, false);
 }
@@ -188,6 +190,8 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantFan(that.log, entity, that)
         }else if (entity_type == 'sensor'){
           accessory = HomeAssistantSensorFactory(that.log, entity, that)
+        }else if (entity_type == 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
+          accessory = HomeAssistantBinarySensorFactory(that.log, entity, that)
         }
 
         if (accessory) {
