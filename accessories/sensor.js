@@ -45,6 +45,7 @@ class HomeAssistantSensor {
     // device info
     this.data = data;
     this.entity_id = data.entity_id;
+    this.uuid_base = data.entity_id;
     if (data.attributes && data.attributes.friendly_name) {
       this.name = data.attributes.friendly_name;
     }else{
