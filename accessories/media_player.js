@@ -25,6 +25,7 @@ function HomeAssistantMediaPlayer(log, data, client) {
   this.domain = "media_player"
   this.data = data
   this.entity_id = data.entity_id
+  this.uuid_base = data.entity_id
   this.supportedMediaCommands = data.attributes.supported_media_commands
 
   if (data.attributes && data.attributes.friendly_name) {
