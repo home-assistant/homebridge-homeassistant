@@ -12,6 +12,8 @@ var HomeAssistantGarageDoor;
 var HomeAssistantMediaPlayer;
 var HomeAssistantRollershutter;
 var HomeAssistantFan;
+var HomeAssistantSensorFactory;
+var HomeAssistantBinarySensorFactory;
 
 module.exports = function(homebridge) {
   console.log("homebridge API version: " + homebridge.version);
@@ -28,6 +30,8 @@ module.exports = function(homebridge) {
   HomeAssistantMediaPlayer = require('./accessories/media_player')(Service, Characteristic, communicationError);
   HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
   HomeAssistantCover = require('./accessories/cover')(Service, Characteristic, communicationError);
+  HomeAssistantSensorFactory = require('./accessories/sensor')(Service, Characteristic, communicationError);
+  HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
 
   homebridge.registerPlatform("homebridge-homeassistant", "HomeAssistant", HomeAssistantPlatform, false);
 }
@@ -140,8 +144,6 @@ HomeAssistantPlatform.prototype = {
         setTimeout(function() { that.accessories(callback); }, 5000);
         return;
       }
-      // that.log(response)
-      // that.log(data)
 
       for (var i = 0; i < data.length; i++) {
         entity = data[i]
@@ -187,8 +189,15 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'input_boolean')
         }else if (entity_type == 'fan'){
           accessory = new HomeAssistantFan(that.log, entity, that)
+<<<<<<< HEAD
         }else if (entity_type == 'cover'){
           accessory = new HomeAssistantCover(that.log, entity, that)
+=======
+        }else if (entity_type == 'sensor'){
+          accessory = HomeAssistantSensorFactory(that.log, entity, that)
+        }else if (entity_type == 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
+          accessory = HomeAssistantBinarySensorFactory(that.log, entity, that)
+>>>>>>> master
         }
 
         if (accessory) {
