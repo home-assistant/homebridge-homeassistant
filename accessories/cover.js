@@ -118,6 +118,9 @@ HomeAssistantCover.prototype = {
     this.model = (this.cover_type === "garage_door") ? "Garage Door" : "Rollershutter";
     this.stateCharacteristic = (this.cover_type === "garage_door") ? Characteristic.CurrentDoorState : Characteristic.TargetDoorState;
     this.targetCharacteristic = (this.cover_type === "garage_door") ? Characteristic.TargetDoorState : Characteristic.TargetPosition;
+    this.stateCharacteristicGetFunction = (this.cover_type === "garage_door") ? this.getCoverState : this.getPosition;
+    this.targetCharacteristicGetFunction = (this.cover_type === "garage_door") ? this.getCoverState : this.getPosition;
+    this.targetCharacteristicSetFunction = (this.cover_type === "garage_door") ? this.setCoverState : this.setPosition;
 
     var informationService = new Service.AccessoryInformation();
     informationService
@@ -127,12 +130,12 @@ HomeAssistantCover.prototype = {
 
     this.coverService
       .getCharacteristic(this.stateCharacteristic)
-      .on("get", this.getPosition.bind(this));
+      .on("get", this.stateCharacteristicGetFunction.bind(this));
 
     this.coverService
       .getCharacteristic(this.targetCharacteristic)
-      .on("get", this.getPosition.bind(this))
-      .on("set", this.setPosition.bind(this));
+      .on("get", this.targetCharacteristicGetFunction.bind(this))
+      .on("set", this.targetCharacteristicSetFunction.bind(this));
 
     return [informationService, this.coverService];
   }
