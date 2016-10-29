@@ -19,7 +19,7 @@ automatically. Easy peasey.
 Here's a list of the devices that are currently exposed:
 
 * **Binary Sensor** - door, leak, moisture, motion, smoke, and window state
-* **Cover** - exposed as a garage door (see notes)
+* **Cover** - exposed as a garage door or window covering (see notes)
 * **Fan** - on/off/speed
 * **Input boolean** - on/off
 * **Lights** - on/off/brightness
@@ -56,9 +56,9 @@ support on/off they will be turned on and off.
 
 ### Cover Support
 
-Covers on your Home Assistant will appear as garage doors, however their real
-type must be specified in the `customize` section of your Home Assistant's
-`configuration.yaml`. Refer to the following example:
+Covers on your Home Assistant will appear as a garage door by default. In order 
+to do change this you may specify its type in the `customize` section of your
+Home Assistant's `configuration.yaml`. Refer to the following example:
 
 ```
 customize:
