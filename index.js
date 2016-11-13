@@ -23,7 +23,7 @@ module.exports = function(homebridge) {
   HomeAssistantLock = require('./accessories/lock')(Service, Characteristic, communicationError);
   HomeAssistantMediaPlayer = require('./accessories/media_player')(Service, Characteristic, communicationError);
   HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
-  HomeAssistantCover = require('./accessories/cover')(Service, Characteristic, communicationError);
+  HomeAssistantCoverFactory = require('./accessories/cover')(Service, Characteristic, communicationError);
   HomeAssistantSensorFactory = require('./accessories/sensor')(Service, Characteristic, communicationError);
   HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
 
@@ -46,6 +46,7 @@ function HomeAssistantPlatform(log, config, api){
 
   var es = new EventSource(config.host + '/api/stream?api_password=' + encodeURIComponent(this.password));
   es.addEventListener('message', function(e) {
+    this.log("Received event: " + e.data)
     if (e.data == 'ping')
       return;
 
@@ -176,18 +177,7 @@ HomeAssistantPlatform.prototype = {
         }else if (entity_type == 'fan'){
           accessory = new HomeAssistantFan(that.log, entity, that)
         }else if (entity_type == 'cover'){
-          if (entity.attributes && entity.attributes.homebridge_cover_type && (
-            entity.attributes.homebridge_cover_type === 'rollershutter' ||
-            entity.attributes.homebridge_cover_type === 'garage_door'
-          )) {
-            accessory = new HomeAssistantCover(that.log, entity, that, entity.attributes.homebridge_cover_type)
-          } else {
-            that.log.error("'"+entity.entity_id+"' is a cover but does not have a 'homebridge_cover_type' property set. "+
-                          "You must set it to either 'rollershutter' or 'garage_door' in the customize section " +
-                          "of your Home Assistant configuration. It will not be available to Homebridge until you do. " +
-                          "See the README.md for more information. " +
-                          "The attributes that were found are:", JSON.stringify(entity.attributes));
-          }
+          accessory = HomeAssistantCoverFactory(that.log, entity, that);
         }else if (entity_type == 'sensor'){
           accessory = HomeAssistantSensorFactory(that.log, entity, that)
         }else if (entity_type == 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
