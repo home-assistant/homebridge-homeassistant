@@ -7,6 +7,7 @@ var communicationError = new Error('Can not communicate with Home Assistant.')
 
 var HomeAssistantLight;
 var HomeAssistantSwitch;
+var HomeAssistantInputBoolean;
 var HomeAssistantLock;
 var HomeAssistantMediaPlayer;
 var HomeAssistantFan;
@@ -20,6 +21,7 @@ module.exports = function(homebridge) {
 
   HomeAssistantLight = require('./accessories/light')(Service, Characteristic, communicationError);
   HomeAssistantSwitch = require('./accessories/switch')(Service, Characteristic, communicationError);
+  HomeAssistantInputBoolean = require('./accessories/input_boolean')(Service, Characteristic, communicationError);
   HomeAssistantLock = require('./accessories/lock')(Service, Characteristic, communicationError);
   HomeAssistantMediaPlayer = require('./accessories/media_player')(Service, Characteristic, communicationError);
   HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
@@ -162,6 +164,8 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantLight(that.log, entity, that)
         }else if (entity_type == 'switch'){
           accessory = new HomeAssistantSwitch(that.log, entity, that)
+        }else if (entity_type == 'input_boolean'){
+          accessory = new HomeAssistantInputBoolean(that.log, entity, that)
         }else if (entity_type == 'lock'){
           accessory = new HomeAssistantLock(that.log, entity, that)
         }else if (entity_type == 'garage_door'){
