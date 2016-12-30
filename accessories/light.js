@@ -285,8 +285,8 @@ HomeAssistantLight.prototype = {
   }
 };
 
-function LightUtil() {
-  var hsvToRgb = function(h, s, v) {
+var LightUtil = {
+  hsvToRgb: function(h, s, v) {
     var r, g, b, i, f, p, q, t;
     if (arguments.length === 1) {
       s = h.s, v = h.v, h = h.h;
@@ -309,9 +309,8 @@ function LightUtil() {
       g: Math.round(g * 255),
       b: Math.round(b * 255)
     };
-  };
-
-  var rgbToHsv = function(r, g, b) {
+  },
+  rgbToHsv: function(r, g, b) {
     if (arguments.length === 1) {
       g = r.g, b = r.b, r = r.r;
     }
@@ -334,4 +333,4 @@ function LightUtil() {
       v: v
     };
   }
-}
+};
