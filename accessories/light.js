@@ -188,7 +188,7 @@ HomeAssistantLight.prototype = {
     var service_data = {};
     service_data.entity_id = this.entity_id;
 
-    service_data.brightness = 255*(level/100.0);
+    service_data.brightness = 255 * (level / 100.0);
     that.data.attributes.brightness = service_data.brightness;
 
     this.log("Setting brightness on the '"+this.name+"' to " + level);
@@ -245,7 +245,6 @@ HomeAssistantLight.prototype = {
         callback(communicationError)
       }
     }.bind(this))
-
   },
   getServices: function() {
     this.lightbulbService = new Service.Lightbulb();
@@ -278,7 +277,6 @@ HomeAssistantLight.prototype = {
           .addCharacteristic(Characteristic.Saturation)
           .on('get', this.getSaturation.bind(this))
           .on('set', this.setSaturation.bind(this));
-
     }
 
     return [informationService, this.lightbulbService];
