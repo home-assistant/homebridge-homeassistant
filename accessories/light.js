@@ -67,7 +67,7 @@ HomeAssistantLight.prototype = {
       this.data.attributes.saturation = saturation;
     }
   },
-  identify: function(callback){
+  identify: function(callback) {
     this.log("identifying: " + this.name);
 
     var that = this;
@@ -75,42 +75,42 @@ HomeAssistantLight.prototype = {
     service_data.entity_id = this.entity_id;
     service_data.flash = 'short';
 
-    this.client.callService(this.domain, 'turn_on', service_data, function(data){
+    this.client.callService(this.domain, 'turn_on', service_data, function(data) {
       if (data) {
         that.log("Successfully identified '"+that.name+"'");
       }
       callback()
     }.bind(this))
   },
-  getPowerState: function(callback){
+  getPowerState: function(callback) {
     this.log("fetching power state for: " + this.name);
 
-    this.client.fetchState(this.entity_id, function(data){
+    this.client.fetchState(this.entity_id, function(data) {
       if (data) {
         powerState = data.state == 'on';
         callback(null, powerState)
-      }else{
+      } else {
         callback(communicationError)
       }
     }.bind(this))
   },
-  getBrightness: function(callback){
+  getBrightness: function(callback) {
     this.log("fetching brightness for: " + this.name);
 
-    this.client.fetchState(this.entity_id, function(data){
+    this.client.fetchState(this.entity_id, function(data) {
       if (data && data.attributes) {
         var brightness = ((data.attributes.brightness || 0) / 255) * 100;
         callback(null, brightness)
-      }else{
+      } else {
         callback(communicationError)
       }
     }.bind(this))
   },
-  getHue: function(callback){
+  getHue: function(callback) {
     this.log("fetching hue for: " + this.name);
 
     var that = this;
-    this.client.fetchState(this.entity_id, function(data){
+    this.client.fetchState(this.entity_id, function(data) {
       if (data && data.attributes && data.attributes.rgb_color) {
 
         var rgb = data.attributes.rgb_color;
@@ -120,16 +120,16 @@ HomeAssistantLight.prototype = {
         that.data.attributes.hue = hue;
 
         callback(null, hue)
-      }else{
+      } else {
         callback(communicationError)
       }
     }.bind(this))
   },
-  getSaturation: function(callback){
+  getSaturation: function(callback) {
     this.log("fetching saturation for: " + this.name);
 
     var that = this;
-    this.client.fetchState(this.entity_id, function(data){
+    this.client.fetchState(this.entity_id, function(data) {
       if (data && data.attributes && data.attributes.rgb_color) {
 
         var rgb = data.attributes.rgb_color;
@@ -139,7 +139,7 @@ HomeAssistantLight.prototype = {
         that.data.attributes.saturation = saturation;
 
         callback(null, saturation);
-      }else{
+      } else {
         callback(communicationError)
       }
     }.bind(this))
@@ -157,22 +157,22 @@ HomeAssistantLight.prototype = {
     if (powerOn) {
       this.log("Setting power state on the '"+this.name+"' to on");
 
-      this.client.callService(this.domain, 'turn_on', service_data, function(data){
+      this.client.callService(this.domain, 'turn_on', service_data, function(data) {
         if (data) {
           that.log("Successfully set power state on the '"+that.name+"' to on");
           callback()
-        }else{
+        } else {
           callback(communicationError)
         }
       }.bind(this))
-    }else{
+    } else {
       this.log("Setting power state on the '"+this.name+"' to off");
 
-      this.client.callService(this.domain, 'turn_off', service_data, function(data){
+      this.client.callService(this.domain, 'turn_off', service_data, function(data) {
         if (data) {
           that.log("Successfully set power state on the '"+that.name+"' to off");
           callback()
-        }else{
+        } else {
           callback(communicationError)
         }
       }.bind(this))
@@ -193,11 +193,11 @@ HomeAssistantLight.prototype = {
 
     this.log("Setting brightness on the '"+this.name+"' to " + level);
 
-    this.client.callService(this.domain, 'turn_on', service_data, function(data){
+    this.client.callService(this.domain, 'turn_on', service_data, function(data) {
       if (data) {
         that.log("Successfully set brightness on the '"+that.name+"' to " + level);
         callback()
-      }else{
+      } else {
         callback(communicationError)
       }
     }.bind(this))
@@ -237,11 +237,11 @@ HomeAssistantLight.prototype = {
     var rgb = LightUtil.hsvToRgb((that.data.attributes.hue || 0) / 360, (that.data.attributes.saturation || 0) / 100,  (that.data.attributes.brightness || 0) / 100);
     service_data.rgb_color = [rgb.r, rgb.g, rgb.b];
 
-    this.client.callService(this.domain, 'turn_on', service_data, function(data){
+    this.client.callService(this.domain, 'turn_on', service_data, function(data) {
       if (data) {
         that.log("Successfully set rgb on the '"+that.name+"' to " + service_data.rgb_color);
         callback()
-      }else{
+      } else {
         callback(communicationError)
       }
     }.bind(this))
