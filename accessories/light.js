@@ -77,7 +77,7 @@ HomeAssistantLight.prototype = {
 
     this.client.callService(this.domain, 'turn_on', service_data, function(data) {
       if (data) {
-        that.log("Successfully identified '"+that.name+"'");
+        that.log("Successfully identified '" + that.name + "'");
       }
       callback();
     }.bind(this));
@@ -213,9 +213,12 @@ HomeAssistantLight.prototype = {
     service_data.entity_id = this.entity_id;
     that.data.attributes.hue = level;
 
+    this.log("Setting hue");
+    this.log("Color values from HomeKit: " + this.data.attributes);
+
     this.client.callService(this.domain, 'turn_on', service_data, function (data) {
       if (data) {
-        that.log("Successfully set rgb on the '" + that.name + "' to " + service_data.rgb_color);
+        that.log("Successfully set hue on the '" + that.name + "' to " + level);
         callback();
       } else {
         callback(communicationError);
@@ -232,10 +235,13 @@ HomeAssistantLight.prototype = {
     var service_data = {};
     service_data.entity_id = this.entity_id;
 
-    that.data.attributes.saturation = level;
+    this.data.attributes.saturation = level;
 
     var rgb = LightUtil.hsvToRgb((that.data.attributes.hue || 0) / 360, (that.data.attributes.saturation || 0) / 100,  (that.data.attributes.brightness || 0) / 100);
     service_data.rgb_color = [rgb.r, rgb.g, rgb.b];
+
+    this.log("Setting saturation");
+    this.log("Color values from HomeKit: " + this.data.attributes);
 
     this.client.callService(this.domain, 'turn_on', service_data, function(data) {
       if (data) {
