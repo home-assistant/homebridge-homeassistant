@@ -196,7 +196,7 @@ HomeAssistantLight.prototype = {
     service_data.entity_id = this.entity_id;
 
     service_data.brightness = 255 * (level / 100.0);
-    that.data.attributes.brightness = level;
+    that.data.attributes.brightness = service_data.brightness;
 
     this.log("Setting brightness on the '" + this.name + "' to " + level);
 
@@ -248,7 +248,7 @@ HomeAssistantLight.prototype = {
     var rgb = LightUtil.hsvToRgb(
         (this.data.attributes.hue || 0) / 360,
         (this.data.attributes.saturation || 0) / 100,
-        (this.data.attributes.brightness || 0) / 100
+        (this.data.attributes.brightness || 0) / 255
     );
     service_data.rgb_color = [rgb.r, rgb.g, rgb.b];
 
