@@ -162,22 +162,22 @@ HomeAssistantLight.prototype = {
     service_data.entity_id = this.entity_id;
 
     if (powerOn) {
-      this.log("Setting power state on the '"+this.name+"' to on");
+      this.log("Setting power state on the '" + this.name + "' to on");
 
       this.client.callService(this.domain, 'turn_on', service_data, function(data) {
         if (data) {
-          that.log("Successfully set power state on the '"+that.name+"' to on");
+          that.log("Successfully set power state on the '" + that.name + "' to on");
           callback();
         } else {
           callback(communicationError);
         }
       }.bind(this));
     } else {
-      this.log("Setting power state on the '"+this.name+"' to off");
+      this.log("Setting power state on the '" + this.name + "' to off");
 
       this.client.callService(this.domain, 'turn_off', service_data, function(data) {
         if (data) {
-          that.log("Successfully set power state on the '"+that.name+"' to off");
+          that.log("Successfully set power state on the '" + that.name + "' to off");
           callback();
         } else {
           callback(communicationError);
@@ -196,7 +196,7 @@ HomeAssistantLight.prototype = {
     service_data.entity_id = this.entity_id;
 
     service_data.brightness = 255 * (level / 100.0);
-    that.data.attributes.brightness = service_data.brightness;
+    that.data.attributes.brightness = level;
 
     this.log("Setting brightness on the '" + this.name + "' to " + level);
 
@@ -257,6 +257,8 @@ HomeAssistantLight.prototype = {
     this.log(this.data.attributes);
 
     this.client.callService(this.domain, 'turn_on', service_data, function(data) {
+      that.log("Saturation callservice data:");
+      that.log(data);
       if (data) {
         that.log("Successfully set rgb on the '" + that.name + "' to " + service_data.rgb_color);
         callback();
