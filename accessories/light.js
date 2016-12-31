@@ -49,7 +49,7 @@ HomeAssistantLight.prototype = {
       this.lightbulbService.getCharacteristic(Characteristic.Brightness)
           .setValue(brightness, null, 'internal');
 
-      this.data.attributes.brightness = brightness;
+      this.data.attributes.brightness = new_state.attributes.brightness;
     }
 
     if (this.is_supported(this.features.RGB_COLOR) && new_state.attributes.rgb_color !== undefined) {
