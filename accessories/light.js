@@ -58,6 +58,13 @@ HomeAssistantLight.prototype = {
       var hue = hsv.h * 360;
       var saturation = hsv.s * 100;
 
+      this.log("OnEvent:");
+      this.log("RGB color:");
+      this.log(new_state.attributes.rgb_color);
+      this.log("HSV color:");
+      this.log(hsv);
+
+
       this.lightbulbService.getCharacteristic(Characteristic.Hue)
           .setValue(hue, null, 'internal');
       this.lightbulbService.getCharacteristic(Characteristic.Saturation)
