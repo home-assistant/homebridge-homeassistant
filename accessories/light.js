@@ -79,7 +79,7 @@ HomeAssistantLight.prototype = {
       if (data) {
         that.log("Successfully identified '"+that.name+"'");
       }
-      callback()
+      callback();
     }.bind(this))
   },
   getPowerState: function(callback) {
@@ -88,9 +88,9 @@ HomeAssistantLight.prototype = {
     this.client.fetchState(this.entity_id, function(data) {
       if (data) {
         powerState = data.state == 'on';
-        callback(null, powerState)
+        callback(null, powerState);
       } else {
-        callback(communicationError)
+        callback(communicationError);
       }
     }.bind(this))
   },
@@ -100,9 +100,9 @@ HomeAssistantLight.prototype = {
     this.client.fetchState(this.entity_id, function(data) {
       if (data && data.attributes) {
         var brightness = ((data.attributes.brightness || 0) / 255) * 100;
-        callback(null, brightness)
+        callback(null, brightness);
       } else {
-        callback(communicationError)
+        callback(communicationError);
       }
     }.bind(this))
   },
@@ -119,9 +119,9 @@ HomeAssistantLight.prototype = {
         var hue = hsv.h * 360;
         that.data.attributes.hue = hue;
 
-        callback(null, hue)
+        callback(null, hue);
       } else {
-        callback(communicationError)
+        callback(communicationError);
       }
     }.bind(this))
   },
@@ -140,7 +140,7 @@ HomeAssistantLight.prototype = {
 
         callback(null, saturation);
       } else {
-        callback(communicationError)
+        callback(communicationError);
       }
     }.bind(this))
   },
@@ -160,9 +160,9 @@ HomeAssistantLight.prototype = {
       this.client.callService(this.domain, 'turn_on', service_data, function(data) {
         if (data) {
           that.log("Successfully set power state on the '"+that.name+"' to on");
-          callback()
+          callback();
         } else {
-          callback(communicationError)
+          callback(communicationError);
         }
       }.bind(this))
     } else {
@@ -171,9 +171,9 @@ HomeAssistantLight.prototype = {
       this.client.callService(this.domain, 'turn_off', service_data, function(data) {
         if (data) {
           that.log("Successfully set power state on the '"+that.name+"' to off");
-          callback()
+          callback();
         } else {
-          callback(communicationError)
+          callback(communicationError);
         }
       }.bind(this))
     }
@@ -196,9 +196,9 @@ HomeAssistantLight.prototype = {
     this.client.callService(this.domain, 'turn_on', service_data, function(data) {
       if (data) {
         that.log("Successfully set brightness on the '"+that.name+"' to " + level);
-        callback()
+        callback();
       } else {
-        callback(communicationError)
+        callback(communicationError);
       }
     }.bind(this))
   },
@@ -216,9 +216,9 @@ HomeAssistantLight.prototype = {
     this.client.callService(this.domain, 'turn_on', service_data, function (data) {
       if (data) {
         that.log("Successfully set rgb on the '" + that.name + "' to " + service_data.rgb_color);
-        callback()
+        callback();
       } else {
-        callback(communicationError)
+        callback(communicationError);
       }
     }.bind(this))
   },
@@ -240,9 +240,9 @@ HomeAssistantLight.prototype = {
     this.client.callService(this.domain, 'turn_on', service_data, function(data) {
       if (data) {
         that.log("Successfully set rgb on the '"+that.name+"' to " + service_data.rgb_color);
-        callback()
+        callback();
       } else {
-        callback(communicationError)
+        callback(communicationError);
       }
     }.bind(this))
   },
