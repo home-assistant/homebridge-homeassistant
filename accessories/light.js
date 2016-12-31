@@ -38,7 +38,7 @@ HomeAssistantLight.prototype = {
   is_supported: function(feature) {
     // If the supported_features attribute doesn't exist, assume supported
     return this.data.attributes.supported_features === undefined ||
-        ((this.data.attributes.supported_features & feature) > 0)
+        ((this.data.attributes.supported_features & feature) > 0);
   },
   onEvent: function(old_state, new_state) {
     this.lightbulbService.getCharacteristic(Characteristic.On)
@@ -80,7 +80,7 @@ HomeAssistantLight.prototype = {
         that.log("Successfully identified '"+that.name+"'");
       }
       callback();
-    }.bind(this))
+    }.bind(this));
   },
   getPowerState: function(callback) {
     this.log("fetching power state for: " + this.name);
@@ -92,7 +92,7 @@ HomeAssistantLight.prototype = {
       } else {
         callback(communicationError);
       }
-    }.bind(this))
+    }.bind(this));
   },
   getBrightness: function(callback) {
     this.log("fetching brightness for: " + this.name);
@@ -104,7 +104,7 @@ HomeAssistantLight.prototype = {
       } else {
         callback(communicationError);
       }
-    }.bind(this))
+    }.bind(this));
   },
   getHue: function(callback) {
     this.log("fetching hue for: " + this.name);
@@ -123,7 +123,7 @@ HomeAssistantLight.prototype = {
       } else {
         callback(communicationError);
       }
-    }.bind(this))
+    }.bind(this));
   },
   getSaturation: function(callback) {
     this.log("fetching saturation for: " + this.name);
@@ -142,7 +142,7 @@ HomeAssistantLight.prototype = {
       } else {
         callback(communicationError);
       }
-    }.bind(this))
+    }.bind(this));
   },
   setPowerState: function(powerOn, callback, context) {
     if (context == 'internal') {
@@ -164,7 +164,7 @@ HomeAssistantLight.prototype = {
         } else {
           callback(communicationError);
         }
-      }.bind(this))
+      }.bind(this));
     } else {
       this.log("Setting power state on the '"+this.name+"' to off");
 
@@ -175,7 +175,7 @@ HomeAssistantLight.prototype = {
         } else {
           callback(communicationError);
         }
-      }.bind(this))
+      }.bind(this));
     }
   },
   setBrightness: function(level, callback, context) {
@@ -200,7 +200,7 @@ HomeAssistantLight.prototype = {
       } else {
         callback(communicationError);
       }
-    }.bind(this))
+    }.bind(this));
   },
   setHue: function(level, callback, context) {
     if (context === 'internal') {
@@ -220,7 +220,7 @@ HomeAssistantLight.prototype = {
       } else {
         callback(communicationError);
       }
-    }.bind(this))
+    }.bind(this));
   },
   setSaturation: function(level, callback, context) {
     if (context === 'internal') {
@@ -244,7 +244,7 @@ HomeAssistantLight.prototype = {
       } else {
         callback(communicationError);
       }
-    }.bind(this))
+    }.bind(this));
   },
   getServices: function() {
     this.lightbulbService = new Service.Lightbulb();
