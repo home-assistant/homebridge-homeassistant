@@ -58,13 +58,6 @@ HomeAssistantLight.prototype = {
       var hue = hsv.h * 360;
       var saturation = hsv.s * 100;
 
-      this.log("OnEvent:");
-      this.log("RGB color:");
-      this.log(new_state.attributes.rgb_color);
-      this.log("HSV color:");
-      this.log(hsv);
-
-
       this.lightbulbService.getCharacteristic(Characteristic.Hue)
           .setValue(hue, null, 'internal');
       this.lightbulbService.getCharacteristic(Characteristic.Saturation)
@@ -220,10 +213,6 @@ HomeAssistantLight.prototype = {
     service_data.entity_id = this.entity_id;
     that.data.attributes.hue = level;
 
-    this.log("Setting hue");
-    this.log("Color values from HomeKit: ");
-    this.log(this.data.attributes);
-
     this.client.callService(this.domain, 'turn_on', service_data, function (data) {
       if (data) {
         that.log("Successfully set hue on the '" + that.name + "' to " + level);
@@ -252,13 +241,7 @@ HomeAssistantLight.prototype = {
     );
     service_data.rgb_color = [rgb.r, rgb.g, rgb.b];
 
-    this.log("Setting saturation");
-    this.log("Color values from HomeKit: ");
-    this.log(this.data.attributes);
-
     this.client.callService(this.domain, 'turn_on', service_data, function(data) {
-      that.log("Saturation callservice data:");
-      that.log(data);
       if (data) {
         that.log("Successfully set rgb on the '" + that.name + "' to " + service_data.rgb_color);
         callback();
