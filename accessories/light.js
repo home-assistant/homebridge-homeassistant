@@ -191,11 +191,11 @@ HomeAssistantLight.prototype = {
     service_data.brightness = 255 * (level / 100.0);
     that.data.attributes.brightness = service_data.brightness;
 
-    this.log("Setting brightness on the '"+this.name+"' to " + level);
+    this.log("Setting brightness on the '" + this.name + "' to " + level);
 
     this.client.callService(this.domain, 'turn_on', service_data, function(data) {
       if (data) {
-        that.log("Successfully set brightness on the '"+that.name+"' to " + level);
+        that.log("Successfully set brightness on the '" + that.name + "' to " + level);
         callback();
       } else {
         callback(communicationError);
@@ -237,7 +237,11 @@ HomeAssistantLight.prototype = {
 
     this.data.attributes.saturation = level;
 
-    var rgb = LightUtil.hsvToRgb((that.data.attributes.hue || 0) / 360, (that.data.attributes.saturation || 0) / 100,  (that.data.attributes.brightness || 0) / 100);
+    var rgb = LightUtil.hsvToRgb(
+        (that.data.attributes.hue || 0) / 360,
+        (that.data.attributes.saturation || 0) / 100,
+        (that.data.attributes.brightness || 0) / 100
+    );
     service_data.rgb_color = [rgb.r, rgb.g, rgb.b];
 
     this.log("Setting saturation");
