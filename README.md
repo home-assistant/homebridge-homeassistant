@@ -26,7 +26,7 @@ Here's a list of the devices that are currently exposed:
 * **Lock** - lock/unlock lock
 * **Media Players** - exposed as an on/off switch
 * **Scenes** - exposed as an on/off switch
-* **Sensors** - temperature, light and humidity sensors
+* **Sensors** - carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
 
 ### Binary Sensor Support
@@ -68,6 +68,16 @@ Scenes will appear to HomeKit as switches. To trigger them, you can simply say
 HomeKit...like "Good Morning" and "Good Night". These scenes already exist and
 cannot be deleted. Simply add your Home Assistant scene to them and set the
 state you would like them to be when executed. That's most like the ON state.
+The switch will automatically turn off shortly after turning on.
+
+### Sensor Support
+
+Carbon dioxide (CO2), humidity, light and temperature sensors are currently supported.
+
+- Light sensors will be found if an entity has its unit of measurement set to `lux`.
+- Temperature sesnsors will be found if an entity has its unit of measurement set to `°C` or `°C`.
+- Humidity sensors will be found if an entity has its unit of measurement set to `%` and has an entity ID containing `humidity` _or_ `homebridge_sensor_type` is set to `humidity` on the entity.
+- Carbon Dioxide (CO2) sensors will be found if an entity has its unit of measurement set to `ppm` and has an entity ID containing `co2` _or_ `homebridge_sensor_type` is set to `co2` on the entity.
 
 ## Installation
 
