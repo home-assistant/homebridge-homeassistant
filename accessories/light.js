@@ -213,7 +213,7 @@ HomeAssistantLight.prototype = {
     service_data.entity_id = this.entity_id;
     this.data.attributes.hue = level;
     
-    this.log("Attributes for '" + that.name + "' are " + this.data.attributes.hue + ", " + this.data.attributes.saturation + ", " + this.data.attributes.brightness);
+    this.log("Attributes in set hue for '" + that.name + "' are " + this.data.attributes.hue + ", " + this.data.attributes.saturation + ", " + this.data.attributes.brightness);
     var rgb = LightUtil.hsvToRgb(
         (this.data.attributes.hue || 0) / 360,
         (this.data.attributes.saturation || 0) / 100,
@@ -244,7 +244,7 @@ HomeAssistantLight.prototype = {
 
     this.data.attributes.saturation = level;
 
-    this.log("Attributes for '" + that.name + "' are " + this.data.attributes.hue + ", " + this.data.attributes.saturation + ", " + this.data.attributes.brightness);
+    this.log("Attributes in set saturation for '" + that.name + "' are " + this.data.attributes.hue + ", " + this.data.attributes.saturation + ", " + this.data.attributes.brightness);
     var rgb = LightUtil.hsvToRgb(
         (this.data.attributes.hue || 0) / 360,
         (this.data.attributes.saturation || 0) / 100,
