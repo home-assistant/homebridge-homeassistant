@@ -116,8 +116,8 @@ HomeAssistantLight.prototype = {
         var rgb = data.attributes.rgb_color;
         var hsv = LightUtil.rgbToHsv(rgb[0], rgb[1], rgb[2]);
 
-        var hue = hsv.h;
-        that.data.attributes.hue = hue * 360;
+        var hue = hsv.h * 360;
+        that.data.attributes.hue = hue;
 
         callback(null, hue);
       } else {
@@ -219,7 +219,7 @@ HomeAssistantLight.prototype = {
         (this.data.attributes.saturation || 0) / 100,
         (this.data.attributes.brightness || 0) / 255
     );
-    if (this.data.attributes.saturation !== undefined) {
+    if (this.data.attributes.saturation != 0) {
       service_data.rgb_color = [rgb.r, rgb.g, rgb.b];
     }
 
@@ -251,7 +251,7 @@ HomeAssistantLight.prototype = {
         (this.data.attributes.brightness || 0) / 255
     );
     
-    if (this.data.attributes.hue !== undefined) {
+    if (this.data.attributes.hue != 0) {
       service_data.rgb_color = [rgb.r, rgb.g, rgb.b];
     }
     
