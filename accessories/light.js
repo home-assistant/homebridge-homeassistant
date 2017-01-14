@@ -55,7 +55,7 @@ HomeAssistantLight.prototype = {
     if (this.is_supported(this.features.RGB_COLOR) && new_state.attributes.rgb_color !== undefined) {
       var rgbColor = new_state.attributes.rgb_color;
       var hsv = LightUtil.rgbToHsv(rgbColor[0], rgbColor[1], rgbColor[2]);
-      var hue = hsv.h;
+      var hue = hsv.h * 360;
       var saturation = hsv.s * 100;
 
       this.lightbulbService.getCharacteristic(Characteristic.Hue)
@@ -117,7 +117,7 @@ HomeAssistantLight.prototype = {
         var hsv = LightUtil.rgbToHsv(rgb[0], rgb[1], rgb[2]);
 
         var hue = hsv.h;
-        that.data.attributes.hue = hue;
+        that.data.attributes.hue = hue * 360;
 
         callback(null, hue);
       } else {
