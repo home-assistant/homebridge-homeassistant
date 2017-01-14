@@ -211,7 +211,14 @@ HomeAssistantLight.prototype = {
     var that = this;
     var service_data = {};
     service_data.entity_id = this.entity_id;
-    that.data.attributes.hue = level;
+    this.data.attributes.hue = level;
+    
+    var rgb = LightUtil.hsvToRgb(
+        (this.data.attributes.hue || 0) / 360,
+        (this.data.attributes.saturation || 0) / 100,
+        (this.data.attributes.brightness || 0) / 255
+    );
+    service_data.rgb_color = [rgb.r, rgb.g, rgb.b];
 
     this.client.callService(this.domain, 'turn_on', service_data, function (data) {
       if (data) {
@@ -239,7 +246,6 @@ HomeAssistantLight.prototype = {
         (this.data.attributes.saturation || 0) / 100,
         (this.data.attributes.brightness || 0) / 255
     );
-    
     service_data.rgb_color = [rgb.r, rgb.g, rgb.b];
 
     this.client.callService(this.domain, 'turn_on', service_data, function(data) {
