@@ -235,7 +235,7 @@ HomeAssistantLight.prototype = {
     this.data.attributes.saturation = level;
 
     var rgb = LightUtil.hsvToRgb(
-        this.data.attributes.hue || 0,
+        (this.data.attributes.hue || 0) / 360,
         (this.data.attributes.saturation || 0) / 100,
         (this.data.attributes.brightness || 0) / 255
     );
