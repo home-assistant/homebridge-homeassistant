@@ -28,5 +28,11 @@
   "dependencies": {
     "eventsource": "^0.2.1",
     "request": "^2.69.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.13.1"
+  },
+  "scripts": {
+    "test": "eslint index.js accessories/*"
   }
 }
