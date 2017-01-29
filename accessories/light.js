@@ -145,7 +145,7 @@ HomeAssistantLight.prototype = {
                     callback(communicationError);
                 }
             }.bind(this));
-        }, 100);
+        }, 800);
     },
     getServices: function() {
         this.lightbulbService = new Service.Lightbulb();
