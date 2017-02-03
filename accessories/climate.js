@@ -1,20 +1,3 @@
-//Received event: {"event_type": "state_changed", "time_fired": "2017-01-17T20:04:21.397530+00:00",
-// "data": {"entity_id": "climate.neq1224255",
-
-// "old_state": {"state": "auto", "entity_id": "climate.neq1224255", "last_changed": "2017-01-17T18:50:02.865910+00:00",
-// "last_updated": "2017-01-17T20:04:21.334921+00:00",
-// "attributes": {"Battery": 3.0, "temperature": 23.0, "friendly_name": "NEQ1224255", "min_temp": 4.5,
-// "operation_mode": "auto", "Valve": 0, "proxy": "wireless", "max_temp": 30.5, "Mode": "Auto", "ID": "NEQ1224255",
-// "operation_list": ["manual", "auto", "boost"], "unit_of_measurement": "\u00b0C", "RSSI": -19, "current_temperature": 16.9}},
- 
-//"new_state": {"state": "auto", "entity_id": "climate.neq1224255", "last_changed": "2017-01-17T18:50:02.865910+00:00",
-// "last_updated": "2017-01-17T20:04:21.397331+00:00",
-// "attributes": {"Battery": 3.0, "temperature": 21.0, "friendly_name": "NEQ1224255", "min_temp": 4.5,
-// "operation_mode": "auto", "Valve": 0, "proxy": "wireless", "max_temp": 30.5, "Mode": "Auto", "ID": "NEQ1224255",
-// "operation_list": ["manual", "auto", "boost"], "unit_of_measurement": "\u00b0C", "RSSI": -19, "current_temperature": 16.9}}}, "origin": "LOCAL"}
-
-
-
 var Service, Characteristic, communicationError;
 
 module.exports = function (oService, oCharacteristic, oCommunicationError) {
@@ -26,10 +9,10 @@ module.exports = function (oService, oCharacteristic, oCommunicationError) {
 };
 module.exports.HomeAssistantClimate = HomeAssistantClimate;
 
-function HomeAssistantClimate(log, data, client, type) {
+function HomeAssistantClimate(log, data, client) {
     // device info
 
-    this.domain = type || 'climate';
+    this.domain = 'climate';
     this.data = data;
     this.entity_id = data.entity_id;
     this.uuid_base = data.entity_id;
@@ -50,8 +33,7 @@ HomeAssistantClimate.prototype = {
     getCurrentTemp: function(callback){
         this.client.fetchState(this.entity_id, function(data){
             if (data) {
-                var CurrentTemp = data.attributes.current_temperature;
-                callback(null, CurrentTemp);
+                callback(null, data.attributes.current_temperature);
             } else {
                 callback(communicationError);
             }
@@ -60,8 +42,7 @@ HomeAssistantClimate.prototype = {
     getTargetTemp: function(callback){
         this.client.fetchState(this.entity_id, function(data){
             if (data) {
-                var TargetTemp = data.attributes.temperature;
-                callback(null, TargetTemp);
+                callback(null, data.attributes.temperature);
             } else {
                 callback(communicationError);
             }
@@ -95,24 +76,19 @@ HomeAssistantClimate.prototype = {
             }
         }.bind(this));
     },
-    getCurrentState: function(callback){
+    getTargetHeatingCoolingState: function(callback){
         this.log('fetching Current Heating Cooling state for: ' + this.name);
 
         this.client.fetchState(this.entity_id, function(data){
             if (data) {
-                if (data.Mode == 'Auto'){
-                    var CurrentState = 3;
-                } else {
-                    var CurrentState = 1;
-                }
-                callback(null, CurrentState);
+                callback(null, ((data.Mode == 'Auto') ? 3 : 1));
             } else {
                 callback(communicationError);
             }
         }.bind(this));
     },
-        
-    
+
+
     getServices: function(){
         this.ThermostatService = new Service.Thermostat();
         var informationService = new Service.AccessoryInformation();
@@ -132,14 +108,13 @@ HomeAssistantClimate.prototype = {
           .on('get', this.getTargetTemp.bind(this))
           .on('set', this.setTargetTemp.bind(this));
 
-
         this.ThermostatService
           .getCharacteristic(Characteristic.TargetHeatingCoolingState)
-          .on('get', this.getCurrentState.bind(this)); 
+          .on('get', this.getTargetHeatingCoolingState.bind(this));
 
         return [informationService, this.ThermostatService];
 
-     }
+    }
 
 
-}
+};
