@@ -58,10 +58,11 @@ HomeAssistantClimate.prototype = {
         var service_data = {};
         service_data.entity_id = this.entity_id;
 
+        // clamp the values
         if (value < 6) {
             service_data.temperature = 6;
         } else if (value > 30) {
-            service_data.temperature = 30,5;
+            service_data.temperature = 30;
         } else{
             service_data.temperature = value;
         }
