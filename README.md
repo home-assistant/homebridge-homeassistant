@@ -91,6 +91,7 @@ Once installed, update your Homebridge's `config.json`.
 
 As with other Homebridge plugins, you configure the Home Assistant plugin by
 adding it to your `config.json`.
+To avoid too much information in your log, just set `logging` to `false` as soon as everything works smoothly.
 
 ```json
 "platforms": [
@@ -99,7 +100,8 @@ adding it to your `config.json`.
     "name": "HomeAssistant",
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
-    "supported_types": ["binary_sensor", "cover", "fan", "input_boolean", "light", "lock", "media_player", "scene", "sensor", "switch"]
+    "supported_types": ["binary_sensor", "cover", "fan", "input_boolean", "light", "lock", "media_player", "scene", "sensor", "switch"],
+    "logging": true
   }
 ]
 ```

@@ -34,8 +34,9 @@ function HomeAssistantPlatform(log, config, api){
     // auth info
     this.host = config.host;
     this.password = config.password;
-    this.supportedTypes = config.supported_types;
+    this.supportedTypes = config.supported_types || ['binary_sensor', 'cover', 'fan', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch'];
     this.foundAccessories = [];
+    this.logging = config.logging || true;
 
     this.log = log;
 
@@ -46,7 +47,8 @@ function HomeAssistantPlatform(log, config, api){
 
     var es = new EventSource(config.host + '/api/stream?api_password=' + encodeURIComponent(this.password));
     es.addEventListener('message', function(e) {
-        this.log('Received event: ' + e.data);
+        if (this.logging)
+            this.log('Received event: ' + e.data);
         if (e.data == 'ping')
             return;
 
