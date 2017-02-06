@@ -202,7 +202,7 @@ HomeAssistantLight.prototype = {
                     callback(communicationError);
                 }
             }.bind(this));
-        }, 800);
+        }.bind(this), 800);
     },
     setHue: function(level, callback, context) {
         if (context === 'internal') {
