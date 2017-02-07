@@ -42,6 +42,12 @@ HomeAssistantLight.prototype = {
         }
 
         if ((this.data.attributes.supported_features & feature) > 0) {
+            //workaround because homeassistant includes RGB_COLOR feature in zwave lights even if they haven't RGB
+            //https://github.com/home-assistant/home-assistant/issues/5333
+            if (feature == this.features.RGB_COLOR && this.data.attributes.rgb_color === undefined) {
+                return false;
+            }
+
             return true;
         }
 
