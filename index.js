@@ -36,7 +36,7 @@ function HomeAssistantPlatform(log, config, api){
     this.password = config.password;
     this.supportedTypes = config.supported_types || ['binary_sensor', 'cover', 'fan', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch'];
     this.foundAccessories = [];
-    this.logging = config.logging || true;
+    this.logging = config.logging !== undefined ? config.logging : true;
 
     this.log = log;
 
