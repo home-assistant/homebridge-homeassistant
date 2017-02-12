@@ -14,12 +14,13 @@ let HomeAssistantLock;
 let HomeAssistantMediaPlayer;
 let HomeAssistantSensorFactory;
 let HomeAssistantSwitch;
+let HomeAssistantDeviceTrackerFactory;
 
 function HomeAssistantPlatform(log, config, api) {
   // auth info
   this.host = config.host;
   this.password = config.password;
-  this.supportedTypes = config.supported_types || ['binary_sensor', 'cover', 'fan', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch'];
+  this.supportedTypes = config.supported_types || ['binary_sensor', 'cover', 'device_tracker', 'fan', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch'];
   this.foundAccessories = [];
   this.logging = config.logging !== undefined ? config.logging : true;
 
@@ -170,6 +171,8 @@ HomeAssistantPlatform.prototype = {
           accessory = HomeAssistantCoverFactory(that.log, entity, that);
         } else if (entityType === 'sensor') {
           accessory = HomeAssistantSensorFactory(that.log, entity, that);
+        } else if (entityType === 'device_tracker') {
+          accessory = HomeAssistantDeviceTrackerFactory(that.log, entity, that);
         } else if (entityType === 'media_player' && entity.attributes && entity.attributes.supported_features) {
           accessory = new HomeAssistantMediaPlayer(that.log, entity, that);
         } else if (entityType === 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
@@ -199,6 +202,7 @@ function HomebridgeHomeAssistant(homebridge) {
   HomeAssistantCoverFactory = require('./accessories/cover')(Service, Characteristic, communicationError);
   HomeAssistantSensorFactory = require('./accessories/sensor')(Service, Characteristic, communicationError);
   HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
+  HomeAssistantDeviceTrackerFactory = require('./accessories/device_tracker')(Service, Characteristic, communicationError);
   /* eslint-enable global-require */
 
   homebridge.registerPlatform('homebridge-homeassistant', 'HomeAssistant', HomeAssistantPlatform, false);
