@@ -170,7 +170,7 @@ HomeAssistantPlatform.prototype = {
                     accessory = new HomeAssistantSwitch(that.log, entity, that, 'scene');
                 }else if (entity_type == 'rollershutter'){
                     that.log.error('Rollershutters are no longer supported by homebridge-homeassistant. Please upgrade to a newer version of Home Assistant to continue using this entity (with the new cover component).');
-                }else if (entity_type == 'media_player' && entity.attributes && entity.attributes.supported_media_commands){
+                }else if (entity_type == 'media_player' && entity.attributes && entity.attributes.supported_features){
                     accessory = new HomeAssistantMediaPlayer(that.log, entity, that);
                 }else if (entity_type == 'input_boolean'){
                     accessory = new HomeAssistantSwitch(that.log, entity, that, 'input_boolean');
