@@ -41,7 +41,7 @@ HomeAssistantLight.prototype = {
             return true;
         }
 
-        return this.data.attributes.supported_features & feature > 0;
+        return (this.data.attributes.supported_features & feature) > 0;
     },
     onEvent: function(old_state, new_state) {
         this.lightbulbService.getCharacteristic(Characteristic.On)
