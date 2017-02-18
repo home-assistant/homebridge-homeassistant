@@ -28,7 +28,7 @@ function HomeAssistantMediaPlayer(log, data, client) {
     this.data = data;
     this.entity_id = data.entity_id;
     this.uuid_base = data.entity_id;
-    this.supportedMediaCommands = data.attributes.supported_media_commands;
+    this.supportedFeatures = data.attributes.supported_features;
 
     if (data.attributes && data.attributes.friendly_name) {
         this.name = data.attributes.friendly_name;
@@ -36,17 +36,17 @@ function HomeAssistantMediaPlayer(log, data, client) {
         this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
     }
 
-    if ((this.supportedMediaCommands | SUPPORT_STOP) == this.supportedMediaCommands) {
+    if ((this.supportedFeatures | SUPPORT_STOP) == this.supportedFeatures) {
         this.onState = 'playing';
         this.offState = 'idle';
         this.onService = 'media_play';
         this.offService = 'media_stop';
-    } else if ((this.supportedMediaCommands | SUPPORT_PAUSE) == this.supportedMediaCommands) {
+    } else if ((this.supportedFeatures | SUPPORT_PAUSE) == this.supportedFeatures) {
         this.onState = 'playing';
         this.offState = 'paused';
         this.onService = 'media_play';
         this.offService = 'media_pause';
-    } else if ((this.supportedMediaCommands | SUPPORT_TURN_ON) == this.supportedMediaCommands && (this.supportedMediaCommands | SUPPORT_TURN_OFF) == this.supportedMediaCommands) {
+    } else if ((this.supportedFeatures | SUPPORT_TURN_ON) == this.supportedFeatures && (this.supportedFeatures | SUPPORT_TURN_OFF) == this.supportedFeatures) {
         this.onState = 'on';
         this.offState = 'off';
         this.onService = 'turn_on';
