@@ -1,3 +1,5 @@
+"use strict";
+
 let Service;
 let Characteristic;
 const url = require('url');
