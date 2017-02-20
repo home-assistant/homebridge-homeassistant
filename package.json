@@ -1,6 +1,6 @@
 {
   "name": "homebridge-homeassistant",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Homebridge plugin for Home Assistant: https://home-assistant.io",
   "license": "Apache-2.0",
   "keywords": [
