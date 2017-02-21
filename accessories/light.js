@@ -114,9 +114,9 @@ HomeAssistantLight.prototype = {
     XY_COLOR: 64,
   }),
   is_supported(feature) {
-    // If the supported_features attribute doesn't exist, assume supported
+    // If the supported_features attribute doesn't exist, assume not supported
     if (this.data.attributes.supported_features === undefined) {
-      return true;
+      return false;
     }
 
     return (this.data.attributes.supported_features & feature) > 0;
