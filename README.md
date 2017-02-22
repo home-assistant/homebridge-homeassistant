@@ -28,6 +28,8 @@ Here's a list of the devices that are currently exposed:
 * **Scenes** - exposed as an on/off switch
 * **Sensors** - carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
+* **Climate** - support generic_thermostat (see notes)
+* **Device Tracker** - occupancy sensor
 
 ### Binary Sensor Support
 
@@ -78,6 +80,22 @@ Carbon dioxide (CO2), humidity, light and temperature sensors are currently supp
 - Temperature sesnsors will be found if an entity has its unit of measurement set to `°C` or `°C`.
 - Humidity sensors will be found if an entity has its unit of measurement set to `%` and has an entity ID containing `humidity` _or_ `homebridge_sensor_type` is set to `humidity` on the entity.
 - Carbon Dioxide (CO2) sensors will be found if an entity has its unit of measurement set to `ppm` and has an entity ID containing `co2` _or_ `homebridge_sensor_type` is set to `co2` on the entity.
+
+### Climate Support
+
+Climate on your Home Assistant will appear in HomeKit as Thermostat. If you are using
+a generic_thermostat, you have to change type in the `customize` section of your
+Home Assistant's `configuration.yaml`. Refer to the following example:
+
+```
+customize:
+  climate.thermostat:
+    homebridge_climate_type: generic
+```
+
+## Device Tracker
+
+Device Tracker on your Home Assistant will appear in HomeKit as occupancy sensor.
 
 ## Installation
 

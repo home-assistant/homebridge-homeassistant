@@ -32,8 +32,10 @@ class HomeAssistantClimate {
     }
 
     onEvent(old_state, new_state) {
-        this.thermostatService.getCharacteristic(this.characteristic)
-            .setValue(new_state.attributes.current_temperature , null, 'internal');
+        this.thermostatService.getCharacteristic(Characteristic.CurrentTemperature)
+            .setValue(new_state.attributes.current_temperature , null, 'internal'),
+        this.thermostatService.getCharacteristic(Characteristic.TargetTemperature)
+            .setValue(new_state.attributes.temperature , null, 'internal');
     }
     identify(callback) {
         this.log('identifying: ' + this.name);
@@ -175,17 +177,39 @@ class HomeAssistantClimate {
     }
 }
 
+class HomeAssistantClimatePhysical extends HomeAssistantClimate {
+    constructor(log, data, client, service, characteristic, currentHeatingCoolingState, targetHeatingCoolingState, currentTemperature, targetTemperature, temperatureDisplayUnits) {
+    this.currentRelativeHumidity = Characteristic.CurrentRelativeHumidity;
+    this.targetRelativeHumidity = Characteristic.TargetRelativeHumidity;
+    this.coolingThresholdTemperature = Characteristic.CoolingThresholdTemperature;
+    this.heatingThresholdTemperature = Characteristic.HeatingThresholdTemperature;
+    this.name = Characteristic.Name;
+  }
+    // TODO
+}
+
 function HomeAssistantClimateFactory(log, data, client) {
     if (!(data.attributes)) {
         return null;
     }
-    return new HomeAssistantClimate(log, data, client,
-      Service.Thermostat,
-      Characteristic.CurrentHeatingCoolingState,
-      Characteristic.TargetHeatingCoolingState,
-      Characteristic.CurrentTemperature,
-      Characteristic.TargetTemperature,
-      Characteristic.TemperatureDisplayUnits);
+
+    if (data.attributes.homebridge_climate_type === 'generic') {
+        return new HomeAssistantClimate(log, data, client,
+                Service.Thermostat,
+                Characteristic.CurrentHeatingCoolingState,
+                Characteristic.TargetHeatingCoolingState,
+                Characteristic.CurrentTemperature,
+                Characteristic.TargetTemperature,
+                Characteristic.TemperatureDisplayUnits);
+    } else {
+        return new HomeAssistantClimatePhysical(log, data, client,
+                Service.Thermostat,
+                Characteristic.CurrentHeatingCoolingState,
+                Characteristic.TargetHeatingCoolingState,
+                Characteristic.CurrentTemperature,
+                Characteristic.TargetTemperature,
+                Characteristic.TemperatureDisplayUnits);
+    }
 }
 
 function HomeAssistantClimateFactoryPlatform(oService, oCharacteristic, oCommunicationError) {
