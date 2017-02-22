@@ -87,6 +87,8 @@ After installing and setting up [Homebridge](https://github.com/nfarina/homebrid
 
 Once installed, update your Homebridge's `config.json`.
 
+You can run `sudo npm upgrade -g homebridge-homeassistant` to upgrade your installation at any time. 
+
 ## Configuration
 
 As with other Homebridge plugins, you configure the Home Assistant plugin by
