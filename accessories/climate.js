@@ -179,11 +179,11 @@ class HomeAssistantClimate {
 
 class HomeAssistantClimatePhysical extends HomeAssistantClimate {
     constructor(log, data, client, service, characteristic, currentHeatingCoolingState, targetHeatingCoolingState, currentTemperature, targetTemperature, temperatureDisplayUnits) {
+    super(log, data, client, service, characteristic, currentHeatingCoolingState, targetHeatingCoolingState, currentTemperature, targetTemperature, temperatureDisplayUnits);
     this.currentRelativeHumidity = Characteristic.CurrentRelativeHumidity;
     this.targetRelativeHumidity = Characteristic.TargetRelativeHumidity;
     this.coolingThresholdTemperature = Characteristic.CoolingThresholdTemperature;
     this.heatingThresholdTemperature = Characteristic.HeatingThresholdTemperature;
-    this.name = Characteristic.Name;
   }
     // TODO
 }
