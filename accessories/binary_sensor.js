@@ -59,7 +59,7 @@ class HomeAssistantBinarySensor {
 
     informationService
           .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
-          .setCharacteristic(Characteristic.Model, `${toTitleCase(this.data.attributes.sensor_class)} Binary Sensor`)
+          .setCharacteristic(Characteristic.Model, `${toTitleCase(this.data.attributes.device_class)} Binary Sensor`)
           .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
 
     return [informationService, this.sensorService];
@@ -67,10 +67,10 @@ class HomeAssistantBinarySensor {
 }
 
 function HomeAssistantBinarySensorFactory(log, data, client) {
-  if (!(data.attributes && data.attributes.sensor_class)) {
+  if (!(data.attributes && data.attributes.device_class)) {
     return null;
   }
-  switch (data.attributes.sensor_class) {
+  switch (data.attributes.device_class) {
     case 'moisture':
       return new HomeAssistantBinarySensor(log, data, client,
                                            Service.LeakSensor,
@@ -102,7 +102,7 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
                                            Characteristic.SmokeDetected.SMOKE_DETECTED,
                                            Characteristic.SmokeDetected.SMOKE_NOT_DETECTED);
     default:
-      log.error(`'${data.entity_id}' has a sensor_class of '${data.attributes.sensor_class}' which is not supported by ` +
+      log.error(`'${data.entity_id}' has a device_class of '${data.attributes.device_class}' which is not supported by ` +
                 'homebridge-homeassistant. Supported classes are \'moisture\', \'motion\', \'occupancy\', \'opening\' and \'smoke\'. ' +
                 'See the README.md for more information.');
       return null;
