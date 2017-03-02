@@ -94,7 +94,7 @@ HomeAssistantSwitch.prototype = {
           .setCharacteristic(Characteristic.Model, model)
           .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
 
-    if (this.domain === 'switch') {
+    if (this.domain === 'switch' || this.domain === 'input_boolean') {
       this.switchService
           .getCharacteristic(Characteristic.On)
           .on('get', this.getPowerState.bind(this))
