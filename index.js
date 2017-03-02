@@ -177,7 +177,7 @@ HomeAssistantPlatform.prototype = {
           accessory = HomeAssistantDeviceTrackerFactory(that.log, entity, that);
         } else if (entityType === 'media_player' && entity.attributes && entity.attributes.supported_features) {
           accessory = new HomeAssistantMediaPlayer(that.log, entity, that);
-        } else if (entityType === 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
+        } else if (entityType === 'binary_sensor' && entity.attributes && entity.attributes.device_class) {
           accessory = HomeAssistantBinarySensorFactory(that.log, entity, that);
         }
 

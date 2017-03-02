@@ -31,9 +31,9 @@ Here's a list of the devices that are currently exposed:
 
 ### Binary Sensor Support
 
-Binary Sensors must have a `sensor_class` set. Accepted `sensor_class`es are `moisture`, `motion`, `occupancy`, `opening` and `smoke`.
+Binary Sensors must have a `device_class` set. Accepted `device_class`es are `moisture`, `motion`, `occupancy`, `opening` and `smoke`.
 
-For binary sensors with the `opening` `sensor_class` you can also set `homebridge_opening_type` to `window` to have the entity display as a window instead of a door to Homebridge.
+For binary sensors with the `opening` `device_class` you can also set `homebridge_opening_type` to `window` to have the entity display as a window instead of a door to Homebridge.
 
 ### Cover Support
 
