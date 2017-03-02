@@ -55,7 +55,7 @@ class HomeAssistantDeviceTracker {
 
     informationService
           .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
-          .setCharacteristic(Characteristic.Model, ' Device Tracker')
+          .setCharacteristic(Characteristic.Model, 'Device Tracker')
           .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
 
     return [informationService, this.sensorService];
