@@ -1,3 +1,5 @@
+'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
@@ -112,9 +114,9 @@ HomeAssistantLight.prototype = {
     XY_COLOR: 64,
   }),
   is_supported(feature) {
-    // If the supported_features attribute doesn't exist, assume supported
+    // If the supported_features attribute doesn't exist, assume not supported
     if (this.data.attributes.supported_features === undefined) {
-      return true;
+      return false;
     }
 
     return (this.data.attributes.supported_features & feature) > 0;
@@ -291,8 +293,7 @@ HomeAssistantLight.prototype = {
     const rgb = LightUtil.hsvToRgb(
             (this.data.attributes.hue || 0) / 360,
             (this.data.attributes.saturation || 0) / 100,
-            (this.data.attributes.brightness || 0) / 255,
-        );
+            (this.data.attributes.brightness || 0) / 255);
     if (this.data.attributes.saturation !== undefined) {
       if (this.is_supported(this.features.XY_COLOR)) {
         serviceData.xy_color = LightUtil.rgbToCie(rgb.r, rgb.g, rgb.b);
@@ -330,8 +331,7 @@ HomeAssistantLight.prototype = {
     const rgb = LightUtil.hsvToRgb(
             (this.data.attributes.hue || 0) / 360,
             (this.data.attributes.saturation || 0) / 100,
-            (this.data.attributes.brightness || 0) / 255,
-        );
+            (this.data.attributes.brightness || 0) / 255);
 
     if (this.data.attributes.hue !== undefined) {
       if (this.is_supported(this.features.XY_COLOR)) {

@@ -1,3 +1,5 @@
+'use strict';
+
 let Service;
 let Characteristic;
 const url = require('url');
@@ -47,10 +49,10 @@ function HomeAssistantPlatform(log, config, api) {
     }
 
     const numAccessories = this.foundAccessories.length;
-    for (let i = 0; i < numAccessories; i + 1) {
+    for (let i = 0; i < numAccessories; i++) {
       const accessory = this.foundAccessories[i];
 
-      if (accessory.entityID === data.data.entityID && accessory.onEvent) {
+      if (accessory.entity_id === data.data.entity_id && accessory.onEvent) {
         accessory.onEvent(data.data.old_state, data.data.new_state);
       }
     }
@@ -124,9 +126,9 @@ HomeAssistantPlatform.prototype = {
         return;
       }
 
-      for (let i = 0; i < data.length; i + 1) {
+      for (let i = 0; i < data.length; i++) {
         const entity = data[i];
-        const entityType = entity.entityID.split('.')[0];
+        const entityType = entity.entity_id.split('.')[0];
 
         /* eslint-disable no-continue */
         // ignore devices that are not in the list of supported types
@@ -178,7 +180,7 @@ HomeAssistantPlatform.prototype = {
           accessory = HomeAssistantClimate(that.log, entity, that);
         } else if (entityType === 'media_player' && entity.attributes && entity.attributes.supported_features) {
           accessory = new HomeAssistantMediaPlayer(that.log, entity, that);
-        } else if (entityType === 'binary_sensor' && entity.attributes && entity.attributes.sensor_class) {
+        } else if (entityType === 'binary_sensor' && entity.attributes && entity.attributes.device_class) {
           accessory = HomeAssistantBinarySensorFactory(that.log, entity, that);
         }
 
