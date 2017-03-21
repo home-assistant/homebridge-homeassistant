@@ -1,3 +1,5 @@
+'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
@@ -26,7 +28,7 @@ class HomeAssistantSensor {
     }
   }
 
-  static transformData(data) {
+  transformData(data) {
     return parseFloat(data.state);
   }
 

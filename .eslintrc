@@ -20,6 +20,14 @@
     "vars-on-top": 0,
     "no-continue": 0,
     "no-param-reassign": 0,
-    "no-multi-assign": 0
+    "no-multi-assign": 0,
+    "class-methods-use-this": [
+      "error",
+      {
+        "exceptMethods": [
+          "transformData"
+        ]
+      }
+    ]
   }
 }
