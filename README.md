@@ -28,7 +28,7 @@ Here's a list of the devices that are currently exposed:
 * **Scenes** - exposed as an on/off switch
 * **Sensors** - carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
-* **Climate** - support generic_thermostat (see notes)
+* **Climate** - support climate, generic_thermostat (see notes)
 * **Device Tracker** - occupancy sensor
 
 ### Binary Sensor Support
