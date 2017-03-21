@@ -19,6 +19,7 @@ automatically. Easy peasey.
 Here's a list of the devices that are currently exposed:
 
 * **Binary Sensor** - door, leak, moisture, motion, smoke, and window state
+* **Climate** - current temperature, target temperature, heat/cool mode
 * **Cover** - exposed as a garage door or window covering (see notes)
 * **Fan** - on/off/speed
 * **Input boolean** - on/off
@@ -87,7 +88,7 @@ After installing and setting up [Homebridge](https://github.com/nfarina/homebrid
 
 Once installed, update your Homebridge's `config.json`.
 
-You can run `sudo npm upgrade -g homebridge-homeassistant` to upgrade your installation at any time. 
+You can run `sudo npm upgrade -g homebridge-homeassistant` to upgrade your installation at any time.
 
 ## Configuration
 
@@ -102,7 +103,7 @@ To avoid too much information in your log, just set `logging` to `false` as soon
     "name": "HomeAssistant",
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
-    "supported_types": ["binary_sensor", "cover", "fan", "input_boolean", "light", "lock", "media_player", "scene", "sensor", "switch"],
+    "supported_types": ["binary_sensor", "climate", "cover", "fan", "input_boolean", "light", "lock", "media_player", "scene", "sensor", "switch"],
     "logging": true
   }
 ]
