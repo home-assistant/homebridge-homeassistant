@@ -22,6 +22,8 @@ HomeAssistantClimate.prototype = {
   onEvent: function (oldState, newState) {
     this.ThermostatService.getCharacteristic(Characteristic.CurrentTemperature)
           .setValue(newState.attributes.current_temperature || newState.attributes.temperature, null, 'internal');
+    this.ThermostatService.getCharacteristic(Characteristic.TargetTemperature)
+          .setValue(newState.attributes.temperature , null, 'internal');
   },
   getCurrentTemp: function (callback) {
     this.client.fetchState(this.entity_id, function (data) {
