@@ -149,7 +149,7 @@ class HomeAssistantRollershutterBinary extends HomeAssistantRollershutter {
       this.log('Cannot set this cover to positions other than 0 or 100');
       callback(communicationError); // TODO
     } else {
-      this.doChangeState(position === '100' ? 'open_cover' : 'close_cover', callback);
+      this.doChangeState(position === 100 ? 'open_cover' : 'close_cover', callback);
     }
   }
 }
