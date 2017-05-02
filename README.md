@@ -81,7 +81,7 @@ The switch will automatically turn off shortly after turning on.
 Carbon dioxide (CO2), humidity, light and temperature sensors are currently supported.
 
 - Light sensors will be found if an entity has its unit of measurement set to `lux`.
-- Temperature sesnsors will be found if an entity has its unit of measurement set to `°C` or `°C`.
+- Temperature sensors will be found if an entity has its unit of measurement set to `°C` or `°C`.
 - Humidity sensors will be found if an entity has its unit of measurement set to `%` and has an entity ID containing `humidity` _or_ `homebridge_sensor_type` is set to `humidity` on the entity.
 - Carbon Dioxide (CO2) sensors will be found if an entity has its unit of measurement set to `ppm` and has an entity ID containing `co2` _or_ `homebridge_sensor_type` is set to `co2` on the entity.
 
