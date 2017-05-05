@@ -108,6 +108,12 @@ HomeAssistantClimate.prototype = {
           .getCharacteristic(Characteristic.TargetHeatingCoolingState)
           .on('get', this.getTargetHeatingCoolingState.bind(this));
 
+    if (this.data && this.data.attributes && this.data.attributes.unit_of_measurement) {
+      var units = (this.data.attributes.unit_of_measurement === '°F') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
+      this.ThermostatService
+            .setCharacteristic(Characteristic.TemperatureDisplayUnits, units)
+    }
+
     return [informationService, this.ThermostatService];
   }
 
