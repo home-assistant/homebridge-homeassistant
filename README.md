@@ -23,6 +23,7 @@ Here's a list of the devices that are currently exposed:
 * **Cover** - exposed as a garage door or window covering (see notes)
 * **Device Tracker** - home/not home status appears as an occupancy sensor
 * **Fan** - on/off/speed
+* **Group** - on/off
 * **Input boolean** - on/off
 * **Lights** - on/off/brightness
 * **Lock** - lock/unlock lock
@@ -54,6 +55,10 @@ customize:
 ### Device Tracker
 
 Device trackers will appear in HomeKit as a room occupancy sensor.
+
+### Group Support
+
+Groups will appear in HomeKit as switches.
 
 ### Media Player Support
 
@@ -112,7 +117,7 @@ To avoid too much information in your log, just set `logging` to `false` as soon
     "name": "HomeAssistant",
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
-    "supported_types": ["binary_sensor", "climate", "cover", "device_tracker", "fan", "input_boolean", "light", "lock", "media_player", "scene", "sensor", "switch"],
+    "supported_types": ["binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "scene", "sensor", "switch"],
     "logging": true
   }
 ]

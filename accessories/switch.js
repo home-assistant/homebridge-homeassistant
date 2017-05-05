@@ -83,6 +83,9 @@ HomeAssistantSwitch.prototype = {
       case 'input_boolean':
         model = 'Input boolean';
         break;
+      case 'group':
+        model = 'Group';
+        break;
       default:
         model = 'Switch';
     }
@@ -102,7 +105,7 @@ HomeAssistantSwitch.prototype = {
           .setCharacteristic(Characteristic.Model, model)
           .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
 
-    if (this.domain === 'switch' || this.domain === 'input_boolean') {
+    if (this.domain === 'switch' || this.domain === 'input_boolean' || this.domain === 'group') {
       this.service
           .getCharacteristic(Characteristic.On)
           .on('get', this.getPowerState.bind(this))
