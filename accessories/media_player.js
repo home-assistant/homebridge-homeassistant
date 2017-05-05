@@ -30,19 +30,17 @@ function HomeAssistantMediaPlayer(log, data, client) {
   } else {
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
   }
-  
+
   if ((this.supportedFeatures | SUPPORT_PAUSE) === this.supportedFeatures) {
     this.onState = 'playing';
     this.offState = 'paused';
     this.onService = 'media_play';
     this.offService = 'media_pause';
-  }
-  else if ((this.supportedFeatures | SUPPORT_STOP) === this.supportedFeatures) {
+  } else if ((this.supportedFeatures | SUPPORT_STOP) === this.supportedFeatures) {
     this.onState = 'playing';
     this.offState = 'idle';
     this.onService = 'media_play';
     this.offService = 'media_stop';
-  
   } else if ((this.supportedFeatures | SUPPORT_TURN_ON) === this.supportedFeatures &&
              (this.supportedFeatures | SUPPORT_TURN_OFF) === this.supportedFeatures) {
     this.onState = 'on';
