@@ -85,6 +85,10 @@ Carbon dioxide (CO2), humidity, light and temperature sensors are currently supp
 - Humidity sensors will be found if an entity has its unit of measurement set to `%` and has an entity ID containing `humidity` _or_ `homebridge_sensor_type` is set to `humidity` on the entity.
 - Carbon Dioxide (CO2) sensors will be found if an entity has its unit of measurement set to `ppm` and has an entity ID containing `co2` _or_ `homebridge_sensor_type` is set to `co2` on the entity.
 
+### Switch Support
+
+You can make a switch appear as an outlet to Homebridge by setting `homebridge_switch_type` to `outlet` on the entity.
+
 ## Installation
 
 After installing and setting up [Homebridge](https://github.com/nfarina/homebridge), you can install the Home Assistant plugin with:

@@ -22,7 +22,7 @@ function HomeAssistantSwitch(log, data, client, type) {
 
 HomeAssistantSwitch.prototype = {
   onEvent(oldState, newState) {
-    this.switchService.getCharacteristic(Characteristic.On)
+    this.service.getCharacteristic(Characteristic.On)
         .setValue(newState.state === 'on', null, 'internal');
   },
   getPowerState(callback) {
@@ -50,7 +50,7 @@ HomeAssistantSwitch.prototype = {
 
       this.client.callService(this.domain, 'turn_on', serviceData, (data) => {
         if (this.domain === 'scene') {
-          this.switchService.getCharacteristic(Characteristic.On)
+          this.service.getCharacteristic(Characteristic.On)
               .setValue('off', null, 'internal');
         }
         if (data) {
@@ -74,8 +74,6 @@ HomeAssistantSwitch.prototype = {
     }
   },
   getServices() {
-    this.switchService = new Service.Switch();
-    const informationService = new Service.AccessoryInformation();
     let model;
 
     switch (this.domain) {
@@ -89,23 +87,33 @@ HomeAssistantSwitch.prototype = {
         model = 'Switch';
     }
 
+    this.service = new Service.Switch();
+    if (this.data && this.data.attributes && this.data.attributes.homebridge_switch_type === 'outlet') {
+      this.service = new Service.Outlet();
+      model = 'Outlet';
+      this.service
+          .getCharacteristic(Characteristic.OutletInUse)
+          .on('get', this.getPowerState.bind(this));
+    }
+    const informationService = new Service.AccessoryInformation();
+
     informationService
           .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
           .setCharacteristic(Characteristic.Model, model)
           .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
 
     if (this.domain === 'switch' || this.domain === 'input_boolean') {
-      this.switchService
+      this.service
           .getCharacteristic(Characteristic.On)
           .on('get', this.getPowerState.bind(this))
           .on('set', this.setPowerState.bind(this));
     } else {
-      this.switchService
+      this.service
           .getCharacteristic(Characteristic.On)
           .on('set', this.setPowerState.bind(this));
     }
 
-    return [informationService, this.switchService];
+    return [informationService, this.service];
   },
 
 };
