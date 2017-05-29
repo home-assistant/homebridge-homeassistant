@@ -36,7 +36,7 @@ Here's a list of the devices that are currently exposed:
 
 Binary Sensors must have a `device_class` set. Accepted `device_class`es are `gas`, `moisture`, `motion`, `occupancy`, `opening` and `smoke`.
 
-For binary sensors with the `gas` `device_class` you must also set `homebridge_gas_type` to `co` or `co2` or to control how the entity is shown in Homebridge.
+For binary sensors with the `gas` `device_class` you can also set `homebridge_gas_type` to `co` or `co2` or to control how the entity is shown in Homebridge (`co` is default).
 
 For binary sensors with the `opening` `device_class` you can also set `homebridge_opening_type` to `window` to have the entity display as a window instead of a door to Homebridge.
 
