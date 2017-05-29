@@ -74,30 +74,30 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
     case 'gas':
       if (!(data.attributes.homebridge_gas_type)) {
         return new HomeAssistantBinarySensor(log, data, client,
-                                           Service.CarbonMonoxideSensor,
-                                           Characteristic.CarbonMonoxideDetected,
-                                           Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
-                                           Characteristic.LeakDetected.CO_LEVELS_NORMAL);
+                                             Service.CarbonMonoxideSensor,
+                                             Characteristic.CarbonMonoxideDetected,
+                                             Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
+                                             Characteristic.LeakDetected.CO_LEVELS_NORMAL);
       }
       switch (data.attributes.homebridge_gas_type) {
         case 'co2':
           return new HomeAssistantBinarySensor(log, data, client,
-                                           Service.CarbonDioxideSensor,
-                                           Characteristic.CarbonDioxideDetected,
-                                           Characteristic.LeakDetected.CO2_LEVELS_ABNORMAL,
-                                           Characteristic.LeakDetected.CO2_LEVELS_NORMAL);
+                                               Service.CarbonDioxideSensor,
+                                               Characteristic.CarbonDioxideDetected,
+                                               Characteristic.LeakDetected.CO2_LEVELS_ABNORMAL,
+                                               Characteristic.LeakDetected.CO2_LEVELS_NORMAL);
         case 'co':
           return new HomeAssistantBinarySensor(log, data, client,
-                                           Service.CarbonMonoxideSensor,
-                                           Characteristic.CarbonMonoxideDetected,
-                                           Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
-                                           Characteristic.LeakDetected.CO_LEVELS_NORMAL);
+                                               Service.CarbonMonoxideSensor,
+                                               Characteristic.CarbonMonoxideDetected,
+                                               Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
+                                               Characteristic.LeakDetected.CO_LEVELS_NORMAL);
         default:
           return new HomeAssistantBinarySensor(log, data, client,
-                                           Service.CarbonMonoxideSensor,
-                                           Characteristic.CarbonMonoxideDetected,
-                                           Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
-                                           Characteristic.LeakDetected.CO_LEVELS_NORMAL);
+                                               Service.CarbonMonoxideSensor,
+                                               Characteristic.CarbonMonoxideDetected,
+                                               Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
+                                               Characteristic.LeakDetected.CO_LEVELS_NORMAL);
       }
     case 'moisture':
       return new HomeAssistantBinarySensor(log, data, client,
