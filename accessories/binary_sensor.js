@@ -58,9 +58,9 @@ class HomeAssistantBinarySensor {
     const informationService = new Service.AccessoryInformation();
 
     informationService
-          .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
-          .setCharacteristic(Characteristic.Model, `${toTitleCase(this.data.attributes.device_class)} Binary Sensor`)
-          .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
+          .setCharacteristic(Characteristic.Manufacturer, (!(data.attributes.homebridge_mfg)) ? 'Home Assistant' : this.data.attributes.homebridge_mfg)
+          .setCharacteristic(Characteristic.Model, (!(data.attributes.homebridge_model)) ? `${toTitleCase(this.data.attributes.device_class)} Binary Sensor` : this.data.attributes.homebridge_model)
+          .setCharacteristic(Characteristic.SerialNumber, (!(data.attributes.homebridge_serial)) ? this.entity_id : this.data.attributes.homebridge_serial);
 
     return [informationService, this.sensorService];
   }
