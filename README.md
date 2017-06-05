@@ -149,6 +149,18 @@ customize:
     homebridge_name: My awesome switch
 ```
 
+Finally, you can (optionally) specify the accessory information by setting `homebridge_mfg`,  `homebridge_model`, and `homebridge_serial` like this:
+
+```yaml
+customize:
+  switch.a_switch:
+    homebridge_mfg: Leviton
+    homebridge_model: DZMX1-1LZ
+    homebridge_serial: 123456789
+```
+
+If you don't specify the accessory information, the data will be pulled from Home Assistant by default.
+
 ## Contributions
 
 * fork

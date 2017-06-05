@@ -15,7 +15,16 @@ function HomeAssistantSwitch(log, data, client, type) {
   } else {
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
   }
-
+  if (data.attributes && data.attributes.homebridge_mfg) {
+    this.mfg = String(data.attributes.homebridge_mfg);
+  } else {
+    this.mfg = 'Home Assistant';
+  }
+  if (data.attributes && data.attributes.homebridge_serial) {
+    this.serial = String(data.attributes.homebridge_serial);
+  } else {
+    this.serial = data.entity_id;
+  }
   this.client = client;
   this.log = log;
 }
@@ -80,13 +89,32 @@ HomeAssistantSwitch.prototype = {
 
     switch (this.domain) {
       case 'scene':
-        model = 'Scene';
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Scene';
+        }
         break;
       case 'input_boolean':
-        model = 'Input boolean';
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Input Boolean';
+        }
         break;
       case 'group':
-        model = 'Group';
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Group';
+        }
+        break;
+      case 'switch':
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Switch';
+        }
         break;
       default:
         model = 'Switch';
@@ -95,7 +123,11 @@ HomeAssistantSwitch.prototype = {
     this.service = new Service.Switch();
     if (this.data && this.data.attributes && this.data.attributes.homebridge_switch_type === 'outlet') {
       this.service = new Service.Outlet();
-      model = 'Outlet';
+      if (this.data.attributes && this.data.attributes.homebridge_model) {
+        model = String(this.data.attributes.homebridge_model);
+      } else {
+        model = 'Outlet';
+      }
       this.service
           .getCharacteristic(Characteristic.OutletInUse)
           .on('get', this.getPowerState.bind(this));
@@ -103,9 +135,9 @@ HomeAssistantSwitch.prototype = {
     const informationService = new Service.AccessoryInformation();
 
     informationService
-          .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
+          .setCharacteristic(Characteristic.Manufacturer, this.mfg)
           .setCharacteristic(Characteristic.Model, model)
-          .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
+          .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
     if (this.domain === 'switch' || this.domain === 'input_boolean' || this.domain === 'group') {
       this.service

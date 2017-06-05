@@ -30,7 +30,6 @@ function HomeAssistantMediaPlayer(log, data, client) {
   } else {
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
   }
-
   if ((this.supportedFeatures | SUPPORT_PAUSE) === this.supportedFeatures) {
     this.onState = 'playing';
     this.offState = 'paused';
@@ -48,7 +47,21 @@ function HomeAssistantMediaPlayer(log, data, client) {
     this.onService = 'turn_on';
     this.offService = 'turn_off';
   }
-
+  if (data.attributes && data.attributes.homebridge_mfg) {
+    this.mfg = String(data.attributes.homebridge_mfg);
+  } else {
+    this.mfg = 'Home Assistant';
+  }
+  if (data.attributes && data.attributes.homebridge_model) {
+    this.model = String(data.attributes.homebridge_model);
+  } else {
+    this.model = 'Media Player';
+  }
+  if (data.attributes && data.attributes.homebridge_serial) {
+    this.serial = String(data.attributes.homebridge_serial);
+  } else {
+    this.serial = data.entity_id;
+  }
   this.client = client;
   this.log = log;
 }
@@ -109,9 +122,9 @@ HomeAssistantMediaPlayer.prototype = {
     const informationService = new Service.AccessoryInformation();
 
     informationService
-          .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
-          .setCharacteristic(Characteristic.Model, 'Media Player')
-          .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
+          .setCharacteristic(Characteristic.Manufacturer, this.mfg)
+          .setCharacteristic(Characteristic.Model, this.model)
+          .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
     this.switchService
         .getCharacteristic(Characteristic.On)

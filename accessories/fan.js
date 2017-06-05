@@ -15,7 +15,21 @@ function HomeAssistantFan(log, data, client) {
   } else {
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
   }
-
+  if (data.attributes && data.attributes.homebridge_mfg) {
+    this.mfg = String(data.attributes.homebridge_mfg);
+  } else {
+    this.mfg = 'Home Assistant';
+  }
+  if (data.attributes && data.attributes.homebridge_model) {
+    this.model = String(data.attributes.homebridge_model);
+  } else {
+    this.model = 'Fan';
+  }
+  if (data.attributes && data.attributes.homebridge_serial) {
+    this.serial = String(data.attributes.homebridge_serial);
+  } else {
+    this.serial = data.entity_id;
+  }
   this.client = client;
   this.log = log;
 }
@@ -128,9 +142,9 @@ HomeAssistantFan.prototype = {
     const informationService = new Service.AccessoryInformation();
 
     informationService
-          .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
-          .setCharacteristic(Characteristic.Model, 'Fan')
-          .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
+          .setCharacteristic(Characteristic.Manufacturer, this.mfg)
+          .setCharacteristic(Characteristic.Model, this.model)
+          .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
     this.fanService
         .getCharacteristic(Characteristic.On)
