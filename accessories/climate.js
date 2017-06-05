@@ -22,7 +22,7 @@ function HomeAssistantClimate(log, data, client) {
   if (data.attributes && data.attributes.homebridge_model) {
     this.model = String(data.attributes.homebridge_model);
   } else {
-    this.model = `${toTitleCase(data.attributes.device_class)} Binary Sensor`;
+    this.model = `Climate`;
   }
   if (data.attributes && data.attributes.homebridge_serial) {
     this.serial = String(data.attributes.homebridge_serial);
