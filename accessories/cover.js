@@ -119,7 +119,8 @@ class HomeAssistantRollershutter extends HomeAssistantCover {
       this.model = String(data.attributes.homebridge_model);
     } else {
       this.model = 'Rollershutter';
-    }    this.service = new Service.WindowCovering();
+    }
+    this.service = new Service.WindowCovering();
     this.stateCharacteristic = Characteristic.CurrentPosition;
     this.targetCharacteristic = Characteristic.TargetPosition;
   }
