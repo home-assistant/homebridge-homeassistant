@@ -40,7 +40,7 @@ class HomeAssistantBinarySensor {
     this.service = service;
     this.characteristic = characteristic;
     this.onValue = onValue;
-    this.offValue = offValue;    
+    this.offValue = offValue;
   }
 
   onEvent(oldState, newState) {
