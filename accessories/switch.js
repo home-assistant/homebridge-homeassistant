@@ -44,11 +44,12 @@ HomeAssistantSwitch.prototype = {
     const that = this;
     const serviceData = {};
     serviceData.entity_id = this.entity_id;
+    var call_domain = 'group' == this.domain ? 'homeassistant' : this.domain;
 
     if (powerOn) {
       this.log(`Setting power state on the '${this.name}' to on`);
 
-      this.client.callService(this.domain, 'turn_on', serviceData, (data) => {
+      this.client.callService(call_domain, 'turn_on', serviceData, (data) => {
         if (this.domain === 'scene') {
           setTimeout(() => {
             this.service.getCharacteristic(Characteristic.On)
@@ -65,7 +66,7 @@ HomeAssistantSwitch.prototype = {
     } else {
       this.log(`Setting power state on the '${this.name}' to off`);
 
-      this.client.callService(this.domain, 'turn_off', serviceData, (data) => {
+      this.client.callService(call_domain, 'turn_off', serviceData, (data) => {
         if (data) {
           that.log(`Successfully set power state on the '${that.name}' to off`);
           callback();
