@@ -35,19 +35,20 @@ function HomeAssistantAlarmControlPanel(log, data, client) {
 }
 
 HomeAssistantAlarmControlPanel.prototype = {
-  onEvent(oldState, newState) {    
+  onEvent(oldState, newState) {
+    var alarmState;
     if (newState.state === 'armed_home') {
-      var alarmState = 0;
+      alarmState = 0;
     } else if (newState.state === 'armed_away') {
-      var alarmState = 1;
+      alarmState = 1;
     } else if (newState.state === 'armed_night') {
-      var alarmState = 2;
+      alarmState = 2;
     } else if (newState.state === 'disarmed') {
-      var alarmState = 3;
+      alarmState = 3;
     } else if (newState.state === 'triggered') {
-      var alarmState = 4;
+      alarmState = 4;
     } else {
-      var alarmState = 3;
+      alarmState = 3;
     }
     this.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState)
         .setValue(alarmState, null, 'internal');
