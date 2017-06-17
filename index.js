@@ -8,6 +8,7 @@ const EventSource = require('eventsource');
 
 const communicationError = new Error('Can not communicate with Home Assistant.');
 
+let HomeAssistantAlarmControlPanel;
 let HomeAssistantBinarySensorFactory;
 let HomeAssistantCoverFactory;
 let HomeAssistantFan;
@@ -23,7 +24,7 @@ function HomeAssistantPlatform(log, config, api) {
   // auth info
   this.host = config.host;
   this.password = config.password;
-  this.supportedTypes = config.supported_types || ['binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch'];
+  this.supportedTypes = config.supported_types || ['alarm_control_panel', 'binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch'];
   this.foundAccessories = [];
   this.logging = config.logging !== undefined ? config.logging : true;
 
@@ -184,6 +185,8 @@ HomeAssistantPlatform.prototype = {
           accessory = HomeAssistantBinarySensorFactory(that.log, entity, that);
         } else if (entityType === 'group') {
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'group');
+        } else if (entityType === 'alarm_control_panel') {
+	      accessory = new HomeAssistantAlarmControlPanel(that.log, entity, that);
         }
 
         if (accessory) {
@@ -211,6 +214,7 @@ function HomebridgeHomeAssistant(homebridge) {
   HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
   HomeAssistantDeviceTrackerFactory = require('./accessories/device_tracker')(Service, Characteristic, communicationError);
   HomeAssistantClimate = require('./accessories/climate')(Service, Characteristic, communicationError);
+  HomeAssistantAlarmControlPanel = require('./accessories/alarm_control_panel')(Service, Characteristic, communicationError);
   /* eslint-enable global-require */
 
   homebridge.registerPlatform('homebridge-homeassistant', 'HomeAssistant', HomeAssistantPlatform, false);
