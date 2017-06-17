@@ -18,6 +18,7 @@ automatically. Easy peasey.
 
 Here's a list of the devices that are currently exposed:
 
+* **Alarm Control Panels** - arm (home, away, night), disarm, triggered
 * **Binary Sensor** - door, leak, moisture, motion, smoke, and window state
 * **Climate** - current temperature, target temperature, heat/cool mode
 * **Cover** - exposed as a garage door or window covering (see notes)
@@ -31,6 +32,10 @@ Here's a list of the devices that are currently exposed:
 * **Scenes** - exposed as an on/off switch
 * **Sensors** - carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
+
+### Alarm Control Panel Support
+
+Home Assistant does not currently support "Night" arming. For now, selecting "Night" within HomeKit apps will set the system to "Home".
 
 ### Binary Sensor Support
 
