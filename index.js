@@ -186,7 +186,7 @@ HomeAssistantPlatform.prototype = {
         } else if (entityType === 'group') {
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'group');
         } else if (entityType === 'alarm_control_panel') {
-	      accessory = new HomeAssistantAlarmControlPanel(that.log, entity, that);
+          accessory = new HomeAssistantAlarmControlPanel(that.log, entity, that);
         }
 
         if (accessory) {
