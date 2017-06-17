@@ -111,7 +111,7 @@ HomeAssistantAlarmControlPanel.prototype = {
     } else if (targetState === Characteristic.SecuritySystemCurrentState.NIGHT_ARM) {
       this.log(`Setting alarm state on the '${this.name}' to armed night`);
 
-      this.client.callService(this.domain, 'alarm_arm_night', serviceData, (data) => {
+      this.client.callService(this.domain, 'alarm_arm_home', serviceData, (data) => {
         if (data) {
           that.log(`Successfully set alarm state on the '${that.name}' to armed night`);
           callback();
