@@ -36,7 +36,7 @@ function HomeAssistantAlarmControlPanel(log, data, client) {
 
 HomeAssistantAlarmControlPanel.prototype = {
   onEvent(oldState, newState) {
-    var alarmState;
+    let alarmState;
     if (newState.state === 'armed_home') {
       alarmState = 0;
     } else if (newState.state === 'armed_away') {
