@@ -86,7 +86,7 @@ HomeAssistantClimate.prototype = {
             state = Characteristic.TargetHeatingCoolingState.OFF;
             break;
         }
-	    callback(null, state);
+        callback(null, state);
       } else {
         callback(communicationError);
       }
@@ -94,6 +94,10 @@ HomeAssistantClimate.prototype = {
   },
 
   setTargetHeatingCoolingState: function (value, callback, context) {
+    if (context === 'internal') {
+      callback();
+      return;
+    }
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
 
@@ -109,6 +113,7 @@ HomeAssistantClimate.prototype = {
         mode = 'heat';
         break;
       case Characteristic.TargetHeatingCoolingState.OFF:
+      default:
         mode = 'idle';
         break;
     }
@@ -118,7 +123,7 @@ HomeAssistantClimate.prototype = {
 
     var that = this;
 
-    this.client.callService(this.domain, 'set_operation_mode', serviceData, function(data) {
+    this.client.callService(this.domain, 'set_operation_mode', serviceData, function (data) {
       if (data) {
         that.log(`Successfully set current heating cooling state of '${that.name}'`);
         callback();
