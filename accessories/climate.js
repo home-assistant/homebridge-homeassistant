@@ -52,20 +52,13 @@ HomeAssistantClimate.prototype = {
     var that = this;
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
+    serviceData.temperature = value;
 
-        // clamp the values
-    if (value < 6) {
-      serviceData.temperature = 6;
-    } else if (value > 30) {
-      serviceData.temperature = 30;
-    } else {
-      serviceData.temperature = value;
-    }
     this.log(`Setting temperature on the '${this.name}' to ${serviceData.temperature}`);
 
     this.client.callService(this.domain, 'set_temperature', serviceData, function (data) {
       if (data) {
-        that.log(`Successfully set temperature of '${that.name}' hi`);
+        that.log(`Successfully set temperature of '${that.name}'`);
         callback();
       } else {
         callback(communicationError);
@@ -96,11 +89,27 @@ HomeAssistantClimate.prototype = {
 
     this.ThermostatService
           .getCharacteristic(Characteristic.CurrentTemperature)
-          .setProps({ minValue: 4.5, maxValue: 30.5, minStep: 0.1 })
           .on('get', this.getCurrentTemp.bind(this));
+
+    var minTemp = 7.0;
+    var maxTemp = 35.0;
+    var tempStep = 0.5;
+
+    if (this.data && this.data.attributes) {
+      if (this.data.attributes.min_temp) {
+        minTemp = this.data.attributes.min_temp;
+      }
+      if (this.data.attributes.max_temp) {
+        maxTemp = this.data.attributes.max_temp;
+      }
+      if (this.data.attributes.target_temp_step) {
+        tempStep = this.data.attributes.target_temp_step;
+      }
+    }
 
     this.ThermostatService
           .getCharacteristic(Characteristic.TargetTemperature)
+          .setProps({ minValue: minTemp, maxValue: maxTemp, minStep: tempStep })
           .on('get', this.getTargetTemp.bind(this))
           .on('set', this.setTargetTemp.bind(this));
 
