@@ -23,7 +23,7 @@ function HomeAssistantPlatform(log, config, api) {
   // auth info
   this.host = config.host;
   this.password = config.password;
-  this.supportedTypes = config.supported_types || ['binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch'];
+  this.supportedTypes = config.supported_types || ['binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch', 'remote'];
   this.foundAccessories = [];
   this.logging = config.logging !== undefined ? config.logging : true;
 
@@ -184,6 +184,8 @@ HomeAssistantPlatform.prototype = {
           accessory = HomeAssistantBinarySensorFactory(that.log, entity, that);
         } else if (entityType === 'group') {
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'group');
+        } else if (entityType === 'remote') {
+          accessory = new HomeAssistantSwitch(that.log, entity, that, 'remote');
         }
 
         if (accessory) {
