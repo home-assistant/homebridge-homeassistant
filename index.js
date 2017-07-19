@@ -24,9 +24,10 @@ function HomeAssistantPlatform(log, config, api) {
   // auth info
   this.host = config.host;
   this.password = config.password;
-  this.supportedTypes = config.supported_types || ['alarm_control_panel', 'binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch'];
+  this.supportedTypes = config.supported_types || ['alarm_control_panel', 'binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'remote', 'scene', 'sensor', 'switch'];
   this.foundAccessories = [];
   this.logging = config.logging !== undefined ? config.logging : true;
+  this.verify_ssl = config.verify_ssl !== undefined ? config.verify_ssl : true;
 
   this.log = log;
 
@@ -78,6 +79,7 @@ HomeAssistantPlatform.prototype = {
         'Content-Type': 'application/json',
         'x-ha-access': this.password,
       },
+      rejectUnauthorized: this.verify_ssl,
     };
 
     request(reqOpts, (error, response, body) => {
@@ -187,6 +189,8 @@ HomeAssistantPlatform.prototype = {
           accessory = new HomeAssistantSwitch(that.log, entity, that, 'group');
         } else if (entityType === 'alarm_control_panel') {
           accessory = new HomeAssistantAlarmControlPanel(that.log, entity, that);
+        } else if (entityType === 'remote') {
+          accessory = new HomeAssistantSwitch(that.log, entity, that, 'remote');
         }
 
         if (accessory) {
