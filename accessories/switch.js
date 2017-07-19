@@ -89,6 +89,9 @@ HomeAssistantSwitch.prototype = {
       case 'group':
         model = 'Group';
         break;
+      case 'remote':
+        model = 'Remote';
+        break;
       default:
         model = 'Switch';
     }

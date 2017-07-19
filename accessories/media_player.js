@@ -31,18 +31,32 @@ function HomeAssistantMediaPlayer(log, data, client) {
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
   }
 
-  if ((this.supportedFeatures | SUPPORT_PAUSE) === this.supportedFeatures) {
-    this.onState = 'playing';
-    this.offState = 'paused';
-    this.onService = 'media_play';
-    this.offService = 'media_pause';
-  } else if ((this.supportedFeatures | SUPPORT_STOP) === this.supportedFeatures) {
+  const supportPause = (this.supportedFeatures | SUPPORT_PAUSE) === this.supportedFeatures;
+  const supportStop = (this.supportedFeatures | SUPPORT_STOP) === this.supportedFeatures;
+  const supportOnOff = ((this.supportedFeatures | SUPPORT_TURN_ON) === this.supportedFeatures &&
+                          (this.supportedFeatures | SUPPORT_TURN_OFF) === this.supportedFeatures);
+
+  if (this.data && this.data.attributes && this.data.attributes.homebridge_media_player_switch === 'on_off' && supportOnOff) {
+    this.onState = 'on';
+    this.offState = 'off';
+    this.onService = 'turn_on';
+    this.offService = 'turn_off';
+  } else if (this.data && this.data.attributes && this.data.attributes.homebridge_media_player_switch === 'play_stop' && supportStop) {
     this.onState = 'playing';
     this.offState = 'idle';
     this.onService = 'media_play';
     this.offService = 'media_stop';
-  } else if ((this.supportedFeatures | SUPPORT_TURN_ON) === this.supportedFeatures &&
-             (this.supportedFeatures | SUPPORT_TURN_OFF) === this.supportedFeatures) {
+  } else if (supportPause) {
+    this.onState = 'playing';
+    this.offState = 'paused';
+    this.onService = 'media_play';
+    this.offService = 'media_pause';
+  } else if (supportStop) {
+    this.onState = 'playing';
+    this.offState = 'idle';
+    this.onService = 'media_play';
+    this.offService = 'media_stop';
+  } else if (supportOnOff) {
     this.onState = 'on';
     this.offState = 'off';
     this.onService = 'turn_on';
@@ -56,14 +70,14 @@ function HomeAssistantMediaPlayer(log, data, client) {
 HomeAssistantMediaPlayer.prototype = {
   onEvent(oldState, newState) {
     this.switchService.getCharacteristic(Characteristic.On)
-        .setValue(newState.state === this.onState, null, 'internal');
+        .setValue(newState.state !== this.offState, null, 'internal');
   },
   getPowerState(callback) {
     this.log(`fetching power state for: ${this.name}`);
 
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        const powerState = data.state === this.onState;
+        const powerState = data.state !== this.offState;
         callback(null, powerState);
       } else {
         callback(communicationError);

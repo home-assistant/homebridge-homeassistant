@@ -52,20 +52,13 @@ HomeAssistantClimate.prototype = {
     var that = this;
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
+    serviceData.temperature = value;
 
-        // clamp the values
-    if (value < 6) {
-      serviceData.temperature = 6;
-    } else if (value > 30) {
-      serviceData.temperature = 30;
-    } else {
-      serviceData.temperature = value;
-    }
     this.log(`Setting temperature on the '${this.name}' to ${serviceData.temperature}`);
 
     this.client.callService(this.domain, 'set_temperature', serviceData, function (data) {
       if (data) {
-        that.log(`Successfully set temperature of '${that.name}' hi`);
+        that.log(`Successfully set temperature of '${that.name}'`);
         callback();
       } else {
         callback(communicationError);
@@ -76,14 +69,69 @@ HomeAssistantClimate.prototype = {
     this.log('fetching Current Heating Cooling state for: ' + this.name);
 
     this.client.fetchState(this.entity_id, function (data) {
-      if (data) {
-        callback(null, ((data.Mode === 'Auto') ? 3 : 1));
+      if (data && data.attributes && data.attributes.operation_mode) {
+        var state;
+        switch (data.attributes.operation_mode) {
+          case 'auto':
+            state = Characteristic.TargetHeatingCoolingState.AUTO;
+            break;
+          case 'cool':
+            state = Characteristic.TargetHeatingCoolingState.COOL;
+            break;
+          case 'heat':
+            state = Characteristic.TargetHeatingCoolingState.HEAT;
+            break;
+          case 'idle':
+          default:
+            state = Characteristic.TargetHeatingCoolingState.OFF;
+            break;
+        }
+        callback(null, state);
       } else {
         callback(communicationError);
       }
     });
   },
 
+  setTargetHeatingCoolingState: function (value, callback, context) {
+    if (context === 'internal') {
+      callback();
+      return;
+    }
+    var serviceData = {};
+    serviceData.entity_id = this.entity_id;
+
+    var mode = '';
+    switch (value) {
+      case Characteristic.TargetHeatingCoolingState.AUTO:
+        mode = 'auto';
+        break;
+      case Characteristic.TargetHeatingCoolingState.COOL:
+        mode = 'cool';
+        break;
+      case Characteristic.TargetHeatingCoolingState.HEAT:
+        mode = 'heat';
+        break;
+      case Characteristic.TargetHeatingCoolingState.OFF:
+      default:
+        mode = 'idle';
+        break;
+    }
+
+    serviceData.operation_mode = mode;
+    this.log(`Setting Current Heating Cooling state on the '${this.name}' to ${mode}`);
+
+    var that = this;
+
+    this.client.callService(this.domain, 'set_operation_mode', serviceData, function (data) {
+      if (data) {
+        that.log(`Successfully set current heating cooling state of '${that.name}'`);
+        callback();
+      } else {
+        callback(communicationError);
+      }
+    });
+  },
 
   getServices: function () {
     this.ThermostatService = new Service.Thermostat();
@@ -96,17 +144,34 @@ HomeAssistantClimate.prototype = {
 
     this.ThermostatService
           .getCharacteristic(Characteristic.CurrentTemperature)
-          .setProps({ minValue: 4.5, maxValue: 30.5, minStep: 0.1 })
           .on('get', this.getCurrentTemp.bind(this));
+
+    var minTemp = 7.0;
+    var maxTemp = 35.0;
+    var tempStep = 0.5;
+
+    if (this.data && this.data.attributes) {
+      if (this.data.attributes.min_temp) {
+        minTemp = this.data.attributes.min_temp;
+      }
+      if (this.data.attributes.max_temp) {
+        maxTemp = this.data.attributes.max_temp;
+      }
+      if (this.data.attributes.target_temp_step) {
+        tempStep = this.data.attributes.target_temp_step;
+      }
+    }
 
     this.ThermostatService
           .getCharacteristic(Characteristic.TargetTemperature)
+          .setProps({ minValue: minTemp, maxValue: maxTemp, minStep: tempStep })
           .on('get', this.getTargetTemp.bind(this))
           .on('set', this.setTargetTemp.bind(this));
 
     this.ThermostatService
           .getCharacteristic(Characteristic.TargetHeatingCoolingState)
-          .on('get', this.getTargetHeatingCoolingState.bind(this));
+          .on('get', this.getTargetHeatingCoolingState.bind(this))
+          .on('set', this.setTargetHeatingCoolingState.bind(this));
 
     if (this.data && this.data.attributes && this.data.attributes.unit_of_measurement) {
       var units = (this.data.attributes.unit_of_measurement === '°F') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;

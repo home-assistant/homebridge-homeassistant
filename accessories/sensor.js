@@ -104,13 +104,13 @@ function HomeAssistantSensorFactory(log, data, client) {
   } else if (data.attributes.unit_of_measurement === '%' && (data.entity_id.includes('humidity') || data.attributes.homebridge_sensor_type === 'humidity')) {
     service = Service.HumiditySensor;
     characteristic = Characteristic.CurrentRelativeHumidity;
-  } else if (data.attributes.unit_of_measurement === 'lux') {
+  } else if (data.attributes.unit_of_measurement.toLowerCase() === 'lux' || data.attributes.homebridge_sensor_type === 'light') {
     service = Service.LightSensor;
     characteristic = Characteristic.CurrentAmbientLightLevel;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
       return Math.max(0.0001, parseFloat(dataToTransform.state));
     };
-  } else if (data.attributes.unit_of_measurement === 'ppm' && (data.entity_id.includes('co2') || data.attributes.homebridge_sensor_type === 'co2')) {
+  } else if (data.attributes.unit_of_measurement.toLowerCase() === 'ppm' && (data.entity_id.includes('co2') || data.attributes.homebridge_sensor_type === 'co2')) {
     service = Service.CarbonDioxideSensor;
     characteristic = Characteristic.CarbonDioxideLevel;
   } else {
