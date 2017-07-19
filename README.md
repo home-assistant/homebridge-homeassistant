@@ -120,7 +120,8 @@ To avoid too much information in your log, just set `logging` to `false` as soon
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
     "supported_types": ["binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "scene", "sensor", "switch"],
-    "logging": true
+    "logging": true,
+    "verify_ssl": true
   }
 ]
 ```
@@ -129,7 +130,7 @@ You can optionally whitelist the device types that are exposed to HomeKit with t
 
 ### Using with self signed SSL certificates
 
-If you have set up SSL using a self signed certificate, you will need to start Homebridge after running `export NODE_TLS_REJECT_UNAUTHORIZED=0` to allow bypassing the Node.js certificate checks.
+If you have set up SSL using a self signed certificate, you will need to to set `verify_ssl` to `false` in your `config.json` file to allow bypassing the Node.js certificate checks.
 
 ## Customization
 

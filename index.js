@@ -26,6 +26,7 @@ function HomeAssistantPlatform(log, config, api) {
   this.supportedTypes = config.supported_types || ['binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'scene', 'sensor', 'switch'];
   this.foundAccessories = [];
   this.logging = config.logging !== undefined ? config.logging : true;
+  this.verify_ssl = config.verify_ssl !== undefined ? config.verify_ssl : true;
 
   this.log = log;
 
@@ -77,6 +78,7 @@ HomeAssistantPlatform.prototype = {
         'Content-Type': 'application/json',
         'x-ha-access': this.password,
       },
+      rejectUnauthorized: this.verify_ssl,
     };
 
     request(reqOpts, (error, response, body) => {
