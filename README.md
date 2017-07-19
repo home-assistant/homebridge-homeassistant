@@ -28,6 +28,7 @@ Here's a list of the devices that are currently exposed:
 * **Lights** - on/off/brightness
 * **Lock** - lock/unlock lock
 * **Media Players** - exposed as an on/off switch
+* **Remotes** - exposed as an on/off switch
 * **Scenes** - exposed as an on/off switch
 * **Sensors** - carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
@@ -72,7 +73,9 @@ toggle them on or off.
 There are some rules to know about how on/off treats your media player. If
 your media player supports play/pause, then turning them on and off via
 HomeKit will play and pause them. If they do not support play/pause but instead
-support on/off they will be turned on and off.
+support on/off they will be turned on and off. If none of the above, HomeKit will play and stop.
+
+You can specify the mode to run by setting `homebridge_media_player_switch` to `play_pause`, `on_off` or `play_stop`, respectively.
 
 ### Scene Support
 
@@ -87,7 +90,7 @@ The switch will automatically turn off shortly after turning on.
 
 Carbon dioxide (CO2), humidity, light and temperature sensors are currently supported.
 
-- Light sensors will be found if an entity has its unit of measurement set to `lux`.
+- Light sensors will be found if an entity has its unit of measurement set to `lux` _or_ `homebridge_sensor_type` is set to `light` on the entity.
 - Temperature sensors will be found if an entity has its unit of measurement set to `°C` or `°C`.
 - Humidity sensors will be found if an entity has its unit of measurement set to `%` and has an entity ID containing `humidity` _or_ `homebridge_sensor_type` is set to `humidity` on the entity.
 - Carbon Dioxide (CO2) sensors will be found if an entity has its unit of measurement set to `ppm` and has an entity ID containing `co2` _or_ `homebridge_sensor_type` is set to `co2` on the entity.
@@ -119,7 +122,7 @@ To avoid too much information in your log, just set `logging` to `false` as soon
     "name": "HomeAssistant",
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
-    "supported_types": ["binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "scene", "sensor", "switch"],
+    "supported_types": ["binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "remote", "scene", "sensor", "switch"],
     "logging": true,
     "verify_ssl": true
   }
