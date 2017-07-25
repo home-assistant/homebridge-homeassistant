@@ -147,10 +147,11 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
                                                Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
                                                Characteristic.LeakDetected.CO_LEVELS_NORMAL);
         default:
-          log.error(`'${data.entity_id}' has a device_class of '${data.attributes.device_class}'
-                    but \'homebridge_gas_type\' is not defined.` +
-                    'Supported sensor types are \'co\' and \'co2\'.' +
-                    'See the README.md for more information.');
+          return new HomeAssistantBinarySensor(log, data, client,
+                                               Service.CarbonMonoxideSensor,
+                                               Characteristic.CarbonMonoxideDetected,
+                                               Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
+                                               Characteristic.LeakDetected.CO_LEVELS_NORMAL);
       }
     case 'moisture':
       return new HomeAssistantBinarySensor(log, data, client,
