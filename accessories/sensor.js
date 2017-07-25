@@ -119,7 +119,7 @@ class HomeAssistantSensor {
     this.sensorService = new this.service(); // eslint-disable-line new-cap
     this.sensorService
         .getCharacteristic(this.characteristic)
-        .setProps({ minValue: -50 })  // Need to modify this value depending on the type of sensor being created?
+        .setProps({ minValue: -50 })
         .on('get', this.getState.bind(this));
     if (this.batterySource) {
       this.batteryService = new Service.BatteryService();
@@ -135,9 +135,8 @@ class HomeAssistantSensor {
         .getCharacteristic(Characteristic.StatusLowBattery)
         .on('get', this.getLowBatteryStatus.bind(this));
       return [informationService, this.batteryService, this.sensorService];
-    } else {
-      return [informationService, this.sensorService];
     }
+    return [informationService, this.sensorService];
   }
 }
 function HomeAssistantSensorFactory(log, data, client) {
@@ -151,7 +150,7 @@ function HomeAssistantSensorFactory(log, data, client) {
     service = Service.AirQualitySensor;
     characteristic = Characteristic.AirQuality;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
-      let value = parseFloat(dataToTransform.state);
+      const value = parseFloat(dataToTransform.state);
       if (value <= 75) {
         return 1;
       } else if (value >= 76 && value <= 150) {
@@ -162,37 +161,32 @@ function HomeAssistantSensorFactory(log, data, client) {
         return 4;
       } else if (value >= 301) {
         return 5;
-      } else {
-        return 0;
       }
+      return 0;
     };
   } else if (data.attributes.homebridge_sensor_type === 'co2' && (typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'ppm')) {
     service = Service.CarbonDioxideSensor;
     characteristic = Characteristic.CarbonDioxideLevel;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
-      let value = parseFloat(dataToTransform.state);
+      const value = parseFloat(dataToTransform.state);
       if (value < 0) {
         return 0;
       } else if (value > 100000) {
         return 100000;
-      } else {
-        return value;
-        //return (Math.round(value / 100) * 100);
       }
+      return value;
     };
   } else if (data.attributes.homebridge_sensor_type === 'co' && (typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'ppm')) {
     service = Service.CarbonMonoxideSensor;
     characteristic = Characteristic.CarbonMonoxideLevel;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
-      let value = parseFloat(dataToTransform.state);
+      const value = parseFloat(dataToTransform.state);
       if (value < 0) {
         return 0;
       } else if (value > 100) {
         return 100;
-      } else {
-        return value;
-        //return parseFloat(Math.round(value * 100) / 100).toFixed(2);
       }
+      return value;
     };
   } else if (data.attributes.homebridge_sensor_type === 'humidity' && data.attributes.unit_of_measurement === '%') {
     service = Service.HumiditySensor;
@@ -201,15 +195,13 @@ function HomeAssistantSensorFactory(log, data, client) {
     service = Service.LightSensor;
     characteristic = Characteristic.CurrentAmbientLightLevel;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
-      let value = parseFloat(dataToTransform.state);
+      const value = parseFloat(dataToTransform.state);
       if (value < 0.0001) {
         return 0.0001;
       } else if (value > 100000) {
         return 100000;
-      } else {
-        return value;
-        //return parseFloat(Math.round(value * 10000) / 10000).toFixed(4);
       }
+      return value;
     };
   } else if (data.attributes.homebridge_sensor_type === 'temperature' && (data.attributes.unit_of_measurement === '°C' || data.attributes.unit_of_measurement === '°F')) {
     service = Service.TemperatureSensor;

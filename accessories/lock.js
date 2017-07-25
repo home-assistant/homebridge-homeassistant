@@ -138,9 +138,8 @@ HomeAssistantLock.prototype = {
         .getCharacteristic(Characteristic.StatusLowBattery)
         .on('get', this.getLowBatteryStatus.bind(this));
       return [informationService, this.lockService, this.batteryService];
-    } else {
-      return [informationService, this.lockService];
-    }   
+    }
+    return [informationService, this.lockService];
   },
 };
 function HomeAssistantLockPlatform(oService, oCharacteristic, oCommunicationError) {

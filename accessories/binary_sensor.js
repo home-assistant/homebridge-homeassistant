@@ -113,9 +113,8 @@ class HomeAssistantBinarySensor {
         .getCharacteristic(Characteristic.StatusLowBattery)
         .on('get', this.getLowBatteryStatus.bind(this));
       return [informationService, this.batteryService, this.sensorService];
-    } else {
-      return [informationService, this.sensorService];
     }
+    return [informationService, this.sensorService];
   }
 }
 function HomeAssistantBinarySensorFactory(log, data, client) {
