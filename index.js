@@ -65,6 +65,7 @@ HomeAssistantPlatform.prototype = {
     options = options || {};
     options.query = options.query || {};
     /* eslint-enable no-param-reassign */
+
     const reqOpts = {
       url: url.parse(requestURL),
       method: method || 'GET',
@@ -121,6 +122,7 @@ HomeAssistantPlatform.prototype = {
       for (let i = 0; i < data.length; i++) {
         const entity = data[i];
         const entityType = entity.entity_id.split('.')[0];
+
         /* eslint-disable no-continue */
         // Ignore devices that are not in the list of supported types
         if (that.supportedTypes.indexOf(entityType) === -1) {
@@ -131,6 +133,7 @@ HomeAssistantPlatform.prototype = {
           continue;
         }
         /* eslint-enable no-continue */
+
         // Support providing custom names
         if (entity.attributes && entity.attributes.homebridge_name) {
           entity.attributes.friendly_name = entity.attributes.homebridge_name;
@@ -189,20 +192,21 @@ function HomebridgeHomeAssistant(homebridge) {
   Characteristic = homebridge.hap.Characteristic;
 
   /* eslint-disable global-require */
-  HomeAssistantAlarmControlPanel = require('./accessories/alarm_control_panel')(Service, Characteristic, communicationError);
-  HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
-  HomeAssistantClimate = require('./accessories/climate')(Service, Characteristic, communicationError);
-  HomeAssistantCoverFactory = require('./accessories/cover')(Service, Characteristic, communicationError);
-  HomeAssistantDeviceTrackerFactory = require('./accessories/device_tracker')(Service, Characteristic, communicationError);
-  HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
   HomeAssistantLight = require('./accessories/light')(Service, Characteristic, communicationError);
+  HomeAssistantSwitch = require('./accessories/switch')(Service, Characteristic, communicationError);
   HomeAssistantLock = require('./accessories/lock')(Service, Characteristic, communicationError);
   HomeAssistantMediaPlayer = require('./accessories/media_player')(Service, Characteristic, communicationError);
+  HomeAssistantFan = require('./accessories/fan')(Service, Characteristic, communicationError);
+  HomeAssistantCoverFactory = require('./accessories/cover')(Service, Characteristic, communicationError);
   HomeAssistantSensorFactory = require('./accessories/sensor')(Service, Characteristic, communicationError);
-  HomeAssistantSwitch = require('./accessories/switch')(Service, Characteristic, communicationError);
+  HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
+  HomeAssistantDeviceTrackerFactory = require('./accessories/device_tracker')(Service, Characteristic, communicationError);
+  HomeAssistantClimate = require('./accessories/climate')(Service, Characteristic, communicationError);
+  HomeAssistantAlarmControlPanel = require('./accessories/alarm_control_panel')(Service, Characteristic, communicationError);
   /* eslint-enable global-require */
 
   homebridge.registerPlatform('homebridge-homeassistant', 'HomeAssistant', HomeAssistantPlatform, false);
 }
+
 module.exports = HomebridgeHomeAssistant;
 module.exports.platform = HomeAssistantPlatform;
