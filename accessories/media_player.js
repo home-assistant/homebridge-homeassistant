@@ -1,9 +1,7 @@
 'use strict';
-
 let Service;
 let Characteristic;
 let communicationError;
-
 function HomeAssistantMediaPlayer(log, data, client) {
   /* eslint-disable no-unused-vars */
   const SUPPORT_PAUSE = 1;
@@ -17,31 +15,15 @@ function HomeAssistantMediaPlayer(log, data, client) {
   const SUPPORT_TURN_OFF = 256;
   const SUPPORT_STOP = 4096;
   /* eslint-enable no-unused-vars */
-
-  // device info
-  this.domain = 'media_player';
-  this.data = data;
-  this.entity_id = data.entity_id;
-  this.uuid_base = data.entity_id;
-  this.supportedFeatures = data.attributes.supported_features;
-
-  if (data.attributes && data.attributes.friendly_name) {
-    this.name = data.attributes.friendly_name;
-  } else {
-    this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
-  }
-
+  const supportOnOff = ((this.supportedFeatures | SUPPORT_TURN_ON) === this.supportedFeatures && (this.supportedFeatures | SUPPORT_TURN_OFF) === this.supportedFeatures);
   const supportPause = (this.supportedFeatures | SUPPORT_PAUSE) === this.supportedFeatures;
   const supportStop = (this.supportedFeatures | SUPPORT_STOP) === this.supportedFeatures;
-  const supportOnOff = ((this.supportedFeatures | SUPPORT_TURN_ON) === this.supportedFeatures &&
-                          (this.supportedFeatures | SUPPORT_TURN_OFF) === this.supportedFeatures);
-
-  if (this.data && this.data.attributes && this.data.attributes.homebridge_media_player_switch === 'on_off' && supportOnOff) {
+  if (data.attributes.homebridge_media_player_switch === 'on_off' && supportOnOff) {
     this.onState = 'on';
     this.offState = 'off';
     this.onService = 'turn_on';
     this.offService = 'turn_off';
-  } else if (this.data && this.data.attributes && this.data.attributes.homebridge_media_player_switch === 'play_stop' && supportStop) {
+  } else if (data.attributes.homebridge_media_player_switch === 'play_stop' && supportStop) {
     this.onState = 'playing';
     this.offState = 'idle';
     this.onService = 'media_play';
@@ -62,25 +44,34 @@ function HomeAssistantMediaPlayer(log, data, client) {
     this.onService = 'turn_on';
     this.offService = 'turn_off';
   }
-  if (data.attributes && data.attributes.homebridge_mfg) {
+  this.client = client;
+  this.data = data;
+  this.domain = 'media_player';
+  this.entityID = data.entity_id;
+  this.log = log;
+  if (data.attributes.homebridge_mfg) {
     this.mfg = String(data.attributes.homebridge_mfg);
   } else {
     this.mfg = 'Home Assistant';
   }
-  if (data.attributes && data.attributes.homebridge_model) {
+  if (data.attributes.homebridge_model) {
     this.model = String(data.attributes.homebridge_model);
   } else {
     this.model = 'Media Player';
   }
-  if (data.attributes && data.attributes.homebridge_serial) {
+  if (data.attributes.friendly_name) {
+    this.name = data.attributes.friendly_name;
+  } else {
+    this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
+  }
+  if (data.attributes.homebridge_serial) {
     this.serial = String(data.attributes.homebridge_serial);
   } else {
     this.serial = data.entity_id;
   }
-  this.client = client;
-  this.log = log;
+  this.supportedFeatures = data.attributes.supported_features;
+  this.uuidBase = data.entity_id; // Do we actually need this line?
 }
-
 HomeAssistantMediaPlayer.prototype = {
   onEvent(oldState, newState) {
     this.switchService.getCharacteristic(Characteristic.On)
@@ -88,8 +79,7 @@ HomeAssistantMediaPlayer.prototype = {
   },
   getPowerState(callback) {
     this.log(`fetching power state for: ${this.name}`);
-
-    this.client.fetchState(this.entity_id, (data) => {
+    this.client.fetchState(this.entityID, (data) => {
       if (data) {
         const powerState = data.state !== this.offState;
         callback(null, powerState);
@@ -103,14 +93,11 @@ HomeAssistantMediaPlayer.prototype = {
       callback();
       return;
     }
-
     const that = this;
     const serviceData = {};
-    serviceData.entity_id = this.entity_id;
-
+    serviceData.entity_id = this.entityID;
     if (powerOn) {
       this.log(`Setting power state on the '${this.name}' to on`);
-
       this.client.callService(this.domain, this.onService, serviceData, (data) => {
         if (data) {
           that.log(`Successfully set power state on the '${that.name}' to on`);
@@ -121,7 +108,6 @@ HomeAssistantMediaPlayer.prototype = {
       });
     } else {
       this.log(`Setting power state on the '${this.name}' to off`);
-
       this.client.callService(this.domain, this.offService, serviceData, (data) => {
         if (data) {
           that.log(`Successfully set power state on the '${that.name}' to off`);
@@ -133,31 +119,24 @@ HomeAssistantMediaPlayer.prototype = {
     }
   },
   getServices() {
-    this.switchService = new Service.Switch();
     const informationService = new Service.AccessoryInformation();
-
     informationService
       .setCharacteristic(Characteristic.Manufacturer, this.mfg)
       .setCharacteristic(Characteristic.Model, this.model)
       .setCharacteristic(Characteristic.SerialNumber, this.serial);
-
+    this.switchService = new Service.Switch();
     this.switchService
         .getCharacteristic(Characteristic.On)
         .on('get', this.getPowerState.bind(this))
         .on('set', this.setPowerState.bind(this));
-
     return [informationService, this.switchService];
   },
-
 };
-
 function HomeAssistantMediaPlayerPlatform(oService, oCharacteristic, oCommunicationError) {
   Service = oService;
   Characteristic = oCharacteristic;
   communicationError = oCommunicationError;
-
   return HomeAssistantMediaPlayer;
 }
-
 module.exports = HomeAssistantMediaPlayerPlatform;
 module.exports.HomeAssistantMediaPlayer = HomeAssistantMediaPlayer;
