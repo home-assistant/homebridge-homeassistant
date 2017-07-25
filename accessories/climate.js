@@ -1,7 +1,9 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 function HomeAssistantClimate(log, data, client) {
   this.client = client;
   this.data = data;
@@ -33,7 +35,8 @@ function HomeAssistantClimate(log, data, client) {
 HomeAssistantClimate.prototype = {
   onEvent: function (oldState, newState) {
     this.ThermostatService.getCharacteristic(Characteristic.CurrentTemperature)
-          .setValue(newState.attributes.current_temperature || newState.attributes.temperature, null, 'internal');
+          .setValue(newState.attributes.current_temperature ||
+                    newState.attributes.temperature, null, 'internal');
     this.ThermostatService.getCharacteristic(Characteristic.TargetTemperature)
           .setValue(newState.attributes.temperature, null, 'internal');
   },
@@ -170,7 +173,9 @@ HomeAssistantClimate.prototype = {
           .on('get', this.getTargetHeatingCoolingState.bind(this))
           .on('set', this.setTargetHeatingCoolingState.bind(this));
     if (this.data && this.data.attributes && this.data.attributes.unit_of_measurement) {
-      var units = (this.data.attributes.unit_of_measurement === '°F') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
+      const units = (this.data.attributes.unit_of_measurement === '°F') ?
+                     Characteristic.TemperatureDisplayUnits.FAHRENHEIT :
+                     Characteristic.TemperatureDisplayUnits.CELSIUS;
       this.ThermostatService
             .setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
     }

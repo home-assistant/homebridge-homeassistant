@@ -1,7 +1,9 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 class HomeAssistantSensor {
   constructor(log, data, client, service, characteristic, transformData) {
     this.batterySource = data.attributes.homebridge_battery_source;
@@ -146,7 +148,8 @@ function HomeAssistantSensorFactory(log, data, client) {
   let service;
   let characteristic;
   let transformData;
-  if (data.attributes.homebridge_sensor_type === 'air_quality' && data.attributes.unit_of_measurement.toLowerCase() === 'aqi') {
+  if (data.attributes.homebridge_sensor_type === 'air_quality' &&
+      data.attributes.unit_of_measurement.toLowerCase() === 'aqi') {
     service = Service.AirQualitySensor;
     characteristic = Characteristic.AirQuality;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
@@ -164,7 +167,9 @@ function HomeAssistantSensorFactory(log, data, client) {
       }
       return 0;
     };
-  } else if (data.attributes.homebridge_sensor_type === 'co2' && (typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'ppm')) {
+  } else if (data.attributes.homebridge_sensor_type === 'co2' &&
+             (typeof data.attributes.unit_of_measurement === 'string' &&
+              data.attributes.unit_of_measurement.toLowerCase() === 'ppm')) {
     service = Service.CarbonDioxideSensor;
     characteristic = Characteristic.CarbonDioxideLevel;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
@@ -176,7 +181,9 @@ function HomeAssistantSensorFactory(log, data, client) {
       }
       return value;
     };
-  } else if (data.attributes.homebridge_sensor_type === 'co' && (typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'ppm')) {
+  } else if (data.attributes.homebridge_sensor_type === 'co' &&
+             (typeof data.attributes.unit_of_measurement === 'string' &&
+              data.attributes.unit_of_measurement.toLowerCase() === 'ppm')) {
     service = Service.CarbonMonoxideSensor;
     characteristic = Characteristic.CarbonMonoxideLevel;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
@@ -188,10 +195,14 @@ function HomeAssistantSensorFactory(log, data, client) {
       }
       return value;
     };
-  } else if (data.attributes.homebridge_sensor_type === 'humidity' && data.attributes.unit_of_measurement === '%') {
+  } else if (data.attributes.homebridge_sensor_type === 'humidity' &&
+             data.attributes.unit_of_measurement === '%') {
     service = Service.HumiditySensor;
     characteristic = Characteristic.CurrentRelativeHumidity;
-  } else if (data.attributes.homebridge_sensor_type === 'light' && (typeof data.attributes.unit_of_measurement === 'string' && (data.attributes.unit_of_measurement.toLowerCase() === 'lux' || data.attributes.unit_of_measurement.toLowerCase() === 'lx'))) {
+  } else if (data.attributes.homebridge_sensor_type === 'light' &&
+             (typeof data.attributes.unit_of_measurement === 'string' &&
+              (data.attributes.unit_of_measurement.toLowerCase() === 'lux' ||
+               data.attributes.unit_of_measurement.toLowerCase() === 'lx'))) {
     service = Service.LightSensor;
     characteristic = Characteristic.CurrentAmbientLightLevel;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
@@ -203,7 +214,9 @@ function HomeAssistantSensorFactory(log, data, client) {
       }
       return value;
     };
-  } else if (data.attributes.homebridge_sensor_type === 'temperature' && (data.attributes.unit_of_measurement === '°C' || data.attributes.unit_of_measurement === '°F')) {
+  } else if (data.attributes.homebridge_sensor_type === 'temperature' &&
+             (data.attributes.unit_of_measurement === '°C' ||
+              data.attributes.unit_of_measurement === '°F')) {
     service = Service.TemperatureSensor;
     characteristic = Characteristic.CurrentTemperature;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow

@@ -1,7 +1,9 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 class HomeAssistantCover {
   constructor(log, data, client) {
     this.client = client;
@@ -92,7 +94,8 @@ class HomeAssistantGarageDoor extends HomeAssistantCover {
       return;
     }
 
-    this.doChangeState(targetState === Characteristic.TargetDoorState.CLOSED ? 'close_cover' : 'open_cover', callback);
+    this.doChangeState(targetState === Characteristic.TargetDoorState.CLOSED ? 'close_cover' :
+                       'open_cover', callback);
   }
 }
 class HomeAssistantRollershutter extends HomeAssistantCover {

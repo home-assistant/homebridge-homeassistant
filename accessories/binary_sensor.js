@@ -1,10 +1,13 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
+
 class HomeAssistantBinarySensor {
   constructor(log, data, client, service, characteristic, onValue, offValue) {
     this.batterySource = data.attributes.homebridge_battery_source;
@@ -144,9 +147,10 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
                                                Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
                                                Characteristic.LeakDetected.CO_LEVELS_NORMAL);
         default:
-          log.error(`'${data.entity_id}' has a device_class of '${data.attributes.device_class}' but \'homebridge_sensor_type\' is not defined.` +
-            'Supported sensor types are \'co\' and \'co2\'.' +
-            'See the README.md for more information.');
+          log.error(`'${data.entity_id}' has a device_class of '${data.attributes.device_class}'
+                    but \'homebridge_gas_type\' is not defined.` +
+                    'Supported sensor types are \'co\' and \'co2\'.' +
+                    'See the README.md for more information.');
       }
     case 'moisture':
       return new HomeAssistantBinarySensor(log, data, client,

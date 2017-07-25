@@ -1,7 +1,9 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 function HomeAssistantFan(log, data, client) {
   this.client = client;
   this.data = data;

@@ -1,7 +1,9 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 class HomeAssistantDeviceTracker {
   constructor(log, data, client, service, characteristic, onValue, offValue) {
     this.batterySource = data.attributes.homebridge_battery_source;

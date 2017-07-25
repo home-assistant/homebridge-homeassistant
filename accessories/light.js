@@ -1,7 +1,9 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 /* eslint-disable */
 const LightUtil = {
     hsvToRgb(h, s, v) {
@@ -77,6 +79,7 @@ const LightUtil = {
     },
 };
 /* eslint-enable */
+
 function HomeAssistantLight(log, data, client) {
   this.client = client;
   this.data = data;

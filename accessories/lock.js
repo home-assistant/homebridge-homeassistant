@@ -1,7 +1,9 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 function HomeAssistantLock(log, data, client) {
   this.batterySource = data.attributes.homebridge_battery_source;
   this.chargingSource = data.attributes.homebridge_charging_source;

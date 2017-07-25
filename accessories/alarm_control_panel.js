@@ -1,8 +1,11 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 function HomeAssistantAlarmControlPanel(log, data, client) {
+  this.alarmCode = data.attributes.homebridge_alarm_code;
   this.client = client;
   this.data = data;
   this.domain = 'alarm_control_panel';
@@ -82,8 +85,8 @@ HomeAssistantAlarmControlPanel.prototype = {
     const that = this;
     const serviceData = {};
     serviceData.entity_id = this.entityID;
-    if (data.attributes.homebridge_alarm_code) {
-      serviceData.code = data.attributes.homebridge_alarm_code;
+    if (this.alarmCode) {
+      serviceData.code = this.alarmCode;
     }
     if (targetState === Characteristic.SecuritySystemCurrentState.STAY_ARM) {
       this.log(`Setting alarm state on the '${this.name}' to armed stay`);

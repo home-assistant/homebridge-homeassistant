@@ -1,4 +1,5 @@
 'use strict';
+
 let HomeAssistantAlarmControlPanel;
 let HomeAssistantBinarySensorFactory;
 let HomeAssistantClimate;
@@ -12,6 +13,7 @@ let HomeAssistantSensorFactory;
 let HomeAssistantSwitch;
 let Service;
 let Characteristic;
+
 const communicationError = new Error('Can not communicate with Home Assistant.');
 const EventSource = require('eventsource');
 const request = require('request');
@@ -125,7 +127,7 @@ HomeAssistantPlatform.prototype = {
           continue;
         }
         // If default behavior is visible, then ignore hidden devices
-        if (this.defaultVisibility === 'visible' && entity.attributes && entity.attributes.homebridge_hidden) {
+        if (this.defaultVisibility === 'visible' && entity.attributes.homebridge_hidden) {
           continue;
         }
         /* eslint-enable no-continue */
@@ -134,7 +136,8 @@ HomeAssistantPlatform.prototype = {
           entity.attributes.friendly_name = entity.attributes.homebridge_name;
         }
         let accessory = null;
-        if (this.defaultVisibility === 'visible' || (this.defaultVisibility === 'hidden' && entity.attributes.homebridge_visible)) {
+        if (this.defaultVisibility === 'visible' || (this.defaultVisibility === 'hidden' &&
+                                                     entity.attributes.homebridge_visible)) {
           if (entityType === 'alarm_control_panel') {
             accessory = new HomeAssistantAlarmControlPanel(that.log, entity, that);
           } else if (entityType === 'automation') {

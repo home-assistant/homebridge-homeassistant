@@ -1,8 +1,11 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 function HomeAssistantMediaPlayer(log, data, client) {
+
   /* eslint-disable no-unused-vars */
   const SUPPORT_PAUSE = 1;
   const SUPPORT_SEEK = 2;
@@ -15,7 +18,9 @@ function HomeAssistantMediaPlayer(log, data, client) {
   const SUPPORT_TURN_OFF = 256;
   const SUPPORT_STOP = 4096;
   /* eslint-enable no-unused-vars */
-  const supportOnOff = ((this.supportedFeatures | SUPPORT_TURN_ON) === this.supportedFeatures && (this.supportedFeatures | SUPPORT_TURN_OFF) === this.supportedFeatures);
+
+  const supportOnOff = ((this.supportedFeatures | SUPPORT_TURN_ON) === this.supportedFeatures &&
+                         (this.supportedFeatures | SUPPORT_TURN_OFF) === this.supportedFeatures);
   const supportPause = (this.supportedFeatures | SUPPORT_PAUSE) === this.supportedFeatures;
   const supportStop = (this.supportedFeatures | SUPPORT_STOP) === this.supportedFeatures;
   if (data.attributes.homebridge_media_player_switch === 'on_off' && supportOnOff) {

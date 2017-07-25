@@ -1,7 +1,9 @@
 'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
+
 function HomeAssistantSwitch(log, data, client, type) {
   this.client = client;
   this.data = data;
@@ -46,7 +48,7 @@ HomeAssistantSwitch.prototype = {
     }
     const that = this;
     const serviceData = {};
-    let callDomain = this.domain === 'group' ? 'homeassistant' : this.domain;
+    const callDomain = this.domain === 'group' ? 'homeassistant' : this.domain;
     serviceData.entity_id = this.entityID;
     if (powerOn) {
       this.log(`Setting power state on the '${this.name}' to on`);
@@ -138,7 +140,8 @@ HomeAssistantSwitch.prototype = {
       .setCharacteristic(Characteristic.Manufacturer, this.mfg)
       .setCharacteristic(Characteristic.Model, model)
       .setCharacteristic(Characteristic.SerialNumber, this.serial);
-    if (this.domain === 'automation' || this.domain === 'group' || this.domain === 'input_boolean' || this.domain == 'remote' || this.domain === 'switch') {
+    if (this.domain === 'automation' || this.domain === 'group' || this.domain === 'input_boolean'
+        || this.domain === 'remote' || this.domain === 'switch') {
       this.service
         .getCharacteristic(Characteristic.On)
         .on('get', this.getPowerState.bind(this))
