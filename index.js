@@ -16,10 +16,12 @@ const communicationError = new Error('Can not communicate with Home Assistant.')
 const EventSource = require('eventsource');
 const request = require('request');
 const url = require('url');
+
 function HomeAssistantPlatform(log, config, api) {
   if (api) {
     // Save the API object as plugin needs to register new accessory via this object.
     this.api = api;
+  }
   this.foundAccessories = [];
   this.host = config.host;
   this.log = log;
@@ -33,7 +35,6 @@ function HomeAssistantPlatform(log, config, api) {
     process.exit();
   }
   this.verify_ssl = config.verify_ssl !== undefined ? config.verify_ssl : true;
-  }
   const es = new EventSource(`${config.host}/api/stream?api_password=${encodeURIComponent(this.password)}`);
   es.addEventListener('message', (e) => {
     if (this.logging) {
@@ -183,6 +184,7 @@ HomeAssistantPlatform.prototype = {
 function HomebridgeHomeAssistant(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
+
   /* eslint-disable global-require */
   HomeAssistantAlarmControlPanel = require('./accessories/alarm_control_panel')(Service, Characteristic, communicationError);
   HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
@@ -196,6 +198,7 @@ function HomebridgeHomeAssistant(homebridge) {
   HomeAssistantSensorFactory = require('./accessories/sensor')(Service, Characteristic, communicationError);
   HomeAssistantSwitch = require('./accessories/switch')(Service, Characteristic, communicationError);
   /* eslint-enable global-require */
+
   homebridge.registerPlatform('homebridge-homeassistant', 'HomeAssistant', HomeAssistantPlatform, false);
 }
 module.exports = HomebridgeHomeAssistant;
