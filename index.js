@@ -1,42 +1,45 @@
 'use strict';
 
+let Service;
+let Characteristic;
+const url = require('url');
+const request = require('request');
+const EventSource = require('eventsource');
+
+const communicationError = new Error('Can not communicate with Home Assistant.');
+
 let HomeAssistantAlarmControlPanel;
 let HomeAssistantBinarySensorFactory;
-let HomeAssistantClimate;
 let HomeAssistantCoverFactory;
-let HomeAssistantDeviceTrackerFactory;
 let HomeAssistantFan;
 let HomeAssistantLight;
 let HomeAssistantLock;
 let HomeAssistantMediaPlayer;
 let HomeAssistantSensorFactory;
 let HomeAssistantSwitch;
-let Service;
-let Characteristic;
-
-const communicationError = new Error('Can not communicate with Home Assistant.');
-const EventSource = require('eventsource');
-const request = require('request');
-const url = require('url');
+let HomeAssistantDeviceTrackerFactory;
+let HomeAssistantClimate;
 
 function HomeAssistantPlatform(log, config, api) {
-  if (api) {
-    // Save the API object as plugin needs to register new accessory via this object.
-    this.api = api;
-  }
-  this.foundAccessories = [];
   this.host = config.host;
-  this.log = log;
-  this.logging = config.logging !== undefined ? config.logging : true;
-  this.password = config.password;
-  this.supportedTypes = config.supported_types || ['alarm_control_panel', 'automation', 'binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'remote', 'scene', 'sensor', 'switch'];
   if (config.default_visibility === 'hidden' || config.default_visibility === 'visible') {
     this.defaultVisibility = config.default_visibility;
   } else {
     this.log.error('Please set default_visibility in config.json to "hidden" or "visible".');
-    process.exit();
   }
+  this.password = config.password;
+  this.supportedTypes = config.supported_types || ['alarm_control_panel', 'automation', 'binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'remote', 'scene', 'sensor', 'switch'];
+  this.foundAccessories = [];
+  this.logging = config.logging !== undefined ? config.logging : true;
   this.verify_ssl = config.verify_ssl !== undefined ? config.verify_ssl : true;
+
+  this.log = log;
+
+  if (api) {
+    // Save the API object as plugin needs to register new accessory via this object.
+    this.api = api;
+  }
+
   const es = new EventSource(`${config.host}/api/stream?api_password=${encodeURIComponent(this.password)}`);
   es.addEventListener('message', (e) => {
     if (this.logging) {
@@ -45,19 +48,23 @@ function HomeAssistantPlatform(log, config, api) {
     if (e.data === 'ping') {
       return;
     }
+
     const data = JSON.parse(e.data);
     if (data.event_type !== 'state_changed') {
       return;
     }
+
     const numAccessories = this.foundAccessories.length;
     for (let i = 0; i < numAccessories; i++) {
       const accessory = this.foundAccessories[i];
+
       if (accessory.entity_id === data.data.entity_id && accessory.onEvent) {
         accessory.onEvent(data.data.old_state, data.data.new_state);
       }
     }
   });
 }
+
 HomeAssistantPlatform.prototype = {
   request(method, path, options, callback) {
     const requestURL = `${this.host}/api${path}`;
@@ -78,15 +85,18 @@ HomeAssistantPlatform.prototype = {
       },
       rejectUnauthorized: this.verify_ssl,
     };
+
     request(reqOpts, (error, response, body) => {
       if (error) {
         callback(error, response);
         return;
       }
+
       if (response.statusCode === 401) {
         callback(new Error('You are not authenticated'), response);
         return;
       }
+
       callback(error, response, JSON.parse(body));
     });
   },
@@ -102,6 +112,7 @@ HomeAssistantPlatform.prototype = {
   callService(domain, service, serviceData, callback) {
     const options = {};
     options.body = serviceData;
+
     this.request('POST', `/services/${domain}/${service}`, options, (error, response, data) => {
       if (error) {
         callback(null);
@@ -187,6 +198,7 @@ HomeAssistantPlatform.prototype = {
     });
   },
 };
+
 function HomebridgeHomeAssistant(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
@@ -209,4 +221,5 @@ function HomebridgeHomeAssistant(homebridge) {
 }
 
 module.exports = HomebridgeHomeAssistant;
+
 module.exports.platform = HomeAssistantPlatform;
