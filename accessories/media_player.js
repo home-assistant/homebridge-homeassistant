@@ -24,6 +24,7 @@ function HomeAssistantMediaPlayer(log, data, client) {
   this.entity_id = data.entity_id;
   this.uuid_base = data.entity_id;
   this.supportedFeatures = data.attributes.supported_features;
+  this.stateLogicCompareWithOn = true;
 
   if (data.attributes && data.attributes.friendly_name) {
     this.name = data.attributes.friendly_name;
@@ -41,6 +42,7 @@ function HomeAssistantMediaPlayer(log, data, client) {
     this.offState = 'off';
     this.onService = 'turn_on';
     this.offService = 'turn_off';
+    this.stateLogicCompareWithOn = false;
   } else if (this.data && this.data.attributes && this.data.attributes.homebridge_media_player_switch === 'play_stop' && supportStop) {
     this.onState = 'playing';
     this.offState = 'idle';
@@ -83,15 +85,26 @@ function HomeAssistantMediaPlayer(log, data, client) {
 
 HomeAssistantMediaPlayer.prototype = {
   onEvent(oldState, newState) {
+    const powerState;
+    if (this.stateLogicCompareWithOn) {
+        powerState = newState.state === this.onState;
+    } else {
+        powerState = newState.state !== this.offState;
+    }
     this.switchService.getCharacteristic(Characteristic.On)
-        .setValue(newState.state !== this.offState, null, 'internal');
+        .setValue(powerState, null, 'internal');
   },
   getPowerState(callback) {
     this.log(`fetching power state for: ${this.name}`);
 
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        const powerState = data.state !== this.offState;
+        const powerState;
+        if (this.stateLogicCompareWithOn) {
+            powerState = newState.state === this.onState;
+        } else {
+            powerState = newState.state !== this.offState;
+        }
         callback(null, powerState);
       } else {
         callback(communicationError);
