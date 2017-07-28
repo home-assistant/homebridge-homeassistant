@@ -87,9 +87,9 @@ HomeAssistantMediaPlayer.prototype = {
   onEvent(oldState, newState) {
     let powerState;
     if (this.stateLogicCompareWithOn) {
-        powerState = newState.state === this.onState;
+      powerState = newState.state === this.onState;
     } else {
-        powerState = newState.state !== this.offState;
+      powerState = newState.state !== this.offState;
     }
     this.switchService.getCharacteristic(Characteristic.On)
         .setValue(powerState, null, 'internal');
@@ -101,9 +101,9 @@ HomeAssistantMediaPlayer.prototype = {
       if (data) {
         let powerState;
         if (this.stateLogicCompareWithOn) {
-            powerState = newState.state === this.onState;
+          powerState = data.state === this.onState;
         } else {
-            powerState = newState.state !== this.offState;
+          powerState = data.state !== this.offState;
         }
         callback(null, powerState);
       } else {
