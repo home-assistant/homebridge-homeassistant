@@ -85,7 +85,7 @@ function HomeAssistantMediaPlayer(log, data, client) {
 
 HomeAssistantMediaPlayer.prototype = {
   onEvent(oldState, newState) {
-    const powerState;
+    let powerState;
     if (this.stateLogicCompareWithOn) {
         powerState = newState.state === this.onState;
     } else {
@@ -99,7 +99,7 @@ HomeAssistantMediaPlayer.prototype = {
 
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        const powerState;
+        let powerState;
         if (this.stateLogicCompareWithOn) {
             powerState = newState.state === this.onState;
         } else {
