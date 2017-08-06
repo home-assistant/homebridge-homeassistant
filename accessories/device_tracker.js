@@ -70,7 +70,7 @@ class HomeAssistantDeviceTracker {
     if (this.batterySource && this.chargingSource) {
       this.client.fetchState(this.chargingSource, (data) => {
         if (data) {
-          callback(null, data.state === 'charging' ? 1 : 0);
+          callback(null, data.state.toLowerCase() === 'charging' ? 1 : 0);
         } else {
           callback(communicationError);
         }
