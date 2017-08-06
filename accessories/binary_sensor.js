@@ -10,42 +10,42 @@ function toTitleCase(str) {
 
 class HomeAssistantBinarySensor {
   constructor(log, data, client, service, characteristic, onValue, offValue) {
-    // device info
+    this.batterySource = data.attributes.homebridge_battery_source;
+    this.characteristic = characteristic;
+    this.chargingSource = data.attributes.homebridge_charging_source;
+    this.client = client;
     this.data = data;
-    this.entity_id = data.entity_id;
-    this.uuid_base = data.entity_id;
-    if (data.attributes && data.attributes.friendly_name) {
-      this.name = data.attributes.friendly_name;
-    } else {
-      this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
-    }
-    if (data.attributes && data.attributes.homebridge_mfg) {
+    this.entityID = data.entity_id;
+    this.entityType = data.entity_id.split('.')[0]; // Do we actually need this line?
+    this.log = log;
+    if (data.attributes.homebridge_mfg) {
       this.mfg = String(data.attributes.homebridge_mfg);
     } else {
       this.mfg = 'Home Assistant';
     }
-    if (data.attributes && data.attributes.homebridge_model) {
+    if (data.attributes.homebridge_model) {
       this.model = String(data.attributes.homebridge_model);
     } else {
       this.model = `${toTitleCase(data.attributes.device_class)} Binary Sensor`;
     }
-    if (data.attributes && data.attributes.homebridge_serial) {
+    if (data.attributes.friendly_name) {
+      this.name = data.attributes.friendly_name;
+    } else {
+      this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
+    }
+    this.offValue = offValue;
+    this.onValue = onValue;
+    if (data.attributes.homebridge_serial) {
       this.serial = String(data.attributes.homebridge_serial);
     } else {
       this.serial = data.entity_id;
     }
-    this.entity_type = data.entity_id.split('.')[0];
-    this.client = client;
-    this.log = log;
     this.service = service;
-    this.characteristic = characteristic;
-    this.onValue = onValue;
-    this.offValue = offValue;
+    this.uuidBase = data.entity_id; // Do we actually need this line?
   }
-
   onEvent(oldState, newState) {
     this.sensorService.getCharacteristic(this.characteristic)
-        .setValue(newState.state === 'on' ? this.onValue : this.offValue, null, 'internal');
+      .setValue(newState.state === 'on' ? this.onValue : this.offValue, null, 'internal');
   }
   identify(callback) {
     this.log(`identifying: ${this.name}`);
@@ -53,7 +53,7 @@ class HomeAssistantBinarySensor {
   }
   getState(callback) {
     this.log(`fetching state for: ${this.name}`);
-    this.client.fetchState(this.entity_id, (data) => {
+    this.client.fetchState(this.entityID, (data) => {
       if (data) {
         callback(null, data.state === 'on' ? this.onValue : this.offValue);
       } else {
@@ -61,25 +61,67 @@ class HomeAssistantBinarySensor {
       }
     });
   }
+  getBatteryLevel(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state));
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
+  getChargingState(callback) {
+    if (this.battery_source && this.chargingSource) {
+      this.client.fetchState(this.chargingSource, (data) => {
+        if (data) {
+          callback(null, data.state.toLowerCase() === 'charging' ? 1 : 0);
+        } else {
+          callback(communicationError);
+        }
+      });
+    } else {
+      callback(null, 2);
+    }
+  }
+  getLowBatteryStatus(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state) > 20 ? 0 : 1);
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
   getServices() {
+    const informationService = new Service.AccessoryInformation();
+    informationService
+      .setCharacteristic(Characteristic.Manufacturer, this.mfg)
+      .setCharacteristic(Characteristic.Model, this.model)
+      .setCharacteristic(Characteristic.SerialNumber, this.serial);
     this.sensorService = new this.service(); // eslint-disable-line new-cap
     this.sensorService
-        .getCharacteristic(this.characteristic)
-        .on('get', this.getState.bind(this));
-
-    const informationService = new Service.AccessoryInformation();
-
-    informationService
-          .setCharacteristic(Characteristic.Manufacturer, this.mfg)
-          .setCharacteristic(Characteristic.Model, this.model)
-          .setCharacteristic(Characteristic.SerialNumber, this.serial);
-
+      .getCharacteristic(this.characteristic)
+      .on('get', this.getState.bind(this));
+    if (this.batterySource) {
+      this.batteryService = new Service.BatteryService();
+      this.batteryService
+        .getCharacteristic(Characteristic.BatteryLevel)
+        .setProps({ maxValue: 100, minValue: 0, minStep: 1 })
+        .on('get', this.getBatteryLevel.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.ChargingState)
+        .setProps({ maxValue: 2 })
+        .on('get', this.getChargingState.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.StatusLowBattery)
+        .on('get', this.getLowBatteryStatus.bind(this));
+      return [informationService, this.batteryService, this.sensorService];
+    }
     return [informationService, this.sensorService];
   }
 }
-
 function HomeAssistantBinarySensorFactory(log, data, client) {
-  if (!(data.attributes && data.attributes.device_class)) {
+  if (!(data.attributes.device_class)) {
     return null;
   }
   switch (data.attributes.device_class) {
@@ -143,19 +185,16 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
                                            Characteristic.SmokeDetected.SMOKE_NOT_DETECTED);
     default:
       log.error(`'${data.entity_id}' has a device_class of '${data.attributes.device_class}' which is not supported by ` +
-                'homebridge-homeassistant. Supported classes are \'gas\', \'moisture\', \'motion\', \'occupancy\', \'opening\' and \'smoke\'. ' +
-                'See the README.md for more information.');
+        'homebridge-homeassistant. Supported classes are \'gas\', \'moisture\', \'motion\', \'occupancy\', \'opening\' and \'smoke\'. ' +
+        'See the README.md for more information.');
       return null;
   }
 }
-
 function HomeAssistantBinarySensorPlatform(oService, oCharacteristic, oCommunicationError) {
   Service = oService;
   Characteristic = oCharacteristic;
   communicationError = oCommunicationError;
-
   return HomeAssistantBinarySensorFactory;
 }
-
 module.exports = HomeAssistantBinarySensorPlatform;
 module.exports.HomeAssistantBinarySensorFactory = HomeAssistantBinarySensorFactory;
