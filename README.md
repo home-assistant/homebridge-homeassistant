@@ -18,6 +18,7 @@ automatically. Easy peasey.
 
 Here's a list of the devices that are currently exposed:
 
+* **Automations** - on/off
 * **Alarm Control Panels** - arm (home, away, night), disarm, triggered
 * **Binary Sensor** - door, leak, moisture, motion, smoke, and window state
 * **Climate** - current temperature, target temperature, heat/cool mode
@@ -127,7 +128,7 @@ To avoid too much information in your log, just set `logging` to `false` as soon
     "name": "HomeAssistant",
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
-    "supported_types": ["binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "remote", "scene", "sensor", "switch"],
+    "supported_types": ["automation", "binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "remote", "scene", "sensor", "switch"],
     "logging": true,
     "verify_ssl": true
   }
