@@ -128,6 +128,7 @@ To avoid too much information in your log, just set `logging` to `false` as soon
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
     "supported_types": ["binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "remote", "scene", "sensor", "switch"],
+    "default_visibility": "hidden",
     "logging": true,
     "verify_ssl": true
   }
@@ -142,11 +143,40 @@ If you have set up SSL using a self signed certificate, you will need to to set 
 
 ## Customization
 
-If there's an entity you'd like to hide from Homebridge, you can do that by adding a `homebridge_hidden` tag and setting it to `true` in your Home Assistant customization configuration. Again, this is set on the Home Assistant side. e.g.:
+To control which entities are passed to Homebridge, you must specify `default_visibility` to `hidden` or `visible`.
+
+Then, you can control individual entities within Home Assistant using `homebridge_hidden` or `homebridge_visible`.
+
+Example
+"I want all of my devices to be hidden by default and I'll choose which ones are visible to Homebridge."
+
+```json
+"platforms": [
+  {
+    "default_visibility": "hidden"
+  }
+]
+```
 
 ```yaml
 customize:
-  switch.a_switch:
+  switch.example:
+    homebridge_visible: true
+```
+
+"I want all of my devices to be visible by default and I'll choose which ones are hidden from Homebridge."
+
+```json
+"platforms": [
+  {
+    "default_visibility": "visible"
+  }
+]
+```
+
+```yaml
+customize:
+  switch.example:
     homebridge_hidden: true
 ```
 
