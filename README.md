@@ -38,6 +38,8 @@ Here's a list of the devices that are currently exposed:
 
 Home Assistant does not currently support "Night" arming. For now, selecting "Night" within HomeKit apps will set the system to "Home".
 
+If your alarm control panel is setup to use a code, you must use `homebridge_alarm_code` to specify the code.
+
 ### Binary Sensor Support
 
 Binary Sensors must have a `device_class` set. Accepted `device_class`es are `gas`, `moisture`, `motion`, `occupancy`, `opening` and `smoke`.
