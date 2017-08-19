@@ -125,6 +125,24 @@ function HomeAssistantSensorFactory(log, data, client) {
   } else if (typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'ppm' && (data.entity_id.includes('co2') || data.attributes.homebridge_sensor_type === 'co2')) {
     service = Service.CarbonDioxideSensor;
     characteristic = Characteristic.CarbonDioxideLevel;
+  } else if ((typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'aqi') || data.attributes.homebridge_sensor_type === 'air_quality') {
+    service = Service.AirQualitySensor;
+    characteristic = Characteristic.AirQuality;
+    transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
+      const value = parseFloat(dataToTransform.state);
+      if (value <= 75) {
+        return 1;
+      } else if (value >= 76 && value <= 150) {
+        return 2;
+      } else if (value >= 151 && value <= 225) {
+        return 3;
+      } else if (value >= 226 && value <= 300) {
+        return 4;
+      } else if (value >= 301) {
+        return 5;
+      }
+      return 0;
+    };
   } else {
     return null;
   }
