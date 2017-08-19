@@ -31,7 +31,7 @@ Here's a list of the devices that are currently exposed:
 * **Media Players** - exposed as an on/off switch
 * **Remotes** - exposed as an on/off switch
 * **Scenes** - exposed as an on/off switch
-* **Sensors** - carbon dioxide (CO2), humidity, light, temperature sensors
+* **Sensors** - air quality, carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
 
 ### Alarm Control Panel Support
@@ -93,8 +93,9 @@ The switch will automatically turn off shortly after turning on.
 
 ### Sensor Support
 
-Carbon dioxide (CO2), humidity, light and temperature sensors are currently supported.
+Air quality, carbon dioxide (CO2), humidity, light and temperature sensors are currently supported.
 
+- Air quality sensors will be found if an entity has its unit of measurement set to `aqi` _or_ `homebridge_sensor_type` is set to `air_quality` on the entity.
 - Light sensors will be found if an entity has its unit of measurement set to `lux` _or_ `homebridge_sensor_type` is set to `light` on the entity.
 - Temperature sensors will be found if an entity has its unit of measurement set to `°C` or `°C`.
 - Humidity sensors will be found if an entity has its unit of measurement set to `%` and has an entity ID containing `humidity` _or_ `homebridge_sensor_type` is set to `humidity` on the entity.
