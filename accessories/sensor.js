@@ -38,6 +38,8 @@ class HomeAssistantSensor {
     }
     this.client = client;
     this.log = log;
+    this.batterySource = data.attributes.homebridge_battery_source;
+    this.chargingSource = data.attributes.homebridge_charging_source;
   }
 
   transformData(data) {
@@ -77,6 +79,37 @@ class HomeAssistantSensor {
     });
   }
 
+  getBatteryLevel(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state));
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
+  getChargingState(callback) {
+    if (this.batterySource && this.chargingSource) {
+      this.client.fetchState(this.chargingSource, (data) => {
+        if (data) {
+          callback(null, data.state.toLowerCase() === 'charging' ? 1 : 0);
+        } else {
+          callback(communicationError);
+        }
+      });
+    } else {
+      callback(null, 2);
+    }
+  }
+  getLowBatteryStatus(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state) > 20 ? 0 : 1);
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
   getServices() {
     this.sensorService = new this.service(); // eslint-disable-line new-cap
     const informationService = new Service.AccessoryInformation();
@@ -91,6 +124,21 @@ class HomeAssistantSensor {
         .setProps({ minValue: -50 })
         .on('get', this.getState.bind(this));
 
+    if (this.batterySource) {
+      this.batteryService = new Service.BatteryService();
+      this.batteryService
+        .getCharacteristic(Characteristic.BatteryLevel)
+        .setProps({ maxValue: 100, minValue: 0, minStep: 1 })
+        .on('get', this.getBatteryLevel.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.ChargingState)
+        .setProps({ maxValue: 2 })
+        .on('get', this.getChargingState.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.StatusLowBattery)
+        .on('get', this.getLowBatteryStatus.bind(this));
+      return [informationService, this.batteryService, this.sensorService];
+    }
     return [informationService, this.sensorService];
   }
 }
@@ -125,6 +173,24 @@ function HomeAssistantSensorFactory(log, data, client) {
   } else if (typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'ppm' && (data.entity_id.includes('co2') || data.attributes.homebridge_sensor_type === 'co2')) {
     service = Service.CarbonDioxideSensor;
     characteristic = Characteristic.CarbonDioxideLevel;
+  } else if ((typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'aqi') || data.attributes.homebridge_sensor_type === 'air_quality') {
+    service = Service.AirQualitySensor;
+    characteristic = Characteristic.AirQuality;
+    transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
+      const value = parseFloat(dataToTransform.state);
+      if (value <= 75) {
+        return 1;
+      } else if (value >= 76 && value <= 150) {
+        return 2;
+      } else if (value >= 151 && value <= 225) {
+        return 3;
+      } else if (value >= 226 && value <= 300) {
+        return 4;
+      } else if (value >= 301) {
+        return 5;
+      }
+      return 0;
+    };
   } else {
     return null;
   }

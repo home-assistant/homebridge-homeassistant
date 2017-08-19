@@ -18,6 +18,7 @@ automatically. Easy peasey.
 
 Here's a list of the devices that are currently exposed:
 
+* **Automations** - on/off
 * **Alarm Control Panels** - arm (home, away, night), disarm, triggered
 * **Binary Sensor** - door, leak, moisture, motion, smoke, and window state
 * **Climate** - current temperature, target temperature, heat/cool mode
@@ -31,12 +32,14 @@ Here's a list of the devices that are currently exposed:
 * **Media Players** - exposed as an on/off switch
 * **Remotes** - exposed as an on/off switch
 * **Scenes** - exposed as an on/off switch
-* **Sensors** - carbon dioxide (CO2), humidity, light, temperature sensors
+* **Sensors** - air quality, carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
 
 ### Alarm Control Panel Support
 
 Home Assistant does not currently support "Night" arming. For now, selecting "Night" within HomeKit apps will set the system to "Home".
+
+If your alarm control panel is setup to use a code, you must use `homebridge_alarm_code` to specify the code.
 
 ### Binary Sensor Support
 
@@ -93,8 +96,9 @@ The switch will automatically turn off shortly after turning on.
 
 ### Sensor Support
 
-Carbon dioxide (CO2), humidity, light and temperature sensors are currently supported.
+Air quality, carbon dioxide (CO2), humidity, light and temperature sensors are currently supported.
 
+- Air quality sensors will be found if an entity has its unit of measurement set to `aqi` _or_ `homebridge_sensor_type` is set to `air_quality` on the entity.
 - Light sensors will be found if an entity has its unit of measurement set to `lux` _or_ `homebridge_sensor_type` is set to `light` on the entity.
 - Temperature sensors will be found if an entity has its unit of measurement set to `°C` or `°C`.
 - Humidity sensors will be found if an entity has its unit of measurement set to `%` and has an entity ID containing `humidity` _or_ `homebridge_sensor_type` is set to `humidity` on the entity.
@@ -127,7 +131,8 @@ To avoid too much information in your log, just set `logging` to `false` as soon
     "name": "HomeAssistant",
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
-    "supported_types": ["binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "remote", "scene", "sensor", "switch"],
+    "supported_types": ["automation", "binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "remote", "scene", "sensor", "switch"],
+    "default_visibility": "hidden",
     "logging": true,
     "verify_ssl": true
   }
@@ -142,11 +147,40 @@ If you have set up SSL using a self signed certificate, you will need to to set 
 
 ## Customization
 
-If there's an entity you'd like to hide from Homebridge, you can do that by adding a `homebridge_hidden` tag and setting it to `true` in your Home Assistant customization configuration. Again, this is set on the Home Assistant side. e.g.:
+To control which entities are passed to Homebridge, you must specify `default_visibility` to `hidden` or `visible`.
+
+Then, you can control individual entities within Home Assistant using `homebridge_hidden` or `homebridge_visible`.
+
+Example
+"I want all of my devices to be hidden by default and I'll choose which ones are visible to Homebridge."
+
+```json
+"platforms": [
+  {
+    "default_visibility": "hidden"
+  }
+]
+```
 
 ```yaml
 customize:
-  switch.a_switch:
+  switch.example:
+    homebridge_visible: true
+```
+
+"I want all of my devices to be visible by default and I'll choose which ones are hidden from Homebridge."
+
+```json
+"platforms": [
+  {
+    "default_visibility": "visible"
+  }
+]
+```
+
+```yaml
+customize:
+  switch.example:
     homebridge_hidden: true
 ```
 
@@ -169,6 +203,18 @@ customize:
 ```
 
 If you don't specify the accessory information, the data will be pulled from Home Assistant by default.
+
+## Battery Tracking
+
+Battery tracking is supported for binary sensors, device trackers, locks, and sensors.
+
+`homebridge_battery_source` must be set to an entity with '%' as its unit of measurement.
+
+`homebridge_charging_source` must set to an entity with `charging` as one of its possible states.
+
+If `homebridge_battery_source` is specified but `homebridge_charging_source` is not, then HomeKit will consider the battery as not chargeable.
+
+If necessary, you can create template sensors within Home Assistant to use for `homebridge_battery_source` and `homebridge_charging_source`.
 
 ## Contributions
 
