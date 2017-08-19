@@ -175,7 +175,7 @@ HomeAssistantPlatform.prototype = {
           } else if (entityType === 'fan') {
             accessory = new HomeAssistantFan(that.log, entity, that);
           } else if (entityType === 'cover') {
-          accessory = HomeAssistantCoverFactory(that.log, entity, that);
+            accessory = HomeAssistantCoverFactory(that.log, entity, that);
           } else if (entityType === 'sensor') {
             accessory = HomeAssistantSensorFactory(that.log, entity, that);
           } else if (entityType === 'device_tracker') {
@@ -194,6 +194,7 @@ HomeAssistantPlatform.prototype = {
             accessory = new HomeAssistantSwitch(that.log, entity, that, 'remote');
           } else if (entityType === 'automation') {
             accessory = new HomeAssistantSwitch(that.log, entity, that, 'automation');
+          }
         }
 
         if (accessory) {

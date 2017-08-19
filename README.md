@@ -39,6 +39,8 @@ Here's a list of the devices that are currently exposed:
 
 Home Assistant does not currently support "Night" arming. For now, selecting "Night" within HomeKit apps will set the system to "Home".
 
+If your alarm control panel is setup to use a code, you must use `homebridge_alarm_code` to specify the code.
+
 ### Binary Sensor Support
 
 Binary Sensors must have a `device_class` set. Accepted `device_class`es are `gas`, `moisture`, `motion`, `occupancy`, `opening` and `smoke`.
@@ -201,6 +203,18 @@ customize:
 ```
 
 If you don't specify the accessory information, the data will be pulled from Home Assistant by default.
+
+## Battery Tracking
+
+Battery tracking is supported for binary sensors, device trackers, locks, and sensors.
+
+`homebridge_battery_source` must be set to an entity with '%' as its unit of measurement.
+
+`homebridge_charging_source` must set to an entity with `charging` as one of its possible states.
+
+If `homebridge_battery_source` is specified but `homebridge_charging_source` is not, then HomeKit will consider the battery as not chargeable.
+
+If necessary, you can create template sensors within Home Assistant to use for `homebridge_battery_source` and `homebridge_charging_source`.
 
 ## Contributions
 

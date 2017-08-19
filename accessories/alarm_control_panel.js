@@ -32,6 +32,7 @@ function HomeAssistantAlarmControlPanel(log, data, client) {
   }
   this.client = client;
   this.log = log;
+  this.alarmCode = data.attributes.homebridge_alarm_code;
 }
 
 HomeAssistantAlarmControlPanel.prototype = {
@@ -86,6 +87,9 @@ HomeAssistantAlarmControlPanel.prototype = {
     const that = this;
     const serviceData = {};
     serviceData.entity_id = this.entity_id;
+    if (this.alarmCode) {
+      serviceData.code = this.alarmCode;
+    }
 
     if (targetState === Characteristic.SecuritySystemCurrentState.STAY_ARM) {
       this.log(`Setting alarm state on the '${this.name}' to armed stay`);
