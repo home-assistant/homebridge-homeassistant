@@ -147,7 +147,9 @@ If you have set up SSL using a self signed certificate, you will need to to set 
 
 ## Customization
 
-To control which entities are passed to Homebridge, you must specify `default_visibility` to `hidden` or `visible`.
+To control which entities are passed to Homebridge, you can set `default_visibility` to `hidden` or `visible`.
+
+If not specified, `default_visibility` will be set to `visible`.
 
 Then, you can control individual entities within Home Assistant using `homebridge_hidden` or `homebridge_visible`.
 

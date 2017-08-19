@@ -32,6 +32,7 @@ function HomeAssistantPlatform(log, config, api) {
   if (config.default_visibility === 'hidden' || config.default_visibility === 'visible') {
     this.defaultVisibility = config.default_visibility;
   } else {
+    this.defaultVisibility = 'visible';
     this.log.error('Please set default_visibility in config.json to "hidden" or "visible".');
   }
 
