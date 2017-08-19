@@ -31,7 +31,7 @@ Here's a list of the devices that are currently exposed:
 * **Media Players** - exposed as an on/off switch
 * **Remotes** - exposed as an on/off switch
 * **Scenes** - exposed as an on/off switch
-* **Sensors** - carbon dioxide (CO2), humidity, light, temperature sensors
+* **Sensors** - air quality, carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
 
 ### Alarm Control Panel Support
@@ -95,8 +95,9 @@ The switch will automatically turn off shortly after turning on.
 
 ### Sensor Support
 
-Carbon dioxide (CO2), humidity, light and temperature sensors are currently supported.
+Air quality, carbon dioxide (CO2), humidity, light and temperature sensors are currently supported.
 
+- Air quality sensors will be found if an entity has its unit of measurement set to `aqi` _or_ `homebridge_sensor_type` is set to `air_quality` on the entity.
 - Light sensors will be found if an entity has its unit of measurement set to `lux` _or_ `homebridge_sensor_type` is set to `light` on the entity.
 - Temperature sensors will be found if an entity has its unit of measurement set to `°C` or `°C`.
 - Humidity sensors will be found if an entity has its unit of measurement set to `%` and has an entity ID containing `humidity` _or_ `homebridge_sensor_type` is set to `humidity` on the entity.
@@ -130,6 +131,7 @@ To avoid too much information in your log, just set `logging` to `false` as soon
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
     "supported_types": ["binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "remote", "scene", "sensor", "switch"],
+    "default_visibility": "hidden",
     "logging": true,
     "verify_ssl": true
   }
@@ -144,11 +146,40 @@ If you have set up SSL using a self signed certificate, you will need to to set 
 
 ## Customization
 
-If there's an entity you'd like to hide from Homebridge, you can do that by adding a `homebridge_hidden` tag and setting it to `true` in your Home Assistant customization configuration. Again, this is set on the Home Assistant side. e.g.:
+To control which entities are passed to Homebridge, you must specify `default_visibility` to `hidden` or `visible`.
+
+Then, you can control individual entities within Home Assistant using `homebridge_hidden` or `homebridge_visible`.
+
+Example
+"I want all of my devices to be hidden by default and I'll choose which ones are visible to Homebridge."
+
+```json
+"platforms": [
+  {
+    "default_visibility": "hidden"
+  }
+]
+```
 
 ```yaml
 customize:
-  switch.a_switch:
+  switch.example:
+    homebridge_visible: true
+```
+
+"I want all of my devices to be visible by default and I'll choose which ones are hidden from Homebridge."
+
+```json
+"platforms": [
+  {
+    "default_visibility": "visible"
+  }
+]
+```
+
+```yaml
+customize:
+  switch.example:
     homebridge_hidden: true
 ```
 
