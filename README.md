@@ -203,6 +203,18 @@ customize:
 
 If you don't specify the accessory information, the data will be pulled from Home Assistant by default.
 
+## Battery Tracking
+
+Battery tracking is supported for binary sensors, device trackers, locks, and sensors.
+
+`homebridge_battery_source` must be set to an entity with '%' as its unit of measurement.
+
+`homebridge_charging_source` must set to an entity with `charging` as one of its possible states.
+
+If `homebridge_battery_source` is specified but `homebridge_charging_source` is not, then HomeKit will consider the battery as not chargeable.
+
+If necessary, you can create template sensors within Home Assistant to use for `homebridge_battery_source` and `homebridge_charging_source`.
+
 ## Contributions
 
 * fork

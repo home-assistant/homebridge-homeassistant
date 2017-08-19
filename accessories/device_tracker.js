@@ -37,6 +37,8 @@ class HomeAssistantDeviceTracker {
     this.characteristic = characteristic;
     this.onValue = onValue;
     this.offValue = offValue;
+    this.batterySource = data.attributes.homebridge_battery_source;
+    this.chargingSource = data.attributes.homebridge_charging_source;
   }
 
   onEvent(oldState, newState) {
@@ -57,6 +59,37 @@ class HomeAssistantDeviceTracker {
       }
     }.bind(this));
   }
+  getBatteryLevel(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state));
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
+  getChargingState(callback) {
+    if (this.batterySource && this.chargingSource) {
+      this.client.fetchState(this.chargingSource, (data) => {
+        if (data) {
+          callback(null, data.state.toLowerCase() === 'charging' ? 1 : 0);
+        } else {
+          callback(communicationError);
+        }
+      });
+    } else {
+      callback(null, 2);
+    }
+  }
+  getLowBatteryStatus(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state) > 20 ? 0 : 1);
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
   getServices() {
     this.sensorService = new this.service();
     this.sensorService
@@ -70,6 +103,21 @@ class HomeAssistantDeviceTracker {
           .setCharacteristic(Characteristic.Model, this.model)
           .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
+    if (this.batterySource) {
+      this.batteryService = new Service.BatteryService();
+      this.batteryService
+        .getCharacteristic(Characteristic.BatteryLevel)
+        .setProps({ maxValue: 100, minValue: 0, minStep: 1 })
+        .on('get', this.getBatteryLevel.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.ChargingState)
+        .setProps({ maxValue: 2 })
+        .on('get', this.getChargingState.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.StatusLowBattery)
+        .on('get', this.getLowBatteryStatus.bind(this));
+      return [informationService, this.batteryService, this.sensorService];
+    }
     return [informationService, this.sensorService];
   }
 }
