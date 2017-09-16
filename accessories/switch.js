@@ -59,7 +59,7 @@ HomeAssistantSwitch.prototype = {
       this.log(`Setting power state on the '${this.name}' to on`);
 
       this.client.callService(callDomain, 'turn_on', serviceData, (data) => {
-        if (this.domain === 'scene') {
+        if (this.domain === 'scene' || this.domain === 'script') {
           setTimeout(() => {
             this.service.getCharacteristic(Characteristic.On)
                 .setValue(false, null, 'internal');
@@ -94,6 +94,13 @@ HomeAssistantSwitch.prototype = {
           model = String(this.data.attributes.homebridge_model);
         } else {
           model = 'Scene';
+        }
+        break;
+      case 'script':
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Script';
         }
         break;
       case 'input_boolean':
