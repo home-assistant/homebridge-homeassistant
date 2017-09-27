@@ -2,6 +2,16 @@ var Service;
 var Characteristic;
 var communicationError;
 
+
+function fahrenheitToCelsius(temperature) {
+    return (temperature - 32) / 1.8;
+}
+ 
+function celsiusToFahrenheit(temperature) {
+    return (temperature * 1.8) + 32;
+}
+
+
 function HomeAssistantClimate(log, data, client) {
     // device info
 
@@ -160,19 +170,40 @@ HomeAssistantClimate.prototype = {
           .getCharacteristic(Characteristic.CurrentTemperature)
           .on('get', this.getCurrentTemp.bind(this));
 
+    // default min/max/step for temperature
     var minTemp = 7.0;
     var maxTemp = 35.0;
     var tempStep = 0.5;
+    // get our unit var -- default to celsius
+    var units = Characteristic.TemperatureDisplayUnits.CELSIUS
+    if (this.data && this.data.attributes && this.data.attributes.unit_of_measurement) {
+      var units = (this.data.attributes.unit_of_measurement === '°F') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
+    }
+    this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
 
-    if (this.data && this.data.attributes) {
-      if (this.data.attributes.min_temp) {
-        minTemp = this.data.attributes.min_temp;
+    if (units == Characteristic.TemperatureDisplayUnits.FAHRENHEIT) {
+      if (this.data && this.data.attributes) {
+        if (this.data.attributes.min_temp) {
+          minTemp = fahrenheitToCelsius(this.data.attributes.min_temp);
+        }
+        if (this.data.attributes.max_temp) {
+          maxTemp = fahrenheitToCelsius(this.data.attributes.max_temp);
+        }
+        if (this.data.attributes.target_temp_step) {
+          tempStep = this.data.attributes.target_temp_step;
+        }
       }
-      if (this.data.attributes.max_temp) {
-        maxTemp = this.data.attributes.max_temp;
-      }
-      if (this.data.attributes.target_temp_step) {
-        tempStep = this.data.attributes.target_temp_step;
+    } else {
+      if (this.data && this.data.attributes) {
+        if (this.data.attributes.min_temp) {
+          minTemp = this.data.attributes.min_temp;
+        }
+        if (this.data.attributes.max_temp) {
+          maxTemp = this.data.attributes.max_temp;
+        }
+        if (this.data.attributes.target_temp_step) {
+          tempStep = this.data.attributes.target_temp_step;
+        }
       }
     }
 
