@@ -52,14 +52,14 @@ HomeAssistantClimate.prototype = {
   getCurrentTemp: function (callback) {
     this.client.fetchState(this.entity_id, function (data) {
       if (data) {
-        callback(null, data.attributes.current_temperature);
+        callback(null, data.attributes.current_temperature); // may need conversion?
       } else {
         callback(communicationError);
       }
     });
   },
   getTargetTemp: function (callback) {
-    this.client.fetchState(this.entity_id, function (data) {
+    this.client.fetchState(this.entity_id, function (data) { // may need conversion?
       if (data) {
         callback(null, data.attributes.temperature);
       } else {
@@ -166,6 +166,14 @@ HomeAssistantClimate.prototype = {
           .setCharacteristic(Characteristic.Model, this.model)
           .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
+    // get our unit var -- default to celsius
+    var units = Characteristic.TemperatureDisplayUnits.CELSIUS
+    if (this.data && this.data.attributes && this.data.attributes.unit_of_measurement) {
+      var units = (this.data.attributes.unit_of_measurement === '°F') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
+    }
+    this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
+
+
     this.ThermostatService
           .getCharacteristic(Characteristic.CurrentTemperature)
           .on('get', this.getCurrentTemp.bind(this));
@@ -174,12 +182,6 @@ HomeAssistantClimate.prototype = {
     var minTemp = 7.0;
     var maxTemp = 35.0;
     var tempStep = 0.5;
-    // get our unit var -- default to celsius
-    var units = Characteristic.TemperatureDisplayUnits.CELSIUS
-    if (this.data && this.data.attributes && this.data.attributes.unit_of_measurement) {
-      var units = (this.data.attributes.unit_of_measurement === '°F') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
-    }
-    this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
 
     if (units == Characteristic.TemperatureDisplayUnits.FAHRENHEIT) {
       if (this.data && this.data.attributes) {
