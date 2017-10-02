@@ -4,13 +4,17 @@ var communicationError;
 
 
 function fahrenheitToCelsius(temperature) {
-    return (temperature - 32) / 1.8;
-}
- 
-function celsiusToFahrenheit(temperature) {
-    return (temperature * 1.8) + 32;
+  return (temperature - 32) / 1.8;
 }
 
+function getTempUnits(data) {
+  // determine HomeAssistant temp. units (celsius vs. fahrenheit)
+  // defaults to celsius
+  var units = 'CELSIUS';
+  if (data.attributes && data.attributes.unit_of_measurement) {
+    var units = (data.attributes.unit_of_measurement === '°F') ? 'FAHRENHEIT' : 'CELSIUS';
+  }
+  return units;
 
 function HomeAssistantClimate(log, data, client) {
     // device info
@@ -52,16 +56,24 @@ HomeAssistantClimate.prototype = {
   getCurrentTemp: function (callback) {
     this.client.fetchState(this.entity_id, function (data) {
       if (data) {
-        callback(null, data.attributes.current_temperature); // may need conversion?
+        if (getTempUnits(data) === 'FAHRENHEIT') {
+          callback(null, fahrenheitToCelsius(data.attributes.temperature))
+        } else {
+          callback(null, data.attributes.temperature)
+        }
       } else {
         callback(communicationError);
       }
     });
   },
   getTargetTemp: function (callback) {
-    this.client.fetchState(this.entity_id, function (data) { // may need conversion?
+    this.client.fetchState(this.entity_id, function (data) { 
       if (data) {
-        callback(null, data.attributes.temperature);
+        if (getTempUnits(data) === 'FAHRENHEIT') {
+          callback(null, fahrenheitToCelsius(data.attributes.temperature))
+        } else {
+          callback(null, data.attributes.temperature)
+        }
       } else {
         callback(communicationError);
       }
@@ -167,12 +179,7 @@ HomeAssistantClimate.prototype = {
           .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
     // get our unit var -- default to celsius
-    var units = Characteristic.TemperatureDisplayUnits.CELSIUS
-    if (this.data && this.data.attributes && this.data.attributes.unit_of_measurement) {
-      var units = (this.data.attributes.unit_of_measurement === '°F') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
-    }
-    this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
-
+    var units = (getTempUnits(this.data) === 'FAHRENHEIT') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
 
     this.ThermostatService
           .getCharacteristic(Characteristic.CurrentTemperature)
@@ -220,11 +227,7 @@ HomeAssistantClimate.prototype = {
           .on('get', this.getTargetHeatingCoolingState.bind(this))
           .on('set', this.setTargetHeatingCoolingState.bind(this));
 
-    if (this.data && this.data.attributes && this.data.attributes.unit_of_measurement) {
-      var units = (this.data.attributes.unit_of_measurement === '°F') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
-      this.ThermostatService
-            .setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
-    }
+    this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
 
     return [informationService, this.ThermostatService];
   }
