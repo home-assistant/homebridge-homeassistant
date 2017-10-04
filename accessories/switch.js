@@ -15,14 +15,23 @@ function HomeAssistantSwitch(log, data, client, type) {
   } else {
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
   }
-
+  if (data.attributes && data.attributes.homebridge_mfg) {
+    this.mfg = String(data.attributes.homebridge_mfg);
+  } else {
+    this.mfg = 'Home Assistant';
+  }
+  if (data.attributes && data.attributes.homebridge_serial) {
+    this.serial = String(data.attributes.homebridge_serial);
+  } else {
+    this.serial = data.entity_id;
+  }
   this.client = client;
   this.log = log;
 }
 
 HomeAssistantSwitch.prototype = {
   onEvent(oldState, newState) {
-    this.switchService.getCharacteristic(Characteristic.On)
+    this.service.getCharacteristic(Characteristic.On)
         .setValue(newState.state === 'on', null, 'internal');
   },
   getPowerState(callback) {
@@ -44,14 +53,17 @@ HomeAssistantSwitch.prototype = {
     const that = this;
     const serviceData = {};
     serviceData.entity_id = this.entity_id;
+    var callDomain = this.domain === 'group' ? 'homeassistant' : this.domain;
 
     if (powerOn) {
       this.log(`Setting power state on the '${this.name}' to on`);
 
-      this.client.callService(this.domain, 'turn_on', serviceData, (data) => {
+      this.client.callService(callDomain, 'turn_on', serviceData, (data) => {
         if (this.domain === 'scene') {
-          this.switchService.getCharacteristic(Characteristic.On)
-              .setValue('off', null, 'internal');
+          setTimeout(() => {
+            this.service.getCharacteristic(Characteristic.On)
+                .setValue(false, null, 'internal');
+          }, 500);
         }
         if (data) {
           that.log(`Successfully set power state on the '${that.name}' to on`);
@@ -63,7 +75,7 @@ HomeAssistantSwitch.prototype = {
     } else {
       this.log(`Setting power state on the '${this.name}' to off`);
 
-      this.client.callService(this.domain, 'turn_off', serviceData, (data) => {
+      this.client.callService(callDomain, 'turn_off', serviceData, (data) => {
         if (data) {
           that.log(`Successfully set power state on the '${that.name}' to off`);
           callback();
@@ -74,38 +86,93 @@ HomeAssistantSwitch.prototype = {
     }
   },
   getServices() {
-    this.switchService = new Service.Switch();
-    const informationService = new Service.AccessoryInformation();
     let model;
 
     switch (this.domain) {
       case 'scene':
-        model = 'Scene';
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Scene';
+        }
         break;
       case 'input_boolean':
-        model = 'Input boolean';
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Input Boolean';
+        }
+        break;
+      case 'group':
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Group';
+        }
+        break;
+      case 'switch':
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Switch';
+        }
+        break;
+      case 'remote':
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Remote';
+        }
+        break;
+      case 'automation':
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Automation';
+        }
+        break;
+      case 'automation':
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Automation';
+        }
         break;
       default:
         model = 'Switch';
     }
 
-    informationService
-          .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
-          .setCharacteristic(Characteristic.Model, model)
-          .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
+    this.service = new Service.Switch();
+    if (this.data && this.data.attributes && this.data.attributes.homebridge_switch_type === 'outlet') {
+      this.service = new Service.Outlet();
+      if (this.data.attributes && this.data.attributes.homebridge_model) {
+        model = String(this.data.attributes.homebridge_model);
+      } else {
+        model = 'Outlet';
+      }
+      this.service
+          .getCharacteristic(Characteristic.OutletInUse)
+          .on('get', this.getPowerState.bind(this));
+    }
+    const informationService = new Service.AccessoryInformation();
 
-    if (this.domain === 'switch' || this.domain === 'input_boolean') {
-      this.switchService
+    informationService
+          .setCharacteristic(Characteristic.Manufacturer, this.mfg)
+          .setCharacteristic(Characteristic.Model, model)
+          .setCharacteristic(Characteristic.SerialNumber, this.serial);
+
+    if (this.domain === 'remote' || this.domain === 'switch' || this.domain === 'input_boolean' || this.domain === 'group' || this.domain === 'automation') {
+      this.service
           .getCharacteristic(Characteristic.On)
           .on('get', this.getPowerState.bind(this))
           .on('set', this.setPowerState.bind(this));
     } else {
-      this.switchService
+      this.service
           .getCharacteristic(Characteristic.On)
           .on('set', this.setPowerState.bind(this));
     }
 
-    return [informationService, this.switchService];
+    return [informationService, this.service];
   },
 
 };

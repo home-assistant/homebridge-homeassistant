@@ -15,9 +15,25 @@ function HomeAssistantLock(log, data, client) {
   } else {
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
   }
-
+  if (data.attributes && data.attributes.homebridge_mfg) {
+    this.mfg = String(data.attributes.homebridge_mfg);
+  } else {
+    this.mfg = 'Home Assistant';
+  }
+  if (data.attributes && data.attributes.homebridge_model) {
+    this.model = String(data.attributes.homebridge_model);
+  } else {
+    this.model = 'Lock';
+  }
+  if (data.attributes && data.attributes.homebridge_serial) {
+    this.serial = String(data.attributes.homebridge_serial);
+  } else {
+    this.serial = data.entity_id;
+  }
   this.client = client;
   this.log = log;
+  this.batterySource = data.attributes.homebridge_battery_source;
+  this.chargingSource = data.attributes.homebridge_charging_source;
 }
 
 HomeAssistantLock.prototype = {
@@ -33,6 +49,37 @@ HomeAssistantLock.prototype = {
       if (data) {
         const lockState = data.state === 'locked';
         callback(null, lockState);
+      } else {
+        callback(communicationError);
+      }
+    });
+  },
+  getBatteryLevel(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state));
+      } else {
+        callback(communicationError);
+      }
+    });
+  },
+  getChargingState(callback) {
+    if (this.batterySource && this.chargingSource) {
+      this.client.fetchState(this.chargingSource, (data) => {
+        if (data) {
+          callback(null, data.state.toLowerCase() === 'charging' ? 1 : 0);
+        } else {
+          callback(communicationError);
+        }
+      });
+    } else {
+      callback(null, 2);
+    }
+  },
+  getLowBatteryStatus(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state) > 20 ? 0 : 1);
       } else {
         callback(communicationError);
       }
@@ -77,9 +124,9 @@ HomeAssistantLock.prototype = {
     const informationService = new Service.AccessoryInformation();
 
     informationService
-          .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
-          .setCharacteristic(Characteristic.Model, 'Lock')
-          .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
+          .setCharacteristic(Characteristic.Manufacturer, this.mfg)
+          .setCharacteristic(Characteristic.Model, this.model)
+          .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
     this.lockService
         .getCharacteristic(Characteristic.LockCurrentState)
@@ -90,6 +137,21 @@ HomeAssistantLock.prototype = {
         .on('get', this.getLockState.bind(this))
         .on('set', this.setLockState.bind(this));
 
+    if (this.batterySource) {
+      this.batteryService = new Service.BatteryService();
+      this.batteryService
+        .getCharacteristic(Characteristic.BatteryLevel)
+        .setProps({ maxValue: 100, minValue: 0, minStep: 1 })
+        .on('get', this.getBatteryLevel.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.ChargingState)
+        .setProps({ maxValue: 2 })
+        .on('get', this.getChargingState.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.StatusLowBattery)
+        .on('get', this.getLowBatteryStatus.bind(this));
+      return [informationService, this.lockService, this.batteryService];
+    }
     return [informationService, this.lockService];
   },
 

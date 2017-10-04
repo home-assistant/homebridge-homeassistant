@@ -98,7 +98,21 @@ function HomeAssistantLight(log, data, client) {
   } else {
     this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
   }
-
+  if (data.attributes && data.attributes.homebridge_mfg) {
+    this.mfg = String(data.attributes.homebridge_mfg);
+  } else {
+    this.mfg = 'Home Assistant';
+  }
+  if (data.attributes && data.attributes.homebridge_model) {
+    this.model = String(data.attributes.homebridge_model);
+  } else {
+    this.model = 'Light';
+  }
+  if (data.attributes && data.attributes.homebridge_serial) {
+    this.serial = String(data.attributes.homebridge_serial);
+  } else {
+    this.serial = data.entity_id;
+  }
   this.client = client;
   this.log = log;
 }
@@ -155,9 +169,12 @@ HomeAssistantLight.prototype = {
     const that = this;
     const serviceData = {};
     serviceData.entity_id = this.entity_id;
-    serviceData.flash = 'short';
-
-    this.client.callService(this.domain, 'turn_on', serviceData, (data) => {
+    let service = 'toggle';
+    if (this.is_supported(this.features.FLASH)) {
+      service = 'turn_on';
+      serviceData.flash = 'short';
+    }
+    this.client.callService(this.domain, service, serviceData, (data) => {
       if (data) {
         that.log(`Successfully identified '${that.name}'`);
       }
@@ -360,9 +377,13 @@ HomeAssistantLight.prototype = {
     const informationService = new Service.AccessoryInformation();
 
     informationService
-          .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
-          .setCharacteristic(Characteristic.Model, 'Light')
-          .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
+          .setCharacteristic(Characteristic.Manufacturer, this.mfg)
+          .setCharacteristic(Characteristic.Model, this.model)
+          .setCharacteristic(Characteristic.SerialNumber, this.serial);
+
+    informationService
+          .setCharacteristic(Characteristic.Identify)
+          .on('set', this.identify.bind(this));
 
     this.lightbulbService
           .getCharacteristic(Characteristic.On)

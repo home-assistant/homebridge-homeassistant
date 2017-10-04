@@ -19,16 +19,30 @@ class HomeAssistantBinarySensor {
     } else {
       this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
     }
-
+    if (data.attributes && data.attributes.homebridge_mfg) {
+      this.mfg = String(data.attributes.homebridge_mfg);
+    } else {
+      this.mfg = 'Home Assistant';
+    }
+    if (data.attributes && data.attributes.homebridge_model) {
+      this.model = String(data.attributes.homebridge_model);
+    } else {
+      this.model = `${toTitleCase(data.attributes.device_class)} Binary Sensor`;
+    }
+    if (data.attributes && data.attributes.homebridge_serial) {
+      this.serial = String(data.attributes.homebridge_serial);
+    } else {
+      this.serial = data.entity_id;
+    }
     this.entity_type = data.entity_id.split('.')[0];
-
     this.client = client;
     this.log = log;
-
     this.service = service;
     this.characteristic = characteristic;
     this.onValue = onValue;
     this.offValue = offValue;
+    this.batterySource = data.attributes.homebridge_battery_source;
+    this.chargingSource = data.attributes.homebridge_charging_source;
   }
 
   onEvent(oldState, newState) {
@@ -49,6 +63,37 @@ class HomeAssistantBinarySensor {
       }
     });
   }
+  getBatteryLevel(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state));
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
+  getChargingState(callback) {
+    if (this.batterySource && this.chargingSource) {
+      this.client.fetchState(this.chargingSource, (data) => {
+        if (data) {
+          callback(null, data.state.toLowerCase() === 'charging' ? 1 : 0);
+        } else {
+          callback(communicationError);
+        }
+      });
+    } else {
+      callback(null, 2);
+    }
+  }
+  getLowBatteryStatus(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state) > 20 ? 0 : 1);
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
   getServices() {
     this.sensorService = new this.service(); // eslint-disable-line new-cap
     this.sensorService
@@ -58,10 +103,25 @@ class HomeAssistantBinarySensor {
     const informationService = new Service.AccessoryInformation();
 
     informationService
-          .setCharacteristic(Characteristic.Manufacturer, 'Home Assistant')
-          .setCharacteristic(Characteristic.Model, `${toTitleCase(this.data.attributes.device_class)} Binary Sensor`)
-          .setCharacteristic(Characteristic.SerialNumber, this.entity_id);
+          .setCharacteristic(Characteristic.Manufacturer, this.mfg)
+          .setCharacteristic(Characteristic.Model, this.model)
+          .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
+    if (this.batterySource) {
+      this.batteryService = new Service.BatteryService();
+      this.batteryService
+        .getCharacteristic(Characteristic.BatteryLevel)
+        .setProps({ maxValue: 100, minValue: 0, minStep: 1 })
+        .on('get', this.getBatteryLevel.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.ChargingState)
+        .setProps({ maxValue: 2 })
+        .on('get', this.getChargingState.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.StatusLowBattery)
+        .on('get', this.getLowBatteryStatus.bind(this));
+      return [informationService, this.batteryService, this.sensorService];
+    }
     return [informationService, this.sensorService];
   }
 }
@@ -71,6 +131,34 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
     return null;
   }
   switch (data.attributes.device_class) {
+    case 'gas':
+      if (!(data.attributes.homebridge_gas_type)) {
+        return new HomeAssistantBinarySensor(log, data, client,
+                                             Service.CarbonMonoxideSensor,
+                                             Characteristic.CarbonMonoxideDetected,
+                                             Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
+                                             Characteristic.LeakDetected.CO_LEVELS_NORMAL);
+      }
+      switch (data.attributes.homebridge_gas_type) {
+        case 'co2':
+          return new HomeAssistantBinarySensor(log, data, client,
+                                               Service.CarbonDioxideSensor,
+                                               Characteristic.CarbonDioxideDetected,
+                                               Characteristic.LeakDetected.CO2_LEVELS_ABNORMAL,
+                                               Characteristic.LeakDetected.CO2_LEVELS_NORMAL);
+        case 'co':
+          return new HomeAssistantBinarySensor(log, data, client,
+                                               Service.CarbonMonoxideSensor,
+                                               Characteristic.CarbonMonoxideDetected,
+                                               Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
+                                               Characteristic.LeakDetected.CO_LEVELS_NORMAL);
+        default:
+          return new HomeAssistantBinarySensor(log, data, client,
+                                               Service.CarbonMonoxideSensor,
+                                               Characteristic.CarbonMonoxideDetected,
+                                               Characteristic.LeakDetected.CO_LEVELS_ABNORMAL,
+                                               Characteristic.LeakDetected.CO_LEVELS_NORMAL);
+      }
     case 'moisture':
       return new HomeAssistantBinarySensor(log, data, client,
                                            Service.LeakSensor,
@@ -103,7 +191,7 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
                                            Characteristic.SmokeDetected.SMOKE_NOT_DETECTED);
     default:
       log.error(`'${data.entity_id}' has a device_class of '${data.attributes.device_class}' which is not supported by ` +
-                'homebridge-homeassistant. Supported classes are \'moisture\', \'motion\', \'occupancy\', \'opening\' and \'smoke\'. ' +
+                'homebridge-homeassistant. Supported classes are \'gas\', \'moisture\', \'motion\', \'occupancy\', \'opening\' and \'smoke\'. ' +
                 'See the README.md for more information.');
       return null;
   }
