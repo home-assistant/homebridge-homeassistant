@@ -34,7 +34,7 @@ function HomeAssistantClimate(log, data, client) {
 }
 HomeAssistantClimate.prototype = {
   onEvent: function (oldState, newState) {
-    const list = {'idle':0, 'heat':1, 'cool':2, 'auto':3, 'off':0}
+    const list = { 'idle': 0, 'heat': 1, 'cool': 2, 'auto': 3, 'off': 0 }
     this.ThermostatService.getCharacteristic(Characteristic.CurrentTemperature)
           .setValue(newState.attributes.current_temperature || newState.attributes.temperature, null, 'internal');
     this.ThermostatService.getCharacteristic(Characteristic.TargetTemperature)
