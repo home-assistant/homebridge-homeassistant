@@ -59,7 +59,7 @@ HomeAssistantSwitch.prototype = {
       this.log(`Setting power state on the '${this.name}' to on`);
 
       this.client.callService(callDomain, 'turn_on', serviceData, (data) => {
-        if (this.domain === 'scene') {
+        if (this.domain === 'scene' || (this.domain === 'script' && !(this.data.attributes.can_cancel))) {
           setTimeout(() => {
             this.service.getCharacteristic(Characteristic.On)
                 .setValue(false, null, 'internal');
@@ -138,6 +138,13 @@ HomeAssistantSwitch.prototype = {
           model = 'Automation';
         }
         break;
+      case 'script':
+        if (this.data.attributes && this.data.attributes.homebridge_model) {
+          model = String(this.data.attributes.homebridge_model);
+        } else {
+          model = 'Script';
+        }
+        break;
       default:
         model = 'Switch';
     }
@@ -161,7 +168,7 @@ HomeAssistantSwitch.prototype = {
           .setCharacteristic(Characteristic.Model, model)
           .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
-    if (this.domain === 'remote' || this.domain === 'switch' || this.domain === 'input_boolean' || this.domain === 'group' || this.domain === 'automation') {
+    if (this.domain === 'remote' || this.domain === 'switch' || this.domain === 'input_boolean' || this.domain === 'group' || this.domain === 'automation' || (this.domain === 'script' && this.data.attributes.can_cancel)) {
       this.service
           .getCharacteristic(Characteristic.On)
           .on('get', this.getPowerState.bind(this))

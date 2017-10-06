@@ -32,6 +32,7 @@ Here's a list of the devices that are currently exposed:
 * **Media Players** - exposed as an on/off switch
 * **Remotes** - exposed as an on/off switch
 * **Scenes** - exposed as an on/off switch
+* **Scripts** - exposed as an on/off switch
 * **Sensors** - air quality, carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
 
@@ -93,6 +94,12 @@ HomeKit...like "Good Morning" and "Good Night". These scenes already exist and
 cannot be deleted. Simply add your Home Assistant scene to them and set the
 state you would like them to be when executed. That's most like the ON state.
 The switch will automatically turn off shortly after turning on.
+
+### Script Support
+
+Scripts containing only one service call will function exactly like scenes (see above).
+
+Scripts containing more than one service call will be able to be turned off as well.
 
 ### Sensor Support
 
