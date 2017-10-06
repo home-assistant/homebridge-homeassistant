@@ -71,6 +71,12 @@ Device trackers will appear in HomeKit as a room occupancy sensor.
 
 Groups will appear in HomeKit as switches.
 
+### Light Support
+
+If supported, lights will display brightness, hue, saturation, and/or color temperature.
+
+By default, Homebridge will allow a color temperature between 50 and 400 mireds. You can override this for your specific light(s) by using `homebridge_min_mireds` and `homebridge_max_mireds`.
+
 ### Media Player Support
 
 Media players on your Home Assistant will be added to your HomeKit as a switch.
