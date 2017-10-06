@@ -34,6 +34,7 @@ Here's a list of the devices that are currently exposed:
 * **Scenes** - exposed as an on/off switch
 * **Sensors** - air quality, carbon dioxide (CO2), humidity, light, temperature sensors
 * **Switches** - on/off
+* **Vacuums** - on/off
 
 ### Alarm Control Panel Support
 
@@ -131,7 +132,7 @@ To avoid too much information in your log, just set `logging` to `false` as soon
     "name": "HomeAssistant",
     "host": "http://127.0.0.1:8123",
     "password": "yourapipassword",
-    "supported_types": ["automation", "binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "remote", "scene", "sensor", "switch"],
+    "supported_types": ["automation", "binary_sensor", "climate", "cover", "device_tracker", "fan", "group", "input_boolean", "light", "lock", "media_player", "remote", "scene", "sensor", "switch", "vacuum"],
     "default_visibility": "hidden",
     "logging": true,
     "verify_ssl": true
