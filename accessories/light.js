@@ -257,7 +257,6 @@ HomeAssistantLight.prototype = {
     });
   },
   getColorTemperature(callback) {
-    const that = this;
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
         const colorTemp = Math.round(data.attributes.color_temp) || this.minTemp;
