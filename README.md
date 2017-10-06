@@ -71,6 +71,10 @@ Device trackers will appear in HomeKit as a room occupancy sensor.
 
 Groups will appear in HomeKit as switches.
 
+### Lock Support
+
+If your lock is setup to use a code, you must use `homebridge_lock_code` to specify the code.
+
 ### Media Player Support
 
 Media players on your Home Assistant will be added to your HomeKit as a switch.
