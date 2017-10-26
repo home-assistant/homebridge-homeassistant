@@ -32,6 +32,7 @@ function HomeAssistantLock(log, data, client) {
   }
   this.client = client;
   this.log = log;
+  this.lockCode = data.attributes.homebridge_lock_code;
   this.batterySource = data.attributes.homebridge_battery_source;
   this.chargingSource = data.attributes.homebridge_charging_source;
 }
@@ -94,6 +95,9 @@ HomeAssistantLock.prototype = {
     const that = this;
     const serviceData = {};
     serviceData.entity_id = this.entity_id;
+    if (this.lockCode) {
+      serviceData.code = this.lockCode;
+    }
 
     if (lockOn) {
       this.log(`Setting lock state on the '${this.name}' to locked`);

@@ -115,6 +115,18 @@ function HomeAssistantLight(log, data, client) {
   }
   this.client = client;
   this.log = log;
+
+  this.maxTemp = 400;
+  this.minTemp = 50;
+
+  if (data.attributes.homebridge_max_mireds) {
+    this.maxTemp = data.attributes.homebridge_max_mireds;
+  }
+
+  if (data.attributes.homebridge_min_mireds) {
+    this.minTemp = data.attributes.homebridge_min_mireds;
+  }
+
 }
 
 HomeAssistantLight.prototype = {
@@ -162,6 +174,13 @@ HomeAssistantLight.prototype = {
       this.data.attributes.hue = hue;
       this.data.attributes.saturation = saturation;
     }
+
+    if (this.is_supported(this.features.COLOR_TEMP)) {
+      const colorTemperature = Math.round(newState.attributes.color_temp) || this.minTemp;
+
+      this.lightbulbService.getCharacteristic(Characteristic.ColorTemperature)
+            .setValue(colorTemperature, null, 'internal');
+    }
   },
   identify(callback) {
     this.log(`identifying: ${this.name}`);
@@ -197,7 +216,7 @@ HomeAssistantLight.prototype = {
     this.log(`fetching brightness for: ${this.name}`);
 
     this.client.fetchState(this.entity_id, (data) => {
-      if (data && data.attributes) {
+      if (data) {
         const brightness = ((data.attributes.brightness || 0) / 255) * 100;
         callback(null, brightness);
       } else {
@@ -208,8 +227,8 @@ HomeAssistantLight.prototype = {
   getHue(callback) {
     const that = this;
     this.client.fetchState(this.entity_id, (data) => {
-      if (data && data.attributes && data.attributes.rgb_color) {
-        const rgb = data.attributes.rgb_color;
+      if (data) {
+        const rgb = data.attributes.rgb_color || [0, 0, 0];
         const hsv = LightUtil.rgbToHsv(rgb[0], rgb[1], rgb[2]);
 
         const hue = hsv.h * 360;
@@ -224,14 +243,24 @@ HomeAssistantLight.prototype = {
   getSaturation(callback) {
     const that = this;
     this.client.fetchState(this.entity_id, (data) => {
-      if (data && data.attributes && data.attributes.rgb_color) {
-        const rgb = data.attributes.rgb_color;
+      if (data) {
+        const rgb = data.attributes.rgb_color || [0, 0, 0];
         const hsv = LightUtil.rgbToHsv(rgb[0], rgb[1], rgb[2]);
 
         const saturation = hsv.s * 100;
         that.data.attributes.saturation = saturation;
 
         callback(null, saturation);
+      } else {
+        callback(communicationError);
+      }
+    });
+  },
+  getColorTemperature(callback) {
+    this.client.fetchState(this.entity_id, (data) => {
+      if (data) {
+        const colorTemp = Math.round(data.attributes.color_temp) || this.minTemp;
+        callback(null, colorTemp);
       } else {
         callback(communicationError);
       }
@@ -372,6 +401,26 @@ HomeAssistantLight.prototype = {
       }
     });
   },
+  setColorTemperature(level, callback, context) {
+    if (context === 'internal') {
+      callback();
+      return;
+    }
+
+    const that = this;
+    const serviceData = {};
+    serviceData.entity_id = this.entity_id;
+    serviceData.color_temp = Math.round(level);
+
+    this.client.callService(this.domain, 'turn_on', serviceData, (data) => {
+      if (data) {
+        that.log(`Successfully set color temperature on the '${that.name}' to ${serviceData.color_temp}`);
+        callback();
+      } else {
+        callback(communicationError);
+      }
+    });
+  },
   getServices() {
     this.lightbulbService = new Service.Lightbulb();
     const informationService = new Service.AccessoryInformation();
@@ -407,6 +456,14 @@ HomeAssistantLight.prototype = {
               .addCharacteristic(Characteristic.Saturation)
               .on('get', this.getSaturation.bind(this))
               .on('set', this.setSaturation.bind(this));
+    }
+
+    if (this.is_supported(this.features.COLOR_TEMP)) {
+      this.lightbulbService
+              .addCharacteristic(Characteristic.ColorTemperature)
+              .setProps({ maxValue: this.maxTemp, minValue: this.minTemp })
+              .on('get', this.getColorTemperature.bind(this))
+              .on('set', this.setColorTemperature.bind(this));
     }
 
     return [informationService, this.lightbulbService];
