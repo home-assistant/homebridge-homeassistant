@@ -77,6 +77,10 @@ If supported, lights will display brightness, hue, saturation, and/or color temp
 
 By default, Homebridge will allow a color temperature between 50 and 400 mireds. You can override this for your specific light(s) by using `homebridge_min_mireds` and `homebridge_max_mireds`.
 
+### Lock Support
+
+If your lock is setup to use a code, you must use `homebridge_lock_code` to specify the code.
+
 ### Media Player Support
 
 Media players on your Home Assistant will be added to your HomeKit as a switch.
