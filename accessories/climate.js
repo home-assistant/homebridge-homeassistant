@@ -59,9 +59,9 @@ HomeAssistantClimate.prototype = {
     this.client.fetchState(this.entity_id, function (data) {
       if (data) {
         if (getTempUnits(data) === 'FAHRENHEIT') {
-          callback(null, fahrenheitToCelsius(data.attributes.temperature));
+          callback(null, fahrenheitToCelsius(data.attributes.current_temperature));
         } else {
-          callback(null, data.attributes.temperature);
+          callback(null, data.attributes.current_temperature);
         }
       } else {
         callback(communicationError);
