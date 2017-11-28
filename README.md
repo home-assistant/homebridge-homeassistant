@@ -118,7 +118,7 @@ Air quality, carbon dioxide (CO2), humidity, light and temperature sensors are c
 
 - Air quality sensors will be found if an entity has its unit of measurement set to `aqi` _or_ `homebridge_sensor_type` is set to `air_quality` on the entity.
 - Light sensors will be found if an entity has its unit of measurement set to `lux` _or_ `homebridge_sensor_type` is set to `light` on the entity.
-- Temperature sensors will be found if an entity has its unit of measurement set to `°C` or `°C`.
+- Temperature sensors will be found if an entity has its unit of measurement set to `°C`, `℃`, `°F`, or `℉`.
 - Humidity sensors will be found if an entity has its unit of measurement set to `%` and has an entity ID containing `humidity` _or_ `homebridge_sensor_type` is set to `humidity` on the entity.
 - Carbon Dioxide (CO2) sensors will be found if an entity has its unit of measurement set to `ppm` and has an entity ID containing `co2` _or_ `homebridge_sensor_type` is set to `co2` on the entity.
 
