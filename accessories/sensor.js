@@ -150,13 +150,17 @@ function HomeAssistantSensorFactory(log, data, client) {
   let service;
   let characteristic;
   let transformData;
-  if (data.attributes.unit_of_measurement === '°C' || data.attributes.unit_of_measurement === '°F') {
+  if (data.attributes.unit_of_measurement === '°C'
+      || data.attributes.unit_of_measurement === '℃'
+      || data.attributes.unit_of_measurement === '°F'
+      || data.attributes.unit_of_measurement === '℉') {
     service = Service.TemperatureSensor;
     characteristic = Characteristic.CurrentTemperature;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
       let value = parseFloat(dataToTransform.state);
       // HomeKit only works with Celsius internally
-      if (dataToTransform.attributes.unit_of_measurement === '°F') {
+      if (dataToTransform.attributes.unit_of_measurement === '°F'
+          || dataToTransform.attributes.unit_of_measurement === '℉') {
         value = (value - 32) / 1.8;
       }
       return value;
