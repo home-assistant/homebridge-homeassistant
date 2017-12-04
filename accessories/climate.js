@@ -7,6 +7,10 @@ function fahrenheitToCelsius(temperature) {
   return (temperature - 32) / 1.8;
 }
 
+function celsiusToFahrenheit(temperature) {
+  return (temperature * 1.8) + 32;
+}
+
 function getTempUnits(data) {
   // determine HomeAssistant temp. units (celsius vs. fahrenheit)
   // defaults to celsius
@@ -98,6 +102,14 @@ HomeAssistantClimate.prototype = {
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
     serviceData.temperature = value;
+    if (getTempUnits(data) === 'FAHRENHEIT') {
+      callback(null, celsiusToFahrenheit(serviceData.temperature));
+    } else {
+      callback(null, serviceData.temperature);
+    }
+    } else {
+      callback(communicationError);
+    }
 
     this.log(`Setting temperature on the '${this.name}' to ${serviceData.temperature}`);
 
