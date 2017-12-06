@@ -55,7 +55,7 @@ HomeAssistantFan.prototype = {
         }
       } else {
         this.fanService.getCharacteristic(Characteristic.RotationSpeed)
-          .setValue(data.attributes.speed, null, 'internal');
+          .setValue(newState.attributes.speed, null, 'internal');
       }
     }
   },
