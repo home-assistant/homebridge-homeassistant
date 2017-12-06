@@ -183,7 +183,8 @@ HomeAssistantPlatform.prototype = {
             accessory = HomeAssistantDeviceTrackerFactory(that.log, entity, that);
           } else if (entityType === 'climate') {
             accessory = new HomeAssistantClimate(that.log, entity, that);
-            if (entity.attributes && entity.attributes.fan_list && entity.attributes.fan_list.length > 2 
+            if (entity.attributes && entity.attributes.fan_list 
+              && entity.attributes.fan_list.length > 2 
               && entity.attributes.homebridge_climate_fan) {
               that.foundAccessories.push(new HomeAssistantClimateFan(that.log, entity, that));
             }
