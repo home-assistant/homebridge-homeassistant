@@ -4,7 +4,7 @@ let Service;
 let Characteristic;
 let communicationError;
 
-function HomeAssistantClimate_Fan(log, data, client) {
+function HomeAssistantClimateFan(log, data, client) {
   // device info
   this.domain = 'climate';
   this.data = data;
@@ -49,7 +49,7 @@ function HomeAssistantClimate_Fan(log, data, client) {
   }
 }
 
-HomeAssistantClimate_Fan.prototype = {
+HomeAssistantClimateFan.prototype = {
   onEvent(oldState, newState) {
     var powerState
     var fan_speed
@@ -237,13 +237,13 @@ HomeAssistantClimate_Fan.prototype = {
 
 };
 
-function HomeAssistantClimate_FanPlatform(oService, oCharacteristic, oCommunicationError) {
+function HomeAssistantClimateFanPlatform(oService, oCharacteristic, oCommunicationError) {
   Service = oService;
   Characteristic = oCharacteristic;
   communicationError = oCommunicationError;
 
-  return HomeAssistantClimate_Fan;
+  return HomeAssistantClimateFan;
 }
 
-module.exports = HomeAssistantClimate_FanPlatform;
-module.exports.HomeAssistantClimate_Fan = HomeAssistantClimate_Fan;
+module.exports = HomeAssistantClimateFanPlatform;
+module.exports.HomeAssistantClimateFan = HomeAssistantClimateFan;
