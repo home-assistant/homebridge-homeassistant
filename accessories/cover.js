@@ -30,7 +30,7 @@ class HomeAssistantCover {
     }
     var coversteps = data.attributes.homebridge_cover_steps;
     if (coversteps) {
-      this.minStep = 100/coversteps;
+      this.minStep = 100 / coversteps;
     } else {
       this.minStep = 1;
     }
