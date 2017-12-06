@@ -1,0 +1,249 @@
+'use strict';
+
+let Service;
+let Characteristic;
+let communicationError;
+
+function HomeAssistantClimate_Fan(log, data, client) {
+  // device info
+  this.domain = 'climate';
+  this.data = data;
+  this.entity_id = data.entity_id;
+  this.uuid_base = data.entity_id + '.Fan';
+  if (data.attributes && data.attributes.friendly_name) {
+    this.name = data.attributes.friendly_name;
+  } else {
+    this.name = data.entity_id.split('.').pop().replace(/_/g, ' ');
+  }
+  this.name = this.name + ' Fan'
+  if (data.attributes && data.attributes.homebridge_mfg) {
+    this.mfg = String(data.attributes.homebridge_mfg);
+  } else {
+    this.mfg = 'Home Assistant';
+  }
+  if (data.attributes && data.attributes.homebridge_model) {
+    this.model = String(data.attributes.homebridge_model);
+  } else {
+    this.model = 'Fan';
+  }
+  if (data.attributes && data.attributes.homebridge_serial) {
+    this.serial = String(data.attributes.homebridge_serial);
+  } else {
+    this.serial = data.entity_id;
+  }
+  this.client = client;
+  this.log = log;
+
+  this.speedList = data.attributes.fan_list;
+  if ('off' in this.speedList) {
+    this.maxValue = this.speedList.length - 1;
+    this.single_off = true;
+  } else {
+    this.maxValue = this.speedList.length;
+    this.single_off = false;
+    if (!(data.attributes.operation_mode in {'off': '', 'idle': ''})){
+      this.last_operation_mode = data.attributes.operation_mode;
+    } else {
+      this.last_operation_mode = 'auto'
+    }
+  }
+}
+
+HomeAssistantClimate_Fan.prototype = {
+  onEvent(oldState, newState) {
+    var powerState
+    var fan_speed
+    if (this.single_off) {
+      powerState = newState.attributes.fan_mode !== 'off';
+      fan_speed = this.speedList.indexOf(newState.attributes.fan_mode);
+    } else {
+      powerState = !(newState.attributes.operation_mode in {'off': '', 'idle': ''});
+      fan_speed = this.speedList.indexOf(newState.attributes.fan_mode) + 1;
+      if (newState.attributes.operation_mode 
+        !== oldState.attributes.operation_mode && powerState) {
+        this.last_operation_mode = newState.attributes.operation_mode;
+        }
+    }
+    this.fanService.getCharacteristic(Characteristic.On)
+      .setValue(powerState, null, 'internal');
+    if (powerState) {
+      this.fanService.getCharacteristic(Characteristic.RotationSpeed)
+        .setValue(fan_speed, null, 'internal');
+    }
+  },
+  getPowerState(callback) {
+    this.client.fetchState(this.entity_id, (data) => {
+      if (data) {
+        if (this.single_off) {
+          callback(null, data.attributes.fan_mode !== 'off');
+        } else {
+          callback(null, !(data.attributes.operation_mode in {'off': '', 'idle': ''}));
+        }
+      } else {
+        callback(communicationError);
+      }
+    });
+  },
+  setPowerState(powerOn, callback, context) {
+    if (context === 'internal') {
+      callback();
+      return;
+    }
+
+    const that = this;
+    const serviceData = {};
+    serviceData.entity_id = this.entity_id;
+
+    if (powerOn) {       
+      if (this.single_off) {
+        serviceData.fan_mode = this.speedList[1];
+      } else {
+        serviceData.operation_mode = this.last_operation_mode;
+        this.log(this.last_operation_mode);
+      }
+      this.log(`Setting power state on the '${this.name}' to on`);
+
+      this.client.callService(this.domain, this.single_off ? 'set_fan_mode' : 'set_operation_mode', serviceData, (data) => {
+        if (data) {
+          that.log(`Successfully set power state on the '${that.name}' to on`);
+          callback();
+        } else {
+          callback(communicationError);
+        }
+      });
+    } else {
+      if (this.single_off) {
+        serviceData.fan_mode = 'off';
+      } else {
+        serviceData.operation_mode = 'idle';
+      }
+      this.log(`Setting power state on the '${this.name}' to off`);
+
+      this.client.callService(this.domain, this.single_off ? 'set_fan_mode' : 'set_operation_mode', serviceData, (data) => {
+        if (data) {
+          that.log(`Successfully set power state on the '${that.name}' to off`);
+          callback();
+        } else {
+          callback(communicationError);
+        }
+      });
+    }
+  },
+  getRotationSpeed(callback) {
+    this.client.fetchState(this.entity_id, (data) => {
+      if (data) {
+        if (this.single_off ? data.attributes.fan_mode !== 'off' : !(data.attributes.operation_mode in {'off': '', 'idle': ''})) {
+          if (this.single_off) {
+            callback(null, this.speedList.indexOf(data.attributes.fan_mode));
+          } else {
+            callback(null, this.speedList.indexOf(data.attributes.fan_mode) + 1);            
+          }
+        } else {
+          callback(null, 0);
+        }
+      } else {
+        callback(communicationError);
+      }
+    });
+  },
+  setRotationSpeed(speed, callback, context) {
+    if (context === 'internal') {
+      callback();
+      return;
+    }
+
+    const that = this;
+    const serviceData = {};
+    serviceData.entity_id = this.entity_id;
+
+    if (speed === 0) {
+      if (this.single_off) {
+        serviceData.fan_mode = 'off';
+      } else {
+        serviceData.operation_mode = 'idle';
+      }
+      this.log(`Setting power state on the '${this.name}' to off`);
+
+      this.client.callService(this.domain, this.single_off ? 'set_fan_mode' : 'set_operation_mode', serviceData, (data) => {
+        if (data) {
+          that.log(`Successfully set power state on the '${that.name}' to off`);
+          callback();
+        } else {
+          callback(communicationError);
+        }
+      });
+    } else {
+      this.client.fetchState(this.entity_id, (data) => {
+        if (data) {
+          for (var index = 0; index < this.speedList.length - 1; index += 1) {
+            if (this.single_off) {
+              if (speed === index) {
+                serviceData.fan_mode = this.speedList[index];
+                break;
+              }  
+            } else {
+              if (speed === index + 1) {
+                serviceData.fan_mode = this.speedList[index];
+                break;
+              }
+            }
+          }
+          if (!serviceData.fan_mode) {
+            serviceData.fan_mode = this.speedList[this.speedList.length - 1];
+          }
+          
+          this.log(`Setting speed on the '${this.name}' to ${serviceData.fan_mode}`);
+
+          this.client.callService(this.domain, 'set_fan_mode', serviceData, (data2) => {
+            if (data2) {
+              that.log(`Successfully set power state on the '${that.name}' to on`);
+              callback();
+            } else {
+              callback(communicationError);
+            }
+          });
+        } else {
+          callback(communicationError);
+        }
+      });
+    }
+  },
+  getServices() {
+    this.fanService = new Service.Fan();
+    const informationService = new Service.AccessoryInformation();
+
+    informationService
+      .setCharacteristic(Characteristic.Manufacturer, this.mfg)
+      .setCharacteristic(Characteristic.Model, this.model)
+      .setCharacteristic(Characteristic.SerialNumber, this.serial);
+
+    this.fanService
+      .getCharacteristic(Characteristic.On)
+      .on('get', this.getPowerState.bind(this))
+      .on('set', this.setPowerState.bind(this));
+
+    this.fanService
+      .getCharacteristic(Characteristic.RotationSpeed)
+      .setProps({
+        minValue: 0,
+        maxValue: this.maxValue,
+        minStep: 1
+      })
+      .on('get', this.getRotationSpeed.bind(this))
+      .on('set', this.setRotationSpeed.bind(this));
+
+    return [informationService, this.fanService];
+  },
+
+};
+
+function HomeAssistantClimate_FanPlatform(oService, oCharacteristic, oCommunicationError) {
+  Service = oService;
+  Characteristic = oCharacteristic;
+  communicationError = oCommunicationError;
+
+  return HomeAssistantClimate_Fan;
+}
+
+module.exports = HomeAssistantClimate_FanPlatform;
+module.exports.HomeAssistantClimate_Fan = HomeAssistantClimate_Fan;
