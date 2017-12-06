@@ -28,6 +28,12 @@ class HomeAssistantCover {
     } else {
       this.serial = data.entity_id;
     }
+    var coversteps = data.attributes.homebridge_cover_steps;
+    if (coversteps) {
+      this.minStep = 100/coversteps;
+    } else {
+      this.minStep = 1;
+    }
   }
 
   onEvent(oldState, newState) {
@@ -62,6 +68,9 @@ class HomeAssistantCover {
 
     this.service
       .getCharacteristic(this.targetCharacteristic)
+      .setProps({
+        minStep: this.minStep
+      })
       .on('get', this.getState.bind(this))
       .on('set', this.setTargetState.bind(this));
 
