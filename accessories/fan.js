@@ -45,8 +45,7 @@ HomeAssistantFan.prototype = {
   onEvent(oldState, newState) {
     this.fanService.getCharacteristic(Characteristic.On)
       .setValue(newState.state === 'on', null, 'internal');
-    
-    if (newState.state === 'on'){
+    if (newState.state === 'on') {
       var speedList = newState.attributes.speed_list;
       if (speedList) {
         if (speedList.length > 2) {
