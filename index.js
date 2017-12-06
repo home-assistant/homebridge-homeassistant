@@ -19,12 +19,13 @@ let HomeAssistantSensorFactory;
 let HomeAssistantSwitch;
 let HomeAssistantDeviceTrackerFactory;
 let HomeAssistantClimate;
+let HomeAssistantClimate_Fan;
 
 function HomeAssistantPlatform(log, config, api) {
   // auth info
   this.host = config.host;
   this.password = config.password;
-  this.supportedTypes = config.supported_types || ['alarm_control_panel', 'automation', 'binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'remote', 'scene', 'script', 'sensor', 'switch', 'vacuum'];
+  this.supportedTypes = config.supported_types || ['alarm_control_panel', 'automation', 'binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'remote', 'scene', 'sensor', 'switch'];
   this.foundAccessories = [];
   this.logging = config.logging !== undefined ? config.logging : true;
   this.verify_ssl = config.verify_ssl !== undefined ? config.verify_ssl : true;
@@ -182,6 +183,9 @@ HomeAssistantPlatform.prototype = {
             accessory = HomeAssistantDeviceTrackerFactory(that.log, entity, that);
           } else if (entityType === 'climate') {
             accessory = new HomeAssistantClimate(that.log, entity, that);
+            if (entity.attributes && entity.attributes.fan_list && entity.attributes.fan_list.length > 2 && entity.attributes.homebridge_climate_fan) {
+              that.foundAccessories.push(new HomeAssistantClimate_Fan(that.log, entity, that))
+            }
           } else if (entityType === 'media_player' && entity.attributes && entity.attributes.supported_features) {
             accessory = new HomeAssistantMediaPlayer(that.log, entity, that);
           } else if (entityType === 'binary_sensor' && entity.attributes && entity.attributes.device_class) {
@@ -194,10 +198,6 @@ HomeAssistantPlatform.prototype = {
             accessory = new HomeAssistantSwitch(that.log, entity, that, 'remote');
           } else if (entityType === 'automation') {
             accessory = new HomeAssistantSwitch(that.log, entity, that, 'automation');
-          } else if (entityType === 'vacuum') {
-            accessory = new HomeAssistantSwitch(that.log, entity, that, 'vacuum');
-          } else if (entityType === 'script') {
-            accessory = new HomeAssistantSwitch(that.log, entity, that, 'script');
           }
         }
 
@@ -226,6 +226,7 @@ function HomebridgeHomeAssistant(homebridge) {
   HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
   HomeAssistantDeviceTrackerFactory = require('./accessories/device_tracker')(Service, Characteristic, communicationError);
   HomeAssistantClimate = require('./accessories/climate')(Service, Characteristic, communicationError);
+  HomeAssistantClimate_Fan = require('./accessories/climate_fan')(Service, Characteristic, communicationError);
   HomeAssistantAlarmControlPanel = require('./accessories/alarm_control_panel')(Service, Characteristic, communicationError);
   /* eslint-enable global-require */
 
