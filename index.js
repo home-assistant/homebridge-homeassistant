@@ -19,7 +19,7 @@ let HomeAssistantSensorFactory;
 let HomeAssistantSwitch;
 let HomeAssistantDeviceTrackerFactory;
 let HomeAssistantClimate;
-let HomeAssistantClimate_Fan;
+let HomeAssistantClimateFan;
 
 function HomeAssistantPlatform(log, config, api) {
   // auth info
@@ -183,8 +183,9 @@ HomeAssistantPlatform.prototype = {
             accessory = HomeAssistantDeviceTrackerFactory(that.log, entity, that);
           } else if (entityType === 'climate') {
             accessory = new HomeAssistantClimate(that.log, entity, that);
-            if (entity.attributes && entity.attributes.fan_list && entity.attributes.fan_list.length > 2 && entity.attributes.homebridge_climate_fan) {
-              that.foundAccessories.push(new HomeAssistantClimate_Fan(that.log, entity, that))
+            if (entity.attributes && entity.attributes.fan_list && entity.attributes.fan_list.length > 2 
+              && entity.attributes.homebridge_climate_fan) {
+              that.foundAccessories.push(new HomeAssistantClimateFan(that.log, entity, that));
             }
           } else if (entityType === 'media_player' && entity.attributes && entity.attributes.supported_features) {
             accessory = new HomeAssistantMediaPlayer(that.log, entity, that);
@@ -226,7 +227,7 @@ function HomebridgeHomeAssistant(homebridge) {
   HomeAssistantBinarySensorFactory = require('./accessories/binary_sensor')(Service, Characteristic, communicationError);
   HomeAssistantDeviceTrackerFactory = require('./accessories/device_tracker')(Service, Characteristic, communicationError);
   HomeAssistantClimate = require('./accessories/climate')(Service, Characteristic, communicationError);
-  HomeAssistantClimate_Fan = require('./accessories/climate_fan')(Service, Characteristic, communicationError);
+  HomeAssistantClimateFan = require('./accessories/climatefan')(Service, Characteristic, communicationError);
   HomeAssistantAlarmControlPanel = require('./accessories/alarm_control_panel')(Service, Characteristic, communicationError);
   /* eslint-enable global-require */
 
