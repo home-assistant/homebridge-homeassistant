@@ -105,7 +105,7 @@ HomeAssistantFan.prototype = {
   getRotationSpeed(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        if (data.state === 'off') {
+        if (data.state === 'off' || data.state === 'idle') {
           callback(null, 0);
         } else {
           var speedList = data.attributes.speed_list;
