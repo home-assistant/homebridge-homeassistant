@@ -25,7 +25,7 @@ function HomeAssistantPlatform(log, config, api) {
   // auth info
   this.host = config.host;
   this.password = config.password;
-  this.supportedTypes = config.supported_types || ['alarm_control_panel', 'automation', 'binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'remote', 'scene', 'sensor', 'switch', 'vacuum'];
+  this.supportedTypes = config.supported_types || ['alarm_control_panel', 'automation', 'binary_sensor', 'climate', 'cover', 'device_tracker', 'fan', 'group', 'input_boolean', 'light', 'lock', 'media_player', 'remote', 'scene', 'script', 'sensor', 'switch', 'vacuum'];
   this.foundAccessories = [];
   this.logging = config.logging !== undefined ? config.logging : true;
   this.verify_ssl = config.verify_ssl !== undefined ? config.verify_ssl : true;
@@ -203,6 +203,7 @@ HomeAssistantPlatform.prototype = {
             accessory = new HomeAssistantSwitch(that.log, entity, that, 'vacuum');
           } else if (entityType === 'script') {
             accessory = new HomeAssistantSwitch(that.log, entity, that, 'script');
+          }
         }
 
         if (accessory) {
