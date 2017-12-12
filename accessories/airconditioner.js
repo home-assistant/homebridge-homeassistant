@@ -47,8 +47,7 @@ HomeAssistantAirConditioner.prototype = {
     var powerState = !(newState.attributes.operation_mode in {'off': '', 'idle': ''});
     var fan_speed = this.speedList.indexOf(newState.attributes.fan_mode) + 1;
     const list = {'idle':0, 'heat':1, 'cool':2, 'auto':3, 'off':0}
-    if (newState.attributes.operation_mode 
-      !== oldState.attributes.operation_mode && powerState) {
+    if (newState.attributes.operation_mode !== oldState.attributes.operation_mode && powerState) {
       this.last_operation_mode = newState.attributes.operation_mode;
       }
     if (powerState) {
