@@ -35,21 +35,21 @@ function HomeAssistantAirConditioner(log, data, client) {
 
   this.speedList = data.attributes.fan_list;
   this.maxValue = this.speedList.length;
-  if (!(data.attributes.operation_mode in {'off': '', 'idle': ''})){
+  if (!(data.attributes.operation_mode in {'off': 0, 'idle': 0})){
     this.last_operation_mode = data.attributes.operation_mode;
   } else {
-    this.last_operation_mode = 'auto'
+    this.last_operation_mode = 'auto';
   }
 }
 
 HomeAssistantAirConditioner.prototype = {
   onEvent(oldState, newState) {
-    var powerState = !(newState.attributes.operation_mode in {'off': '', 'idle': ''});
+    var powerState = !(newState.attributes.operation_mode in {'off': 0, 'idle': 0});
     var fan_speed = this.speedList.indexOf(newState.attributes.fan_mode) + 1;
     const list = {'idle':0, 'heat':1, 'cool':2, 'auto':3, 'off':0}
     if (newState.attributes.operation_mode !== oldState.attributes.operation_mode && powerState) {
       this.last_operation_mode = newState.attributes.operation_mode;
-      }
+    }
     if (powerState) {
       this.fanService.getCharacteristic(Characteristic.RotationSpeed)
         .setValue(fan_speed, null, 'internal');
@@ -57,11 +57,11 @@ HomeAssistantAirConditioner.prototype = {
     this.fanService.getCharacteristic(Characteristic.On)
       .setValue(powerState, null, 'internal');
     this.ThermostatService.getCharacteristic(Characteristic.CurrentTemperature)
-          .setValue(newState.attributes.current_temperature || newState.attributes.temperature, null, 'internal');
+      .setValue(newState.attributes.current_temperature || newState.attributes.temperature, null, 'internal');
     this.ThermostatService.getCharacteristic(Characteristic.TargetTemperature)
-          .setValue(newState.attributes.temperature, null, 'internal');
+      .setValue(newState.attributes.temperature, null, 'internal');
     this.ThermostatService.getCharacteristic(Characteristic.TargetHeatingCoolingState)
-          .setValue(list[newState.state], null, 'internal');
+      .setValue(list[newState.state], null, 'internal');
   },
   getCurrentTemp: function (callback) {
     this.client.fetchState(this.entity_id, function (data) {
@@ -172,7 +172,7 @@ HomeAssistantAirConditioner.prototype = {
   getPowerState(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        callback(null, !(data.attributes.operation_mode in {'off': '', 'idle': ''}));
+        callback(null, !(data.attributes.operation_mode in {'off': 0, 'idle': 0}));
       } else {
         callback(communicationError);
       }
@@ -218,7 +218,7 @@ HomeAssistantAirConditioner.prototype = {
   getRotationSpeed(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        if (!(data.attributes.operation_mode in {'off': '', 'idle': ''})) {
+        if (!(data.attributes.operation_mode in {'off': 0, 'idle': 0})) {
           callback(null, this.speedList.indexOf(data.attributes.fan_mode) + 1);            
         } else {
           callback(null, 0);
@@ -338,7 +338,7 @@ HomeAssistantAirConditioner.prototype = {
     if (this.data && this.data.attributes && this.data.attributes.unit_of_measurement) {
       var units = (this.data.attributes.unit_of_measurement === '°F') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
       this.ThermostatService
-          .setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
+        .setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
     }
 
     return [informationService, this.fanService, this.ThermostatService];
