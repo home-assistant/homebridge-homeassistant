@@ -1,3 +1,5 @@
+'use strict';
+
 let Service;
 let Characteristic;
 let communicationError;
@@ -33,24 +35,23 @@ function HomeAssistantAirConditioner(log, data, client) {
 
   this.speedList = data.attributes.fan_list;
   this.maxValue = this.speedList.length;
-  if (!(data.attributes.operation_mode in {'off': 0, 'idle': 0})){
-    this.last_operation_mode = data.attributes.operation_mode;
+  if (!(data.attributes.operation_mode in {'off':0, 'idle':0})){
+    this.lastOperationMode = data.attributes.operation_mode;
   } else {
-    this.last_operation_mode = 'auto';
+    this.lastOperationMode = 'auto';
   }
 }
 
 HomeAssistantAirConditioner.prototype = {
   onEvent(oldState, newState) {
-    var powerState = !(newState.attributes.operation_mode in {'off': 0, 'idle': 0});
-    var fan_speed = this.speedList.indexOf(newState.attributes.fan_mode) + 1;
+    var powerState = !(newState.attributes.operation_mode in {'off':0, 'idle':0});
     const list = {'idle':0, 'heat':1, 'cool':2, 'auto':3, 'off':0}
     if (newState.attributes.operation_mode !== oldState.attributes.operation_mode && powerState) {
-      this.last_operation_mode = newState.attributes.operation_mode;
+      this.lastOperationMode = newState.attributes.operation_mode;
     }
     if (powerState) {
       this.fanService.getCharacteristic(Characteristic.RotationSpeed)
-        .setValue(fan_speed, null, 'internal');
+        .setValue(this.speedList.indexOf(newState.attributes.fan_mode) + 1, null, 'internal');
     }
     this.fanService.getCharacteristic(Characteristic.On)
       .setValue(powerState, null, 'internal');
@@ -157,7 +158,6 @@ HomeAssistantAirConditioner.prototype = {
     this.log(`Setting Current Heating Cooling state on the '${this.name}' to ${mode}`);
 
     var that = this;
-
     this.client.callService(this.domain, 'set_operation_mode', serviceData, function (data) {
       if (data) {
         that.log(`Successfully set current heating cooling state of '${that.name}' to ${mode}`);
@@ -170,7 +170,7 @@ HomeAssistantAirConditioner.prototype = {
   getPowerState(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        callback(null, !(data.attributes.operation_mode in {'off': 0, 'idle': 0}));
+        callback(null, !(data.attributes.operation_mode in {'off':0, 'idle':0}));
       } else {
         callback(communicationError);
       }
@@ -186,11 +186,9 @@ HomeAssistantAirConditioner.prototype = {
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
 
-    if (powerOn) {       
-      serviceData.operation_mode = this.last_operation_mode;
-
+    if (powerOn) {
+      serviceData.operation_mode = this.lastOperationMode;
       this.log(`Setting power state on the '${this.name}' to on`);
-
       this.client.callService(this.domain, 'set_operation_mode', serviceData, (data) => {
         if (data) {
           that.log(`Successfully set power state on the '${that.name}' to on`);
@@ -216,7 +214,7 @@ HomeAssistantAirConditioner.prototype = {
   getRotationSpeed(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        if (!(data.attributes.operation_mode in {'off': 0, 'idle': 0})) {
+        if (!(data.attributes.operation_mode in {'off':0, 'idle':0})) {
           callback(null, this.speedList.indexOf(data.attributes.fan_mode) + 1);            
         } else {
           callback(null, 0);
@@ -251,7 +249,7 @@ HomeAssistantAirConditioner.prototype = {
     } else {
       this.client.fetchState(this.entity_id, (data) => {
         if (data) {
-          for (var index = 0; index < this.speedList.length - 1; index += 1) { 
+          for (var index = 0; index < this.speedList.length - 1; index += 1) {
             if (speed === index + 1) {
               serviceData.fan_mode = this.speedList[index];
               break;
@@ -260,7 +258,7 @@ HomeAssistantAirConditioner.prototype = {
           if (!serviceData.fan_mode) {
             serviceData.fan_mode = this.speedList[this.speedList.length - 1];
           }
-          
+
           this.log(`Setting speed on the '${this.name}' to ${serviceData.fan_mode}`);
 
           this.client.callService(this.domain, 'set_fan_mode', serviceData, (data2) => {
