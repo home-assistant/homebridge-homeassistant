@@ -35,7 +35,7 @@ function HomeAssistantAirConditioner(log, data, client) {
 
   this.speedList = data.attributes.fan_list;
   this.maxValue = this.speedList.length;
-  if (!(data.attributes.operation_mode in {'off':0, 'idle':0})){
+  if (!(data.attributes.operation_mode in {'off': 0, 'idle': 0})) {
     this.lastOperationMode = data.attributes.operation_mode;
   } else {
     this.lastOperationMode = 'auto';
@@ -44,8 +44,8 @@ function HomeAssistantAirConditioner(log, data, client) {
 
 HomeAssistantAirConditioner.prototype = {
   onEvent(oldState, newState) {
-    var powerState = !(newState.attributes.operation_mode in {'off':0, 'idle':0});
-    const list = {'idle':0, 'heat':1, 'cool':2, 'auto':3, 'off':0}
+    var powerState = !(newState.attributes.operation_mode in {'off': 0, 'idle': 0});
+    const list = {'idle': 0, 'heat': 1, 'cool': 2, 'auto': 3, 'off': 0}
     if (newState.attributes.operation_mode !== oldState.attributes.operation_mode && powerState) {
       this.lastOperationMode = newState.attributes.operation_mode;
     }
@@ -170,7 +170,7 @@ HomeAssistantAirConditioner.prototype = {
   getPowerState(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        callback(null, !(data.attributes.operation_mode in {'off':0, 'idle':0}));
+        callback(null, !(data.attributes.operation_mode in {'off': 0, 'idle': 0}));
       } else {
         callback(communicationError);
       }
@@ -214,8 +214,8 @@ HomeAssistantAirConditioner.prototype = {
   getRotationSpeed(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        if (!(data.attributes.operation_mode in {'off':0, 'idle':0})) {
-          callback(null, this.speedList.indexOf(data.attributes.fan_mode) + 1);            
+        if (!(data.attributes.operation_mode in {'off': 0, 'idle': 0})) {
+          callback(null, this.speedList.indexOf(data.attributes.fan_mode) + 1);
         } else {
           callback(null, 0);
         }
