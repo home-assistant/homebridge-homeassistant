@@ -1,5 +1,3 @@
-'use strict';
-
 let Service;
 let Characteristic;
 let communicationError;
