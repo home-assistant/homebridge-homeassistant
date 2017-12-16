@@ -45,6 +45,18 @@ HomeAssistantFan.prototype = {
   onEvent(oldState, newState) {
     this.fanService.getCharacteristic(Characteristic.On)
       .setValue(newState.state === 'on', null, 'internal');
+    if (newState.state === 'on') {
+      var speedList = newState.attributes.speed_list;
+      if (speedList) {
+        if (speedList.length > 2) {
+          this.fanService.getCharacteristic(Characteristic.RotationSpeed)
+            .setValue(speedList.indexOf(newState.attributes.speed), null, 'internal');
+        }
+      } else {
+        this.fanService.getCharacteristic(Characteristic.RotationSpeed)
+          .setValue(newState.attributes.speed, null, 'internal');
+      }
+    }
   },
   getPowerState(callback) {
     this.client.fetchState(this.entity_id, (data) => {
@@ -93,7 +105,7 @@ HomeAssistantFan.prototype = {
   getRotationSpeed(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        if (data.state === 'off') {
+        if (data.state === 'off' || data.state === 'idle') {
           callback(null, 0);
         } else {
           var speedList = data.attributes.speed_list;
