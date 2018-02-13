@@ -168,7 +168,7 @@ function HomeAssistantSensorFactory(log, data, client) {
   } else if (data.attributes.unit_of_measurement === '%' && (data.entity_id.includes('humidity') || data.attributes.homebridge_sensor_type === 'humidity')) {
     service = Service.HumiditySensor;
     characteristic = Characteristic.CurrentRelativeHumidity;
-  } else if ((typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'lux') || data.attributes.homebridge_sensor_type === 'light') {
+  } else if ((typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'lux') || (data.attributes.homebridge_sensor_type === 'light' || data.entity_id.includes('illumination'))) {
     service = Service.LightSensor;
     characteristic = Characteristic.CurrentAmbientLightLevel;
     transformData = function transformData(dataToTransform) { // eslint-disable-line no-shadow
