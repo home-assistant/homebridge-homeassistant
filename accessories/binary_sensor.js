@@ -192,6 +192,8 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
         Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED
       );
     case 'opening':
+    case 'window':
+    case 'door':
       return new HomeAssistantBinarySensor(
         log, data, client,
         Service.ContactSensor,
