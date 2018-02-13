@@ -131,6 +131,17 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
     return null;
   }
   switch (data.attributes.device_class) {
+    case 'door':
+    case 'garage_door':
+    case 'opening':
+    case 'window':
+      return new HomeAssistantBinarySensor(
+        log, data, client,
+        Service.ContactSensor,
+        Characteristic.ContactSensorState,
+        Characteristic.ContactSensorState.CONTACT_NOT_DETECTED,
+        Characteristic.ContactSensorState.CONTACT_DETECTED
+      );
     case 'gas':
       if (!(data.attributes.homebridge_gas_type)) {
         return new HomeAssistantBinarySensor(
@@ -190,14 +201,6 @@ function HomeAssistantBinarySensorFactory(log, data, client) {
         Characteristic.OccupancyDetected,
         Characteristic.OccupancyDetected.OCCUPANCY_DETECTED,
         Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED
-      );
-    case 'opening':
-      return new HomeAssistantBinarySensor(
-        log, data, client,
-        Service.ContactSensor,
-        Characteristic.ContactSensorState,
-        Characteristic.ContactSensorState.CONTACT_NOT_DETECTED,
-        Characteristic.ContactSensorState.CONTACT_DETECTED
       );
     case 'smoke':
       return new HomeAssistantBinarySensor(
