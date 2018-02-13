@@ -165,7 +165,7 @@ function HomeAssistantSensorFactory(log, data, client) {
       }
       return value;
     };
-  } else if (data.attributes.unit_of_measurement === '%' && (data.entity_id.includes('humidity') || data.attributes.homebridge_sensor_type === 'humidity')) {
+  } else if (data.attributes.unit_of_measurement === '%' && (data.entity_id.includes('humidity') || data.entity_id.includes('moisture') || data.attributes.homebridge_sensor_type === 'humidity')) {
     service = Service.HumiditySensor;
     characteristic = Characteristic.CurrentRelativeHumidity;
   } else if ((typeof data.attributes.unit_of_measurement === 'string' && data.attributes.unit_of_measurement.toLowerCase() === 'lux') || data.attributes.homebridge_sensor_type === 'light') {
