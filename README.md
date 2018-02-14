@@ -21,7 +21,7 @@ Here's a list of the devices that are currently exposed:
 * **Automations** - on/off
 * **Alarm Control Panels** - arm (home, away, night), disarm, triggered
 * **Binary Sensor** - door, leak, moisture, motion, smoke, and window state
-* **Climate** - current temperature, target temperature, heat/cool mode
+* **Climate** - current temperature, target temperature, heat/cool mode, fan on/off/speed
 * **Cover** - exposed as a garage door or window covering (see notes)
 * **Device Tracker** - home/not home status appears as an occupancy sensor
 * **Fan** - on/off/speed
@@ -49,6 +49,16 @@ For binary sensors with the `gas` `device_class` you can also set `homebridge_ga
 
 For binary sensors with the `opening` `device_class` you can also set `homebridge_opening_type` to `window` to have the entity display as a window instead of a door to Homebridge.
 
+### Climate Support
+If your device is air-conditioned then you have a thermostat and a fan, both working at the same time. In order
+to do change this you may specify its type in the `customize` section of your
+Home Assistant's `configuration.yaml`. Refer to the following example:
+
+```
+customize:
+  cover.living_room:
+    homebridge_climate_type: airconditioner
+```
 ### Cover Support
 
 Covers on your Home Assistant will appear as a garage door by default. In order
