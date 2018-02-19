@@ -340,18 +340,18 @@ HomeAssistantClimate.prototype = {
 
     this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
 
-    this.fanService = new Service.Fan();
-    this.fanService
-      .getCharacteristic(Characteristic.RotationSpeed)
-      .setProps({
-        minValue: 0,
-        maxValue: this.maxFanRotationValue,
-        minStep: 1
-      })
-      .on('get', this.getRotationSpeed.bind(this))
-      .on('set', this.setRotationSpeed.bind(this));
+//    this.fanService = new Service.Fan();
+//    this.fanService
+//      .getCharacteristic(Characteristic.RotationSpeed)
+//      .setProps({
+//        minValue: 0,
+//        maxValue: this.maxFanRotationValue,
+//        minStep: 1
+//      })
+//      .on('get', this.getRotationSpeed.bind(this))
+//      .on('set', this.setRotationSpeed.bind(this));
 
-    return [informationService, this.ThermostatService, this.fanService];
+    return [informationService, this.ThermostatService];
   }
 
 
