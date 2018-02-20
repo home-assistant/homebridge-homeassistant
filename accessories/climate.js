@@ -1,6 +1,7 @@
 var Service;
 var Characteristic;
 var communicationError;
+var debounce = require('lodash.debounce');
 
 
 function fahrenheitToCelsius(temperature) {
@@ -110,6 +111,10 @@ HomeAssistantClimate.prototype = {
       serviceData.temperature = celsiusToFahrenheit(serviceData.temperature);
     }
   
+    this.log(`Trying to set the temperature on the '${this.name}' to ${serviceData.temperature}`);
+    this.setTargetTempDebounced(serviceData, callback);
+  },
+  setTargetTempDebounced: debounce(function(serviceData, callback) {
     this.log(`Setting temperature on the '${this.name}' to ${serviceData.temperature}`);
 
     this.client.callService(this.domain, 'set_temperature', serviceData, function (data) {
@@ -120,7 +125,7 @@ HomeAssistantClimate.prototype = {
         callback(communicationError);
       }
     });
-  },
+  }, 2000),
   getTargetHeatingCoolingState: function (callback) {
     this.log('fetching Current Heating Cooling state for: ' + this.name);
 
