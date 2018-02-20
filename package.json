@@ -28,6 +28,7 @@
   "dependencies": {
     "eventsource": "^0.2.1",
     "request": "^2.69.0",
+    "bluebird": "^3.2.2",
     "lodash.debounce": "^4.0.8"
   },
   "devDependencies": {
