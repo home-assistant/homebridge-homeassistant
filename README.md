@@ -59,9 +59,11 @@ Home Assistant's `configuration.yaml`. Refer to the following example:
 customize:
   cover.lounge_main:
     homebridge_cover_type: rollershutter
-  cover.garage:
+    homebridge_cover_steps: 8
+  cover.garage:
     homebridge_cover_type: garage_door
 ```
+If covers type is rollershutter and Run a fixed step, You can add a property `homebridge_cover_steps` to fix value increment.
 
 ### Device Tracker
 
