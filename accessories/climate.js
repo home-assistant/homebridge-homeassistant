@@ -119,7 +119,7 @@ HomeAssistantClimate.prototype = {
     var that = this
     this.client.callService(this.domain, 'set_temperature', serviceData, function (data) {
       if (data) {
-        that.log(`Successfully set temperature of '${that.name}'`);
+        that.log(`Successfully set temperature of '${that.name}'!`);
       }
       return prom.resolve().asCallback(callback)
     });
