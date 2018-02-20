@@ -121,6 +121,7 @@ HomeAssistantClimate.prototype = {
       if (data) {
         that.log(`Successfully set temperature of '${that.name}'`);
       }
+      return prom.resolve().asCallback(callback)
     });
   }, 1000),
   getTargetHeatingCoolingState: function (callback) {
