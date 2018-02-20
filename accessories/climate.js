@@ -103,10 +103,10 @@ HomeAssistantClimate.prototype = {
       return;
     }
     this.log(`Trying to set the temperature on the '${this.name}'`);
-    this.setTargetTempDebounced(value, callback);
+    this.setTargetTempDebounced(value);
     return prom.resolve().asCallback(callback)
   },
-  setTargetTempDebounced: debounce(function(value, callback) {
+  setTargetTempDebounced: debounce(function(value) {
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
     serviceData.temperature = value;
@@ -119,9 +119,8 @@ HomeAssistantClimate.prototype = {
     var that = this
     this.client.callService(this.domain, 'set_temperature', serviceData, function (data) {
       if (data) {
-        that.log(`Successfully set temperature of '${that.name}'!`);
+        that.log(`Successfully set temperature of '${that.name}'`);
       }
-      return prom.resolve().asCallback(callback)
     });
   }, 1000),
   getTargetHeatingCoolingState: function (callback) {
