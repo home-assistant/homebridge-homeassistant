@@ -102,9 +102,9 @@ HomeAssistantClimate.prototype = {
       return;
     }
     this.log(`Trying to set the temperature on the '${this.name}'`);
-    this.setTargetTempDebounced(serviceData, callback);
+    this.setTargetTempDebounced(value, callback);
   },
-  setTargetTempDebounced: debounce(function(serviceData, callback) {
+  setTargetTempDebounced: debounce(function(value, callback) {
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
     serviceData.temperature = value;
