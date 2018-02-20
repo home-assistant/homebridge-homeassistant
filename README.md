@@ -224,7 +224,7 @@ If you don't specify the accessory information, the data will be pulled from Hom
 
 ## Battery Tracking
 
-Battery tracking is supported for binary sensors, device trackers, locks, and sensors.
+Battery tracking is supported for binary sensors, covers, device trackers, locks, and sensors.
 
 `homebridge_battery_source` must be set to an entity with '%' as its unit of measurement.
 

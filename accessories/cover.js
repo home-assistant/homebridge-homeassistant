@@ -29,6 +29,8 @@ class HomeAssistantCover {
     } else {
       this.serial = data.entity_id;
     }
+    this.batterySource = data.attributes.homebridge_battery_source;
+    this.chargingSource = data.attributes.homebridge_charging_source;
   }
 
   onEvent(oldState, newState) {
@@ -52,6 +54,37 @@ class HomeAssistantCover {
     });
   }
 
+  getBatteryLevel(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state));
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
+  getChargingState(callback) {
+    if (this.batterySource && this.chargingSource) {
+      this.client.fetchState(this.chargingSource, (data) => {
+        if (data) {
+          callback(null, data.state.toLowerCase() === 'charging' ? 1 : 0);
+        } else {
+          callback(communicationError);
+        }
+      });
+    } else {
+      callback(null, 2);
+    }
+  }
+  getLowBatteryStatus(callback) {
+    this.client.fetchState(this.batterySource, (data) => {
+      if (data) {
+        callback(null, parseFloat(data.state) > 20 ? 0 : 1);
+      } else {
+        callback(communicationError);
+      }
+    });
+  }
   getServices() {
     const informationService = new Service.AccessoryInformation();
     informationService
@@ -69,6 +102,21 @@ class HomeAssistantCover {
       .on('get', this.getState.bind(this))
       .on('set', this.setTargetState.bind(this));
 
+    if (this.batterySource) {
+      this.batteryService = new Service.BatteryService();
+      this.batteryService
+        .getCharacteristic(Characteristic.BatteryLevel)
+        .setProps({ maxValue: 100, minValue: 0, minStep: 1 })
+        .on('get', this.getBatteryLevel.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.ChargingState)
+        .setProps({ maxValue: 2 })
+        .on('get', this.getChargingState.bind(this));
+      this.batteryService
+        .getCharacteristic(Characteristic.StatusLowBattery)
+        .on('get', this.getLowBatteryStatus.bind(this));
+      return [informationService, this.batteryService, this.service];
+    }
     return [informationService, this.service];
   }
 
