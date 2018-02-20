@@ -101,19 +101,18 @@ HomeAssistantClimate.prototype = {
       callback();
       return;
     }
-
-    var serviceData = {};
+    this.log(`Trying to set the temperature on the '${this.name}'`);
+    this.setTargetTempDebounced(serviceData, callback);
+  },
+  setTargetTempDebounced: debounce(function(serviceData, callback) {
+  var serviceData = {};
     serviceData.entity_id = this.entity_id;
     serviceData.temperature = value;
 
     if (getTempUnits(this.data) === 'FAHRENHEIT') {
       serviceData.temperature = celsiusToFahrenheit(serviceData.temperature);
     }
-  
-    this.log(`Trying to set the temperature on the '${this.name}' to ${serviceData.temperature}`);
-    this.setTargetTempDebounced(serviceData, callback);
-  },
-  setTargetTempDebounced: debounce(function(serviceData, callback) {
+
     this.log(`Setting temperature on the '${this.name}' to ${serviceData.temperature}`);
     var that = this
     this.client.callService(this.domain, 'set_temperature', serviceData, function (data) {
@@ -124,7 +123,7 @@ HomeAssistantClimate.prototype = {
         callback(communicationError);
       }
     });
-  }, 2000),
+  }, 5000),
   getTargetHeatingCoolingState: function (callback) {
     this.log('fetching Current Heating Cooling state for: ' + this.name);
 
