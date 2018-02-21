@@ -103,10 +103,10 @@ HomeAssistantClimate.prototype = {
       return;
     }
     this.log(`Trying to set the temperature on the '${this.name}'`);
-    this.setTargetTempDebounced(value);
-    return prom.resolve().asCallback(callback)
+    this.setTargetTempDebounced(value, callback);
+    //return prom.resolve().asCallback(callback)
   },
-  setTargetTempDebounced: debounce(function(value) {
+  setTargetTempDebounced: debounce(function(value, callback) {
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
     serviceData.temperature = value;
@@ -120,6 +120,9 @@ HomeAssistantClimate.prototype = {
     this.client.callService(this.domain, 'set_temperature', serviceData, function (data) {
       if (data) {
         that.log(`Successfully set temperature of '${that.name}'`);
+        callback();
+      }else{
+        callback(communicationError);
       }
     });
   }, 1000),
@@ -342,18 +345,24 @@ HomeAssistantClimate.prototype = {
 
     this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
 
-//    this.fanService = new Service.Fan();
-//    this.fanService
-//      .getCharacteristic(Characteristic.RotationSpeed)
-//      .setProps({
-//        minValue: 0,
-//        maxValue: this.maxFanRotationValue,
-//        minStep: 1
-//      })
-//      .on('get', this.getRotationSpeed.bind(this))
-//      .on('set', this.setRotationSpeed.bind(this));
+    servicelist = [informationService, this.ThermostatService]
 
-    return [informationService, this.ThermostatService];
+    // Check if we have a fan
+    if(this.data.attributes.fan_list) {
+        this.fanService = new Service.Fan();
+        this.fanService
+          .getCharacteristic(Characteristic.RotationSpeed)
+          .setProps({
+            minValue: 0,
+            maxValue: this.maxFanRotationValue,
+            minStep: 1
+          })
+          .on('get', this.getRotationSpeed.bind(this))
+          .on('set', this.setRotationSpeed.bind(this));
+        servicelist.push(this.fanService)
+     }
+
+    return servicelist;
   }
 
 
