@@ -105,7 +105,7 @@ HomeAssistantClimate.prototype = {
     this.setTargetTempDebounced(value);
     callback();
   },
-  setTargetTempDebounced: debounce(function(value) {
+  setTargetTempDebounced: debounce(function (value) {
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
     serviceData.temperature = value;
@@ -115,7 +115,7 @@ HomeAssistantClimate.prototype = {
     }
 
     this.log(`Setting temperature on the '${this.name}' to ${serviceData.temperature}`);
-    var that = this
+    var that = this;
     this.client.callService(this.domain, 'set_temperature', serviceData, function (data) {
       if (data) {
         that.log(`Successfully set temperature of '${that.name}'`);
@@ -341,10 +341,10 @@ HomeAssistantClimate.prototype = {
 
     this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
 
-    servicelist = [informationService, this.ThermostatService]
+    var servicelist = [informationService, this.ThermostatService]
 
     // Only add the fan service if that feature is supported
-    if(this.data.attributes.supported_features & 64) {
+    if (this.data.attributes.supported_features & 64) {
       this.fanService = new Service.Fan();
       this.fanService
         .getCharacteristic(Characteristic.RotationSpeed)
@@ -355,7 +355,7 @@ HomeAssistantClimate.prototype = {
         })
         .on('get', this.getRotationSpeed.bind(this))
         .on('set', this.setRotationSpeed.bind(this));
-      servicelist.push(this.fanService)
+      servicelist.push(this.fanService);
     }
 
     return servicelist;
