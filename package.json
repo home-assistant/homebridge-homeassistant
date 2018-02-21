@@ -27,7 +27,8 @@
   },
   "dependencies": {
     "eventsource": "^0.2.1",
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "lodash.debounce": "^4.0.8"
   },
   "devDependencies": {
     "eslint": "^3.13.1",
