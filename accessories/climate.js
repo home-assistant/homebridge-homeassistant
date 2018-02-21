@@ -2,7 +2,6 @@ var Service;
 var Characteristic;
 var communicationError;
 var debounce = require('lodash.debounce');
-var prom = require('bluebird');
 
 
 function fahrenheitToCelsius(temperature) {
@@ -105,7 +104,6 @@ HomeAssistantClimate.prototype = {
     this.log(`Trying to set the temperature on the '${this.name}'`);
     this.setTargetTempDebounced(value);
     callback();
-    //return prom.resolve().asCallback(callback)
   },
   setTargetTempDebounced: debounce(function(value) {
     var serviceData = {};
