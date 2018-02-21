@@ -1,6 +1,7 @@
 var Service;
 var Characteristic;
 var communicationError;
+var debounce = require('lodash.debounce');
 
 
 function fahrenheitToCelsius(temperature) {
@@ -100,8 +101,11 @@ HomeAssistantClimate.prototype = {
       callback();
       return;
     }
-
-    var that = this;
+    this.log(`Trying to set the temperature on the '${this.name}'`);
+    this.setTargetTempDebounced(value);
+    callback();
+  },
+  setTargetTempDebounced: debounce(function (value) {
     var serviceData = {};
     serviceData.entity_id = this.entity_id;
     serviceData.temperature = value;
@@ -109,18 +113,15 @@ HomeAssistantClimate.prototype = {
     if (getTempUnits(this.data) === 'FAHRENHEIT') {
       serviceData.temperature = celsiusToFahrenheit(serviceData.temperature);
     }
-  
-    this.log(`Setting temperature on the '${this.name}' to ${serviceData.temperature}`);
 
+    this.log(`Setting temperature on the '${this.name}' to ${serviceData.temperature}`);
+    var that = this;
     this.client.callService(this.domain, 'set_temperature', serviceData, function (data) {
       if (data) {
         that.log(`Successfully set temperature of '${that.name}'`);
-        callback();
-      } else {
-        callback(communicationError);
       }
     });
-  },
+  }, 1000),
   getTargetHeatingCoolingState: function (callback) {
     this.log('fetching Current Heating Cooling state for: ' + this.name);
 
@@ -340,18 +341,24 @@ HomeAssistantClimate.prototype = {
 
     this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
 
-    this.fanService = new Service.Fan();
-    this.fanService
-      .getCharacteristic(Characteristic.RotationSpeed)
-      .setProps({
-        minValue: 0,
-        maxValue: this.maxFanRotationValue,
-        minStep: 1
-      })
-      .on('get', this.getRotationSpeed.bind(this))
-      .on('set', this.setRotationSpeed.bind(this));
+    var servicelist = [informationService, this.ThermostatService];
 
-    return [informationService, this.ThermostatService, this.fanService];
+    // Only add the fan service if that feature is supported
+    if (this.data.attributes.supported_features & 64) {
+      this.fanService = new Service.Fan();
+      this.fanService
+        .getCharacteristic(Characteristic.RotationSpeed)
+        .setProps({
+          minValue: 0,
+          maxValue: this.maxFanRotationValue,
+          minStep: 1
+        })
+        .on('get', this.getRotationSpeed.bind(this))
+        .on('set', this.setRotationSpeed.bind(this));
+      servicelist.push(this.fanService);
+    }
+
+    return servicelist;
   }
 
 
