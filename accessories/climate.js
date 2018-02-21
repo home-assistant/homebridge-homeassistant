@@ -348,7 +348,9 @@ HomeAssistantClimate.prototype = {
     servicelist = [informationService, this.ThermostatService]
 
     // Check if we have a fan
+    this.log(this.data.attributes)
     if(this.data.attributes.fan_list) {
+        this.log("There is a fan")
         this.fanService = new Service.Fan();
         this.fanService
           .getCharacteristic(Characteristic.RotationSpeed)
@@ -360,7 +362,9 @@ HomeAssistantClimate.prototype = {
           .on('get', this.getRotationSpeed.bind(this))
           .on('set', this.setRotationSpeed.bind(this));
         servicelist.push(this.fanService)
-     }
+    }else{
+        this.log("There is not a fan")
+    }
 
     return servicelist;
   }
