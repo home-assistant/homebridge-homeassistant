@@ -341,7 +341,7 @@ HomeAssistantClimate.prototype = {
 
     this.ThermostatService.setCharacteristic(Characteristic.TemperatureDisplayUnits, units);
 
-    var servicelist = [informationService, this.ThermostatService]
+    var servicelist = [informationService, this.ThermostatService];
 
     // Only add the fan service if that feature is supported
     if (this.data.attributes.supported_features & 64) {
