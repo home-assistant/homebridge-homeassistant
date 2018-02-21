@@ -349,7 +349,7 @@ HomeAssistantClimate.prototype = {
 
     // Check if we have a fan
     this.log(this.data.attributes)
-    if(this.data.attributes.fan_list) {
+    if(this.data.attributes.supported_features & 64) {
         this.log("There is a fan")
         this.fanService = new Service.Fan();
         this.fanService
