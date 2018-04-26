@@ -45,7 +45,7 @@ class HomeAssistantCover {
   getState(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        let transformedData = this.transformData(data);
+        const transformedData = this.transformData(data);
         if (transformedData !== null) {
           callback(null, this.transformData(data));
         } else {
