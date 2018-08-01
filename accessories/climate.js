@@ -175,13 +175,8 @@ HomeAssistantClimate.prototype = {
     }
 
     // get list of supported operations and map our mode to supported one
-    let modes = this.data.operation_list;
-    var operation_mode = mode;
-    modes.forEach(element => {
-      if (element.toLowerCase() === mode) {
-        operation_mode = element;
-        break;
-      }
+    var operation_mode = this.data.operation_list.find(element => {
+      return element.toLocaleLowerCase() === mode;
     });
 
     serviceData.operation_mode = operation_mode;
