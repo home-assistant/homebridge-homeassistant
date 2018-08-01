@@ -175,7 +175,8 @@ HomeAssistantClimate.prototype = {
     }
 
     // get list of supported operations and map our mode to supported one
-    var operationMode = this.data.attributes.operation_list.find(element => element.toLowerCase() === mode);
+    var modes = this.data.attributes.operation_list;
+    var operationMode = modes.find(element => element.toLowerCase() === mode);
 
     serviceData.operation_mode = operationMode;
     this.log(`Setting Current Heating Cooling state on the '${this.name}' to ${operationMode}`);
