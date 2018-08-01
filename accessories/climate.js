@@ -127,7 +127,7 @@ HomeAssistantClimate.prototype = {
     this.client.fetchState(this.entity_id, function (data) {
       if (data && data.attributes && data.attributes.operation_mode) {
         var state;
-        switch (data.attributes.operation_mode) {
+        switch (data.attributes.operation_mode.toLowerCase()) {
           case 'auto':
             state = Characteristic.TargetHeatingCoolingState.AUTO;
             break;
@@ -174,12 +174,22 @@ HomeAssistantClimate.prototype = {
         break;
     }
 
-    serviceData.operation_mode = mode;
-    this.log(`Setting Current Heating Cooling state on the '${this.name}' to ${mode}`);
+    // get list of supported operations and map our mode to supported one
+    let modes = this.data.operation_list;
+    var operation_mode = mode;
+    modes.forEach(element => {
+      if (element.toLowerCase() === mode) {
+        operation_mode = element;
+        break;
+      }
+    });
+
+    serviceData.operation_mode = operation_mode;
+    this.log(`Setting Current Heating Cooling state on the '${this.name}' to ${operation_mode}`);
 
     var that = this;
 
-    if (mode === 'idle') {
+    if (operation_mode === 'idle') {
       this.fanService.getCharacteristic(Characteristic.On)
         .setValue(false, null, 'internal');
     } else {
