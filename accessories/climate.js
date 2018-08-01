@@ -175,7 +175,7 @@ HomeAssistantClimate.prototype = {
     }
 
     // get list of supported operations and map our mode to supported one
-    var operation_mode = this.data.operation_list.find(element => {
+    var operation_mode = this.data.attributes.operation_list.find(element => {
       return element.toLocaleLowerCase() === mode;
     });
 
