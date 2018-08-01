@@ -66,7 +66,7 @@ HomeAssistantClimate.prototype = {
       this.ThermostatService.getCharacteristic(Characteristic.TargetTemperature)
         .setValue(newState.attributes.temperature, null, 'internal');
       this.ThermostatService.getCharacteristic(Characteristic.TargetHeatingCoolingState)
-        .setValue(list[newState.state], null, 'internal');
+        .setValue(list[newState.state.toLowerCase()], null, 'internal');
     }
   },
   getCurrentTemp: function (callback) {
@@ -176,7 +176,7 @@ HomeAssistantClimate.prototype = {
 
     // get list of supported operations and map our mode to supported one
     var operation_mode = this.data.attributes.operation_list.find(element => {
-      return element.toLocaleLowerCase() === mode;
+      return element.toLowerCase() === mode;
     });
 
     serviceData.operation_mode = operation_mode;
