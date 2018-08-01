@@ -175,16 +175,14 @@ HomeAssistantClimate.prototype = {
     }
 
     // get list of supported operations and map our mode to supported one
-    var operation_mode = this.data.attributes.operation_list.find(element => {
-      return element.toLowerCase() === mode;
-    });
+    var operationMode = this.data.attributes.operation_list.find(element => element.toLowerCase() === mode);
 
-    serviceData.operation_mode = operation_mode;
-    this.log(`Setting Current Heating Cooling state on the '${this.name}' to ${operation_mode}`);
+    serviceData.operation_mode = operationMode;
+    this.log(`Setting Current Heating Cooling state on the '${this.name}' to ${operationMode}`);
 
     var that = this;
 
-    if (operation_mode === 'idle') {
+    if (operationMode === 'idle') {
       this.fanService.getCharacteristic(Characteristic.On)
         .setValue(false, null, 'internal');
     } else {
