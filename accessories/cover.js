@@ -45,7 +45,12 @@ class HomeAssistantCover {
   getState(callback) {
     this.client.fetchState(this.entity_id, (data) => {
       if (data) {
-        callback(null, this.transformData(data));
+        const transformedData = this.transformData(data);
+        if (transformedData !== null) {
+          callback(null, this.transformData(data));
+        } else {
+          callback(communicationError);
+        }
       } else {
         callback(communicationError);
       }
@@ -103,6 +108,9 @@ class HomeAssistantGarageDoor extends HomeAssistantCover {
   }
 
   transformData(data) {
+    if (data.state === 'unavailable') {
+      return null;
+    }
     return data.state === 'closed' ? this.stateCharacteristic.CLOSED : this.stateCharacteristic.OPEN;
   }
 
@@ -158,7 +166,7 @@ class HomeAssistantRollershutter extends HomeAssistantCover {
 
 class HomeAssistantRollershutterBinary extends HomeAssistantRollershutter {
   transformData(data) {
-    return (data && data.state) ? ((data.state === 'open') * 100) : null;
+    return (data && data.state && data.state !== 'unavailable') ? ((data.state === 'open') * 100) : null;
   }
 
   setTargetState(position, callback, context) {
